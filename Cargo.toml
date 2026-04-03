@@ -1,6 +1,6 @@
 [package]
 name = "quizzical"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Terminal quiz game for cert exam prep. Beat mode, combo scoring, burning fuse timer. Security+ deck included."
 license = "MIT"
