@@ -6,11 +6,20 @@ A terminal quiz game for certification exam prep. Built in Rust with a full-scre
 
 ## Install
 
+**From crates.io** (recommended):
+
 ```bash
-cargo build --release
+cargo install quizzical
 ```
 
-Binary lands at `target/release/quizzical`.
+**From source:**
+
+```bash
+git clone https://github.com/PR0CK0/quizzical
+cd quizzical
+cargo build --release
+# binary at target/release/quizzical
+```
 
 ## Usage
 
