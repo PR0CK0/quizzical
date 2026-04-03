@@ -1,5 +1,7 @@
 # quizzical
 
+[![crates.io](https://img.shields.io/crates/v/quizzical.svg)](https://crates.io/crates/quizzical)
+
 A terminal quiz game for certification exam prep. Built in Rust with a full-screen TUI, physics-based animations, and a beat mode with a burning fuse timer and combo scoring.
 
 ## Install
