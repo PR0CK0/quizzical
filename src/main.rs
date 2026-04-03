@@ -45,8 +45,9 @@ enum GameMode {
 impl GameMode {
     fn beat_time(self) -> f64 {
         match self {
-            GameMode::BeatHard => 10.0,
-            _ => 20.0,
+            GameMode::BeatHard => 5.0,
+            GameMode::Beat => 10.0,
+            GameMode::Normal => 0.0,
         }
     }
     fn is_beat(self) -> bool {
@@ -197,7 +198,6 @@ const CORRECT_BANNERS: &[&str] = &[
 ];
 
 // fuse spark chars — cycles on each tick
-const SPARK: &[char] = &['✸', '✺', '◈', '*', '✦', '·', '✸', '◈'];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -313,11 +313,10 @@ fn draw_progress_bar(out: &mut impl Write, x: u16, y: u16, width: u16, done: usi
     );
 }
 
-/// Draw the burning fuse at row `y`.
+/// Draw the burning fuse across 3 rows starting at `y`.
 /// pct_remaining: 1.0 = full time, 0.0 = time's up.
-/// tick: increments ~20/sec, used for spark animation.
+/// tick: increments ~20/sec, used for animation.
 fn draw_fuse(out: &mut impl Write, width: u16, y: u16, pct_remaining: f64, tick: usize, beat_time: f64) {
-    // Layout: " [!] " + fuel + spark + ash + "  " + time_str
     let prefix = " [!] ";
     let time_secs = pct_remaining * beat_time;
     let time_str = format!(" {:4.1}s ", time_secs);
@@ -325,106 +324,83 @@ fn draw_fuse(out: &mut impl Write, width: u16, y: u16, pct_remaining: f64, tick:
         .saturating_sub(prefix.len() + time_str.len())
         .max(3);
 
-    // fuel is to the LEFT of spark (toward bomb), ash to the RIGHT (already burned)
-    // spark starts at right (full time) and moves left toward bomb as time runs out
+    // spark moves left as time runs out
     let fuel_w = ((pct_remaining * fuse_w as f64) as usize).min(fuse_w.saturating_sub(1));
     let ash_w = fuse_w.saturating_sub(1 + fuel_w);
+    let spark_x = prefix.len() + fuel_w;
 
-    let spark_ch = SPARK[tick % SPARK.len()];
-
-    // color transitions as time runs out
-    let (fuel_color, spark_color, fuel_ch) = if pct_remaining > 0.5 {
-        (Color::Yellow, Color::Yellow, '━')
+    // color based on urgency
+    let (fuel_color, time_color) = if pct_remaining > 0.5 {
+        (Color::Yellow, Color::Green)
     } else if pct_remaining > 0.25 {
-        (Color::DarkYellow, Color::Yellow, '━')
-    } else if pct_remaining > 0.10 {
-        (Color::Red, Color::Red, '≈')
+        (Color::DarkYellow, Color::Yellow)
     } else {
-        // critical: alternate characters for flicker
-        let ch = if tick % 2 == 0 { '≈' } else { '~' };
-        (Color::Red, Color::Red, ch)
+        (Color::Red, Color::Red)
     };
 
-    // bomb label — flashes red when critical
-    let bomb_color = if pct_remaining <= 0.25 && tick % 2 == 0 {
-        Color::Red
-    } else {
-        Color::DarkGrey
-    };
+    let critical = pct_remaining <= 0.10;
+    let flash = tick % 2 == 0;
+    let bomb_color = if pct_remaining <= 0.25 && flash { Color::Red } else { Color::DarkGrey };
 
-    // clear the fuse row first
-    let _ = queue!(out, MoveTo(0, y), Print(" ".repeat(width as usize)));
+    // ── row 0 (y): ember glow above spark ──
+    let row0_blank = " ".repeat(width as usize);
+    let _ = queue!(out, MoveTo(0, y), Print(&row0_blank));
+    // draw ember plume: a few chars of heat shimmer above spark position
+    let ember_chars = ['`', '\'', '^', '`', '\''];
+    if pct_remaining < 0.99 {
+        for offset in 0..3usize {
+            let ex = spark_x.saturating_sub(1) + offset;
+            if ex < width as usize {
+                let ch = ember_chars[(tick + offset * 3) % ember_chars.len()];
+                let ec = if offset == 1 { Color::White } else { Color::DarkYellow };
+                let _ = queue!(out, MoveTo(ex as u16, y), SetForegroundColor(ec), Print(ch), ResetColor);
+            }
+        }
+    }
 
-    // bomb label
-    let _ = queue!(
-        out,
-        MoveTo(0, y),
-        SetForegroundColor(bomb_color),
-        SetAttribute(Attribute::Bold),
-        Print(prefix),
-        ResetColor
-    );
+    // ── row 1 (y+1): main fuse ──
+    let row1_blank = " ".repeat(width as usize);
+    let _ = queue!(out, MoveTo(0, y + 1), Print(&row1_blank));
 
-    let fuse_x = prefix.len() as u16;
+    // bomb
+    let _ = queue!(out, MoveTo(0, y + 1), SetForegroundColor(bomb_color), SetAttribute(Attribute::Bold), Print(prefix), ResetColor);
 
-    // fuel (left side, remaining time)
+    // fuel
     if fuel_w > 0 {
+        let fuel_ch = if critical && flash { '~' } else if pct_remaining <= 0.25 { '≈' } else { '━' };
         let fuel: String = std::iter::repeat(fuel_ch).take(fuel_w).collect();
-        let bold = if pct_remaining <= 0.10 {
-            Attribute::Bold
-        } else {
-            Attribute::Reset
-        };
-        let _ = queue!(
-            out,
-            MoveTo(fuse_x, y),
-            SetForegroundColor(fuel_color),
-            SetAttribute(bold),
-            Print(&fuel),
-            ResetColor
-        );
+        let _ = queue!(out, MoveTo(prefix.len() as u16, y + 1), SetForegroundColor(fuel_color), SetAttribute(Attribute::Bold), Print(&fuel), ResetColor);
     }
 
     // spark
-    let spark_x = fuse_x + fuel_w as u16;
-    let _ = queue!(
-        out,
-        MoveTo(spark_x, y),
-        SetForegroundColor(spark_color),
-        SetAttribute(Attribute::Bold),
-        Print(spark_ch),
-        ResetColor
-    );
+    let spark_chars = ['*', '✸', '✺', '◈', '✦', '✸', '*', '◈'];
+    let sc = spark_chars[tick % spark_chars.len()];
+    let spark_col = if critical && flash { Color::White } else { Color::Yellow };
+    let _ = queue!(out, MoveTo(spark_x as u16, y + 1), SetForegroundColor(spark_col), SetAttribute(Attribute::Bold), Print(sc), ResetColor);
 
-    // ash (right side, elapsed time)
+    // ash
     if ash_w > 0 {
-        let ash: String = std::iter::repeat('╌').take(ash_w).collect();
-        let _ = queue!(
-            out,
-            MoveTo(spark_x + 1, y),
-            SetForegroundColor(Color::DarkGrey),
-            Print(&ash),
-            ResetColor
-        );
+        let ash: String = std::iter::repeat('·').take(ash_w).collect();
+        let _ = queue!(out, MoveTo((spark_x + 1) as u16, y + 1), SetForegroundColor(Color::DarkGrey), Print(&ash), ResetColor);
     }
 
-    // time remaining (right-aligned)
-    let time_x = (prefix.len() + fuse_w) as u16;
-    let time_color = if pct_remaining > 0.5 {
-        Color::Green
-    } else if pct_remaining > 0.25 {
-        Color::Yellow
-    } else {
-        Color::Red
-    };
-    let _ = queue!(
-        out,
-        MoveTo(time_x, y),
-        SetForegroundColor(time_color),
-        SetAttribute(Attribute::Bold),
-        Print(&time_str),
-        ResetColor
-    );
+    // time display
+    let _ = queue!(out, MoveTo((prefix.len() + fuse_w) as u16, y + 1), SetForegroundColor(time_color), SetAttribute(Attribute::Bold), Print(&time_str), ResetColor);
+
+    // ── row 2 (y+2): smoke trail below spark ──
+    let row2_blank = " ".repeat(width as usize);
+    let _ = queue!(out, MoveTo(0, y + 2), Print(&row2_blank));
+    if pct_remaining < 0.99 && ash_w > 0 {
+        // show fading smoke dots behind (right of) spark
+        let smoke_chars = ['.', '·', ' '];
+        for offset in 1..=ash_w.min(6) {
+            let sx = spark_x + offset;
+            if sx < width as usize {
+                let ch = smoke_chars[(offset - 1).min(2)];
+                let _ = queue!(out, MoveTo(sx as u16, y + 2), SetForegroundColor(Color::DarkGrey), Print(ch), ResetColor);
+            }
+        }
+    }
 }
 
 fn draw_combo_row(out: &mut impl Write, width: u16, y: u16, bs: &BeatState, tick: usize) {
@@ -501,7 +477,7 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
         let toggle_y = art_start + art_lines.len() as u16 + 3;
         let normal_label = "  NORMAL  ";
         let beat_label = "  ⚡ BEAT  ";
-        let hard_label = "  💀 HARD  ";
+        let hard_label = "  ☠ DEATHMATCH  ";
         let gap = "    ";
 
         let total_toggle_w = normal_label.len() + gap.len() + beat_label.len() + gap.len() + hard_label.len() + 4;
@@ -698,7 +674,7 @@ fn show_question_beat(
     let _ = queue!(out, Clear(ClearType::All));
     draw_header_beat(out, width, q_num, total, bs);
     draw_progress_bar(out, 0, 1, width, q_num - 1, total);
-    draw_question_content(out, q, width, height, 5);
+    draw_question_content(out, q, width, height, 7);
     let _ = queue!(
         out,
         MoveTo(2, height - 2),
@@ -707,8 +683,8 @@ fn show_question_beat(
         Print("  Answer [A / B / C / D]  or  [q] to quit: "),
         ResetColor
     );
-    // initial fuse (full)
-    draw_fuse(out, width, height - 4, 1.0, 0, beat_time);
+    // initial fuse (full) — occupies rows h-6, h-5, h-4
+    draw_fuse(out, width, height - 6, 1.0, 0, beat_time);
     out.flush().unwrap();
 }
 
@@ -740,7 +716,7 @@ fn run_beat_question(
         let pct = remaining / beat_time;
 
         // update just the dynamic rows (fuse + combo), no full clear
-        draw_fuse(out, width, height - 4, pct, tick, beat_time);
+        draw_fuse(out, width, height - 6, pct, tick, beat_time);
         draw_combo_row(out, width, height - 3, bs, tick);
         out.flush().unwrap();
 
@@ -767,6 +743,8 @@ fn run_beat_question(
                 }
                 Ok(Event::Resize(w2, h2)) => {
                     show_question_beat(out, q, q_num, total, bs, w2, h2, beat_time);
+                    // redraw fuse at new size
+                    draw_fuse(out, w2, h2 - 6, 1.0 - (start.elapsed().as_secs_f64() / beat_time).clamp(0.0, 1.0), tick, beat_time);
                 }
                 _ => {}
             }
@@ -1133,7 +1111,7 @@ fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total:
     };
     let lb = add_to_leaderboard(entry);
 
-    let mode_label = if mode == GameMode::BeatHard { "HARD" } else { "NORMAL" };
+    let mode_label = if mode == GameMode::BeatHard { "DEATHMATCH" } else { "BEAT" };
     let mut lines = vec![
         format!("--  BEAT MODE OVER! [{}]  --", mode_label),
         String::new(),
@@ -1179,6 +1157,34 @@ fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total:
     }
     out.flush().unwrap();
     wait_for_key();
+}
+
+fn flash_result_deathmatch(out: &mut impl Write, correct: bool, pts: u64, width: u16, height: u16) {
+    let (msg, color) = if correct {
+        (format!("  +{}  CORRECT  ", fmt_score(pts)), Color::Green)
+    } else {
+        ("  WRONG  ".to_string(), Color::Red)
+    };
+    // flash 3 times over ~300ms, overlaying on the prompt row
+    for i in 0..6 {
+        let show = i % 2 == 0;
+        let _ = queue!(out, MoveTo(0, height - 2), Print(" ".repeat(width as usize)));
+        if show {
+            let x = (width / 2).saturating_sub(msg.len() as u16 / 2);
+            let _ = queue!(out,
+                MoveTo(x, height - 2),
+                SetBackgroundColor(color),
+                SetForegroundColor(Color::Black),
+                SetAttribute(Attribute::Bold),
+                Print(&msg),
+                ResetColor
+            );
+        }
+        out.flush().unwrap();
+        thread::sleep(Duration::from_millis(50));
+    }
+    let _ = queue!(out, MoveTo(0, height - 2), Print(" ".repeat(width as usize)));
+    out.flush().unwrap();
 }
 
 // ─── File picker ─────────────────────────────────────────────────────────────
@@ -1370,14 +1376,22 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                         bs.last_pts = pts;
                         bs.response_times.push(elapsed);
                         let (w, h) = terminal::size()?;
-                        show_correct_beat(&mut out, q, pts, &bs, w, h);
+                        if mode == GameMode::BeatHard {
+                            flash_result_deathmatch(&mut out, true, pts, w, h);
+                        } else {
+                            show_correct_beat(&mut out, q, pts, &bs, w, h);
+                        }
                     } else {
                         let prev_combo = bs.combo;
                         bs.combo = 0;
                         bs.wrong += 1;
                         bs.last_pts = 0;
                         let (w, h) = terminal::size()?;
-                        show_wrong_beat(&mut out, q, &chosen, prev_combo, w, h);
+                        if mode == GameMode::BeatHard {
+                            flash_result_deathmatch(&mut out, false, 0, w, h);
+                        } else {
+                            show_wrong_beat(&mut out, q, &chosen, prev_combo, w, h);
+                        }
                     }
                 }
             }
