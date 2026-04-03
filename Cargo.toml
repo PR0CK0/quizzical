@@ -2,6 +2,12 @@
 name = "quizzical"
 version = "0.1.0"
 edition = "2021"
+description = "Terminal quiz game for cert exam prep. Beat mode, combo scoring, burning fuse timer. Security+ deck included."
+license = "MIT"
+repository = "https://github.com/PR0CK0/quizzical"
+keywords = ["quiz", "terminal", "tui", "comptia", "flashcards"]
+categories = ["command-line-utilities", "games"]
+readme = "README.md"
 
 [dependencies]
 crossterm = "0.27"
