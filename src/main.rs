@@ -9,7 +9,7 @@ use crossterm::{
 };
 use rand::seq::SliceRandom;
 use rand::Rng;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::io::{stdout, Write};
@@ -39,6 +39,61 @@ struct Question {
 enum GameMode {
     Normal,
     Beat,
+    BeatHard,
+}
+
+impl GameMode {
+    fn beat_time(self) -> f64 {
+        match self {
+            GameMode::BeatHard => 10.0,
+            _ => 20.0,
+        }
+    }
+    fn is_beat(self) -> bool {
+        matches!(self, GameMode::Beat | GameMode::BeatHard)
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+struct LeaderboardEntry {
+    score: u64,
+    correct: usize,
+    total: usize,
+    max_combo: usize,
+    avg_time: f64,
+    hard: bool,
+    deck: String,
+}
+
+fn scores_path() -> std::path::PathBuf {
+    let base = dirs_next::data_dir()
+        .or_else(|| std::env::var("HOME").ok().map(std::path::PathBuf::from))
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    let dir = base.join("quizzical");
+    let _ = std::fs::create_dir_all(&dir);
+    dir.join("scores.json")
+}
+
+fn load_leaderboard() -> Vec<LeaderboardEntry> {
+    std::fs::read_to_string(scores_path())
+        .ok()
+        .and_then(|s| serde_json::from_str(&s).ok())
+        .unwrap_or_default()
+}
+
+fn save_leaderboard(entries: &[LeaderboardEntry]) {
+    if let Ok(json) = serde_json::to_string_pretty(entries) {
+        let _ = std::fs::write(scores_path(), json);
+    }
+}
+
+fn add_to_leaderboard(entry: LeaderboardEntry) -> Vec<LeaderboardEntry> {
+    let mut lb = load_leaderboard();
+    lb.push(entry);
+    lb.sort_by(|a, b| b.score.cmp(&a.score));
+    lb.truncate(10);
+    save_leaderboard(&lb);
+    lb
 }
 
 struct BeatState {
@@ -108,7 +163,7 @@ impl BeatState {
     }
 }
 
-const BEAT_TIME: f64 = 20.0; // seconds per question
+// beat time is now per-mode via GameMode::beat_time()
 
 // ─── Strings ─────────────────────────────────────────────────────────────────
 
@@ -261,10 +316,10 @@ fn draw_progress_bar(out: &mut impl Write, x: u16, y: u16, width: u16, done: usi
 /// Draw the burning fuse at row `y`.
 /// pct_remaining: 1.0 = full time, 0.0 = time's up.
 /// tick: increments ~20/sec, used for spark animation.
-fn draw_fuse(out: &mut impl Write, width: u16, y: u16, pct_remaining: f64, tick: usize) {
+fn draw_fuse(out: &mut impl Write, width: u16, y: u16, pct_remaining: f64, tick: usize, beat_time: f64) {
     // Layout: " [!] " + fuel + spark + ash + "  " + time_str
     let prefix = " [!] ";
-    let time_secs = pct_remaining * BEAT_TIME;
+    let time_secs = pct_remaining * beat_time;
     let time_str = format!(" {:4.1}s ", time_secs);
     let fuse_w = (width as usize)
         .saturating_sub(prefix.len() + time_str.len())
@@ -446,79 +501,53 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
         let toggle_y = art_start + art_lines.len() as u16 + 3;
         let normal_label = "  NORMAL  ";
         let beat_label = "  ⚡ BEAT  ";
+        let hard_label = "  💀 HARD  ";
         let gap = "    ";
 
-        let total_toggle_w = normal_label.len() + gap.len() + beat_label.len() + 4;
+        let total_toggle_w = normal_label.len() + gap.len() + beat_label.len() + gap.len() + hard_label.len() + 4;
         let tx = cx.saturating_sub(total_toggle_w as u16 / 2);
 
         // NORMAL box
-        if mode == GameMode::Normal {
-            let _ = queue!(
-                out,
-                MoveTo(tx, toggle_y),
-                SetBackgroundColor(Color::Cyan),
-                SetForegroundColor(Color::Black),
-                SetAttribute(Attribute::Bold),
-                Print(normal_label),
-                ResetColor
-            );
+        let _ = if mode == GameMode::Normal {
+            queue!(out, MoveTo(tx, toggle_y), SetBackgroundColor(Color::Cyan), SetForegroundColor(Color::Black), SetAttribute(Attribute::Bold), Print(normal_label), ResetColor)
         } else {
-            let _ = queue!(
-                out,
-                MoveTo(tx, toggle_y),
-                SetForegroundColor(Color::DarkGrey),
-                Print(normal_label),
-                ResetColor
-            );
-        }
+            queue!(out, MoveTo(tx, toggle_y), SetForegroundColor(Color::DarkGrey), Print(normal_label), ResetColor)
+        };
 
         let _ = queue!(out, MoveTo(tx + normal_label.len() as u16, toggle_y), Print(gap));
 
         // BEAT box
         let beat_x = tx + normal_label.len() as u16 + gap.len() as u16;
-        if mode == GameMode::Beat {
-            let _ = queue!(
-                out,
-                MoveTo(beat_x, toggle_y),
-                SetBackgroundColor(Color::Red),
-                SetForegroundColor(Color::White),
-                SetAttribute(Attribute::Bold),
-                Print(beat_label),
-                ResetColor
-            );
+        let _ = if mode == GameMode::Beat {
+            queue!(out, MoveTo(beat_x, toggle_y), SetBackgroundColor(Color::Red), SetForegroundColor(Color::White), SetAttribute(Attribute::Bold), Print(beat_label), ResetColor)
         } else {
-            let _ = queue!(
-                out,
-                MoveTo(beat_x, toggle_y),
-                SetForegroundColor(Color::DarkGrey),
-                Print(beat_label),
-                ResetColor
-            );
-        }
+            queue!(out, MoveTo(beat_x, toggle_y), SetForegroundColor(Color::DarkGrey), Print(beat_label), ResetColor)
+        };
 
-        let hint1 = "[ ← → ] or [ B ] to toggle mode";
+        let _ = queue!(out, MoveTo(beat_x + beat_label.len() as u16, toggle_y), Print(gap));
+
+        // HARD box
+        let hard_x = beat_x + beat_label.len() as u16 + gap.len() as u16;
+        let _ = if mode == GameMode::BeatHard {
+            queue!(out, MoveTo(hard_x, toggle_y), SetBackgroundColor(Color::DarkRed), SetForegroundColor(Color::White), SetAttribute(Attribute::Bold), Print(hard_label), ResetColor)
+        } else {
+            queue!(out, MoveTo(hard_x, toggle_y), SetForegroundColor(Color::DarkGrey), Print(hard_label), ResetColor)
+        };
+
+        let hint1 = "[ ← → ] or [ B ] to cycle mode";
         let hint2 = "[ Enter ] to start   [ q ] to quit";
         let _ = queue!(
             out,
             MoveTo(cx.saturating_sub(hint1.len() as u16 / 2), toggle_y + 2),
-            SetForegroundColor(Color::DarkGrey),
-            Print(hint1),
-            ResetColor,
+            SetForegroundColor(Color::DarkGrey), Print(hint1), ResetColor,
             MoveTo(cx.saturating_sub(hint2.len() as u16 / 2), toggle_y + 3),
-            SetForegroundColor(Color::DarkGrey),
-            Print(hint2),
-            ResetColor
+            SetForegroundColor(Color::DarkGrey), Print(hint2), ResetColor
         );
 
-        if mode == GameMode::Beat {
-            let beat_info = format!("  Timed: {}s/question  │  Points: faster = more  │  Chain for combo  ", BEAT_TIME as u32);
-            let _ = queue!(
-                out,
-                MoveTo(cx.saturating_sub(beat_info.len() as u16 / 2), toggle_y + 5),
-                SetForegroundColor(Color::Yellow),
-                Print(&beat_info),
-                ResetColor
-            );
+        if mode.is_beat() {
+            let beat_info = format!("  Timed: {}s/question  │  Points: faster = more  │  Chain for combo  ", mode.beat_time() as u32);
+            let color = if mode == GameMode::BeatHard { Color::Red } else { Color::Yellow };
+            let _ = queue!(out, MoveTo(cx.saturating_sub(beat_info.len() as u16 / 2), toggle_y + 5), SetForegroundColor(color), Print(&beat_info), ResetColor);
         }
 
         out.flush().unwrap();
@@ -527,13 +556,18 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
             Some(Event::Key(k)) => match k.code {
                 KeyCode::Enter => return Some(mode),
                 KeyCode::Char('q') | KeyCode::Esc => return None,
-                KeyCode::Char('b') | KeyCode::Char('B')
-                | KeyCode::Left | KeyCode::Right
-                | KeyCode::Tab => {
-                    mode = if mode == GameMode::Normal {
-                        GameMode::Beat
-                    } else {
-                        GameMode::Normal
+                KeyCode::Char('b') | KeyCode::Char('B') | KeyCode::Right | KeyCode::Tab => {
+                    mode = match mode {
+                        GameMode::Normal => GameMode::Beat,
+                        GameMode::Beat => GameMode::BeatHard,
+                        GameMode::BeatHard => GameMode::Normal,
+                    };
+                }
+                KeyCode::Left => {
+                    mode = match mode {
+                        GameMode::Normal => GameMode::BeatHard,
+                        GameMode::Beat => GameMode::Normal,
+                        GameMode::BeatHard => GameMode::Beat,
                     };
                 }
                 _ => {}
@@ -659,6 +693,7 @@ fn show_question_beat(
     bs: &BeatState,
     width: u16,
     height: u16,
+    beat_time: f64,
 ) {
     let _ = queue!(out, Clear(ClearType::All));
     draw_header_beat(out, width, q_num, total, bs);
@@ -673,7 +708,7 @@ fn show_question_beat(
         ResetColor
     );
     // initial fuse (full)
-    draw_fuse(out, width, height - 4, 1.0, 0);
+    draw_fuse(out, width, height - 4, 1.0, 0, beat_time);
     out.flush().unwrap();
 }
 
@@ -693,18 +728,19 @@ fn run_beat_question(
     bs: &BeatState,
     width: u16,
     height: u16,
+    beat_time: f64,
 ) -> BeatResult {
-    show_question_beat(out, q, q_num, total, bs, width, height);
+    show_question_beat(out, q, q_num, total, bs, width, height, beat_time);
     let start = Instant::now();
     let mut tick: usize = 0;
 
     loop {
         let elapsed = start.elapsed().as_secs_f64();
-        let remaining = (BEAT_TIME - elapsed).max(0.0);
-        let pct = remaining / BEAT_TIME;
+        let remaining = (beat_time - elapsed).max(0.0);
+        let pct = remaining / beat_time;
 
         // update just the dynamic rows (fuse + combo), no full clear
-        draw_fuse(out, width, height - 4, pct, tick);
+        draw_fuse(out, width, height - 4, pct, tick, beat_time);
         draw_combo_row(out, width, height - 3, bs, tick);
         out.flush().unwrap();
 
@@ -730,7 +766,7 @@ fn run_beat_question(
                     return BeatResult::Answer(ch.to_string(), elapsed);
                 }
                 Ok(Event::Resize(w2, h2)) => {
-                    show_question_beat(out, q, q_num, total, bs, w2, h2);
+                    show_question_beat(out, q, q_num, total, bs, w2, h2, beat_time);
                 }
                 _ => {}
             }
@@ -1066,7 +1102,7 @@ fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, heig
     wait_for_key();
 }
 
-fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total: usize, width: u16, height: u16) {
+fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total: usize, width: u16, height: u16, deck: &str, mode: GameMode) {
     let _ = queue!(out, Clear(ClearType::All));
     let cx = width / 2;
     let cy = height / 2;
@@ -1086,10 +1122,20 @@ fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total:
         ("~  KEEP GRINDING", "Speed will come with reps.")
     };
 
-    let lines = vec![
-        format!("╔══════════════════════════════════════╗"),
-        format!("║           BEAT MODE OVER!            ║"),
-        format!("╚══════════════════════════════════════╝"),
+    let entry = LeaderboardEntry {
+        score: bs.score,
+        correct: bs.correct,
+        total: answered,
+        max_combo: bs.max_combo,
+        avg_time: bs.avg_time(),
+        hard: mode == GameMode::BeatHard,
+        deck: deck.to_string(),
+    };
+    let lb = add_to_leaderboard(entry);
+
+    let mode_label = if mode == GameMode::BeatHard { "HARD" } else { "NORMAL" };
+    let mut lines = vec![
+        format!("--  BEAT MODE OVER! [{}]  --", mode_label),
         String::new(),
         format!("  Score          {:>10} pts", fmt_score(bs.score)),
         format!("  Questions      {:>4} / {}", answered, total),
@@ -1100,21 +1146,31 @@ fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total:
         grade.to_string(),
         sub.to_string(),
         String::new(),
-        "[ press any key to exit ]".to_string(),
+        "-- TOP 10 --------------------------------------".to_string(),
     ];
+
+    for (i, e) in lb.iter().enumerate() {
+        let flag = if e.hard { "H" } else { " " };
+        lines.push(format!("  {:>2}.  {:>10} pts  ×{}  {}  [{}]",
+            i + 1, fmt_score(e.score), e.max_combo, flag, e.deck));
+    }
+    lines.push(String::new());
+    lines.push("[ press any key to exit ]".to_string());
 
     let start = cy.saturating_sub(lines.len() as u16 / 2);
     for (i, line) in lines.iter().enumerate() {
         let x = cx.saturating_sub(line.len() as u16 / 2);
         let y = start + i as u16;
         let line_color = match i {
-            0..=2 => color,
-            4..=8 => Color::White,
-            10 => color,
-            11 => Color::DarkGrey,
+            0 => color,
+            2..=6 => Color::White,
+            8 => color,
+            9 => Color::DarkGrey,
+            11 => Color::Cyan,
+            12.. => Color::White,
             _ => Color::DarkGrey,
         };
-        let bold = matches!(i, 0..=2 | 10);
+        let bold = matches!(i, 0 | 8 | 11);
         if bold {
             let _ = queue!(out, MoveTo(x, y), SetForegroundColor(line_color), SetAttribute(Attribute::Bold), Print(line), ResetColor);
         } else {
@@ -1282,18 +1338,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     // ── Beat mode ────────────────────────────────────────────────────────────
     } else {
+        let beat_time = mode.beat_time();
         let mut bs = BeatState::new();
         let mut answered = 0usize;
 
         'outer: for (idx, q) in questions.iter().enumerate() {
             let (w, h) = terminal::size()?;
-            let result = run_beat_question(&mut out, q, idx + 1, total, &bs, w, h);
+            let result = run_beat_question(&mut out, q, idx + 1, total, &bs, w, h, beat_time);
 
             match result {
                 BeatResult::Quit => {
-                    // show stats even on early quit
                     let (w, h) = terminal::size()?;
-                    show_final_beat(&mut out, &bs, answered, total, w, h);
+                    show_final_beat(&mut out, &bs, answered, total, w, h, &deck_name, mode);
                     break 'outer;
                 }
                 BeatResult::Timeout => {
@@ -1306,7 +1362,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 BeatResult::Answer(chosen, elapsed) => {
                     answered += 1;
                     if chosen == q.correct {
-                        let pts = BeatState::calc_points(elapsed, BEAT_TIME, bs.combo);
+                        let pts = BeatState::calc_points(elapsed, beat_time, bs.combo);
                         bs.score += pts;
                         bs.combo += 1;
                         bs.max_combo = bs.max_combo.max(bs.combo);
@@ -1330,7 +1386,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         // completed all questions
         if answered == total {
             let (w, h) = terminal::size()?;
-            show_final_beat(&mut out, &bs, answered, total, w, h);
+            show_final_beat(&mut out, &bs, answered, total, w, h, &deck_name, mode);
         }
     }
 

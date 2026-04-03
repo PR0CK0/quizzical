@@ -19,8 +19,8 @@
 - timeout: "TIME'S UP" flash, combo reset
 - wrong: "COMBO BROKEN" flash if streak active
 - early quit → full stats screen
-- [ ] configurable time per question (hard mode 10s)
-- [ ] leaderboard saved to `scores.json` (top 10 runs)
+- [x] configurable time per question — HARD mode = 10s (toggle on title screen)
+- [x] leaderboard saved to `scores.json` (top 10 runs, shown on final beat screen)
 
 ## [x] deck metadata (`name` field in JSON)
 - title screen shows `{name} edition` pulled from the loaded deck file
