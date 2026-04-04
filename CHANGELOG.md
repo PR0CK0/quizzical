@@ -5,6 +5,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.0] - 2026-04-03
+
+### Added
+- **Column headers** in leaderboard — "#", "score", "combo", "mode", "deck" labels
+- **Mode column** shows "H" (Hard) or "D" (Deathmatch) per entry
+
+### Changed
+- Answer format: `Vec<String>` with full-text `correct` field (replaces A/B/C/D HashMap)
+- Input changed from letter keys (A/B/C/D) to number keys (1/2/3/4)
+- Answers shuffled at runtime — no memorizing positions
+- Decks moved to `decks/` subdirectory; file picker scans there automatically
+- Deck filenames renamed: `security-plus-full.json`, `security-plus-acronyms.json`
+- Old root-level JSON files removed
+
+### Fixed
+- Leaderboard rows no longer drift horizontally — all table lines use a fixed x position based on the widest row, so columns stay aligned
+- `scores.json` excluded from deck file picker (saved to OS data dir via `dirs-next`)
+
+---
+
 ## [0.2.0] - 2026-04-03
 
 ### Added
