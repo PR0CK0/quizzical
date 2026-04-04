@@ -10,7 +10,6 @@ use crossterm::{
 use rand::seq::SliceRandom;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -30,28 +29,38 @@ struct QBank {
 struct Question {
     domain: String,
     question: String,
-    answers: HashMap<String, String>,
-    correct: String,
+    answers: Vec<String>,
+    correct: String,  // full text of the correct answer
     explanation: String,
+}
+
+impl Question {
+    /// Returns answers shuffled into display order and the 0-based index of the correct one.
+    fn shuffled_answers(&self, rng: &mut impl rand::Rng) -> (Vec<String>, usize) {
+        let mut answers = self.answers.clone();
+        answers.shuffle(rng);
+        let correct_idx = answers.iter().position(|a| a == &self.correct).unwrap_or(0);
+        (answers, correct_idx)
+    }
 }
 
 #[derive(Clone, Copy, PartialEq)]
 enum GameMode {
     Normal,
-    Beat,
-    BeatHard,
+    Hard,
+    Deathmatch,
 }
 
 impl GameMode {
     fn beat_time(self) -> f64 {
         match self {
-            GameMode::BeatHard => 5.0,
-            GameMode::Beat => 10.0,
+            GameMode::Deathmatch => 5.0,
+            GameMode::Hard => 10.0,
             GameMode::Normal => 0.0,
         }
     }
-    fn is_beat(self) -> bool {
-        matches!(self, GameMode::Beat | GameMode::BeatHard)
+    fn is_timed(self) -> bool {
+        matches!(self, GameMode::Hard | GameMode::Deathmatch)
     }
 }
 
@@ -97,7 +106,7 @@ fn add_to_leaderboard(entry: LeaderboardEntry) -> Vec<LeaderboardEntry> {
     lb
 }
 
-struct BeatState {
+struct TimedState {
     score: u64,
     combo: usize,
     max_combo: usize,
@@ -108,9 +117,9 @@ struct BeatState {
     last_pts: u64,
 }
 
-impl BeatState {
+impl TimedState {
     fn new() -> Self {
-        BeatState {
+        TimedState {
             score: 0,
             combo: 0,
             max_combo: 0,
@@ -274,14 +283,14 @@ fn draw_header_normal(out: &mut impl Write, width: u16, q_num: usize, total: usi
     );
 }
 
-fn draw_header_beat(out: &mut impl Write, width: u16, q_num: usize, total: usize, bs: &BeatState) {
+fn draw_header_timed(out: &mut impl Write, width: u16, q_num: usize, total: usize, bs: &TimedState) {
     let combo_str = if bs.combo >= 2 {
         format!(" │ {}", bs.combo_label())
     } else {
         String::new()
     };
     let bar = format!(
-        " ⚡ BEAT MODE  Q {}/{}  │  {} pts{}  ",
+        " ⚡  Q {}/{}  │  {} pts{}  ",
         q_num,
         total,
         fmt_score(bs.score),
@@ -403,7 +412,7 @@ fn draw_fuse(out: &mut impl Write, width: u16, y: u16, pct_remaining: f64, tick:
     }
 }
 
-fn draw_combo_row(out: &mut impl Write, width: u16, y: u16, bs: &BeatState, tick: usize) {
+fn draw_combo_row(out: &mut impl Write, width: u16, y: u16, bs: &TimedState, tick: usize) {
     let _ = queue!(out, MoveTo(0, y), Print(" ".repeat(width as usize)));
     if bs.combo < 2 {
         return;
@@ -476,7 +485,7 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
         // mode toggle
         let toggle_y = art_start + art_lines.len() as u16 + 3;
         let normal_label = "  NORMAL  ";
-        let beat_label = "  ⚡ BEAT  ";
+        let beat_label = "  ⚡ HARD  ";
         let hard_label = "  ☠ DEATHMATCH  ";
         let gap = "    ";
 
@@ -494,8 +503,8 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
 
         // BEAT box
         let beat_x = tx + normal_label.len() as u16 + gap.len() as u16;
-        let _ = if mode == GameMode::Beat {
-            queue!(out, MoveTo(beat_x, toggle_y), SetBackgroundColor(Color::Red), SetForegroundColor(Color::White), SetAttribute(Attribute::Bold), Print(beat_label), ResetColor)
+        let _ = if mode == GameMode::Hard {
+            queue!(out, MoveTo(beat_x, toggle_y), SetBackgroundColor(Color::Yellow), SetForegroundColor(Color::Black), SetAttribute(Attribute::Bold), Print(beat_label), ResetColor)
         } else {
             queue!(out, MoveTo(beat_x, toggle_y), SetForegroundColor(Color::DarkGrey), Print(beat_label), ResetColor)
         };
@@ -504,7 +513,7 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
 
         // HARD box
         let hard_x = beat_x + beat_label.len() as u16 + gap.len() as u16;
-        let _ = if mode == GameMode::BeatHard {
+        let _ = if mode == GameMode::Deathmatch {
             queue!(out, MoveTo(hard_x, toggle_y), SetBackgroundColor(Color::DarkRed), SetForegroundColor(Color::White), SetAttribute(Attribute::Bold), Print(hard_label), ResetColor)
         } else {
             queue!(out, MoveTo(hard_x, toggle_y), SetForegroundColor(Color::DarkGrey), Print(hard_label), ResetColor)
@@ -520,9 +529,9 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
             SetForegroundColor(Color::DarkGrey), Print(hint2), ResetColor
         );
 
-        if mode.is_beat() {
+        if mode.is_timed() {
             let beat_info = format!("  Timed: {}s/question  │  Points: faster = more  │  Chain for combo  ", mode.beat_time() as u32);
-            let color = if mode == GameMode::BeatHard { Color::Red } else { Color::Yellow };
+            let color = if mode == GameMode::Deathmatch { Color::Red } else { Color::Yellow };
             let _ = queue!(out, MoveTo(cx.saturating_sub(beat_info.len() as u16 / 2), toggle_y + 5), SetForegroundColor(color), Print(&beat_info), ResetColor);
         }
 
@@ -534,16 +543,16 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
                 KeyCode::Char('q') | KeyCode::Esc => return None,
                 KeyCode::Char('b') | KeyCode::Char('B') | KeyCode::Right | KeyCode::Tab => {
                     mode = match mode {
-                        GameMode::Normal => GameMode::Beat,
-                        GameMode::Beat => GameMode::BeatHard,
-                        GameMode::BeatHard => GameMode::Normal,
+                        GameMode::Normal => GameMode::Hard,
+                        GameMode::Hard => GameMode::Deathmatch,
+                        GameMode::Deathmatch => GameMode::Normal,
                     };
                 }
                 KeyCode::Left => {
                     mode = match mode {
-                        GameMode::Normal => GameMode::BeatHard,
-                        GameMode::Beat => GameMode::Normal,
-                        GameMode::BeatHard => GameMode::Beat,
+                        GameMode::Normal => GameMode::Deathmatch,
+                        GameMode::Hard => GameMode::Normal,
+                        GameMode::Deathmatch => GameMode::Hard,
                     };
                 }
                 _ => {}
@@ -558,6 +567,7 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
 fn draw_question_content(
     out: &mut impl Write,
     q: &Question,
+    answers: &[String],
     width: u16,
     height: u16,
     bottom_reserve: u16,
@@ -578,68 +588,42 @@ fn draw_question_content(
 
     // Question
     for line in &word_wrap(&q.question, usable_w) {
-        if row >= max_row {
-            break;
-        }
-        let _ = queue!(
-            out,
-            MoveTo(3, row),
-            SetAttribute(Attribute::Bold),
-            Print(line),
-            ResetColor
-        );
+        if row >= max_row { break; }
+        let _ = queue!(out, MoveTo(3, row), SetAttribute(Attribute::Bold), Print(line), ResetColor);
         row += 1;
     }
     row += 1;
 
     // Divider
     if row < max_row {
-        let _ = queue!(
-            out,
-            MoveTo(2, row),
-            SetForegroundColor(Color::DarkGrey),
-            Print("─".repeat((width as usize).saturating_sub(4))),
-            ResetColor
-        );
+        let _ = queue!(out, MoveTo(2, row), SetForegroundColor(Color::DarkGrey), Print("-".repeat((width as usize).saturating_sub(4))), ResetColor);
         row += 2;
     }
 
-    // Answer options
-    for letter in &["A", "B", "C", "D"] {
-        if let Some(text) = q.answers.get(*letter) {
-            let label = format!("  {}.  ", letter);
-            let indent = label.len();
-            let ans_lines = word_wrap(text, usable_w.saturating_sub(indent + 2));
-            if row >= max_row {
-                break;
-            }
-            let _ = queue!(
-                out,
-                MoveTo(3, row),
-                SetForegroundColor(Color::Yellow),
-                SetAttribute(Attribute::Bold),
-                Print(&label),
-                ResetColor
-            );
-            if let Some(first) = ans_lines.first() {
-                let _ = queue!(out, MoveTo(3 + indent as u16, row), Print(first));
-            }
-            row += 1;
-            for extra in ans_lines.iter().skip(1) {
-                if row >= max_row {
-                    break;
-                }
-                let _ = queue!(out, MoveTo(3 + indent as u16, row), Print(extra));
-                row += 1;
-            }
+    // Answer options: 1-4
+    for (i, text) in answers.iter().enumerate() {
+        let label = format!("  {}.  ", i + 1);
+        let indent = label.len();
+        let ans_lines = word_wrap(text, usable_w.saturating_sub(indent + 2));
+        if row >= max_row { break; }
+        let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Yellow), SetAttribute(Attribute::Bold), Print(&label), ResetColor);
+        if let Some(first) = ans_lines.first() {
+            let _ = queue!(out, MoveTo(3 + indent as u16, row), Print(first));
+        }
+        row += 1;
+        for extra in ans_lines.iter().skip(1) {
+            if row >= max_row { break; }
+            let _ = queue!(out, MoveTo(3 + indent as u16, row), Print(extra));
             row += 1;
         }
+        row += 1;
     }
 }
 
 fn show_question_normal(
     out: &mut impl Write,
     q: &Question,
+    answers: &[String],
     q_num: usize,
     total: usize,
     score: usize,
@@ -649,38 +633,39 @@ fn show_question_normal(
     let _ = queue!(out, Clear(ClearType::All));
     draw_header_normal(out, width, q_num, total, score);
     draw_progress_bar(out, 0, 1, width, q_num - 1, total);
-    draw_question_content(out, q, width, height, 3);
+    draw_question_content(out, q, answers, width, height, 3);
     let _ = queue!(
         out,
         MoveTo(2, height - 2),
         SetForegroundColor(Color::White),
         SetAttribute(Attribute::Bold),
-        Print("  Answer [A / B / C / D]  or  [q] to quit: "),
+        Print("  Answer [1 / 2 / 3 / 4]  or  [q] to quit: "),
         ResetColor
     );
     out.flush().unwrap();
 }
 
-fn show_question_beat(
+fn show_question_timed(
     out: &mut impl Write,
     q: &Question,
+    answers: &[String],
     q_num: usize,
     total: usize,
-    bs: &BeatState,
+    bs: &TimedState,
     width: u16,
     height: u16,
     beat_time: f64,
 ) {
     let _ = queue!(out, Clear(ClearType::All));
-    draw_header_beat(out, width, q_num, total, bs);
+    draw_header_timed(out, width, q_num, total, bs);
     draw_progress_bar(out, 0, 1, width, q_num - 1, total);
-    draw_question_content(out, q, width, height, 7);
+    draw_question_content(out, q, answers, width, height, 7);
     let _ = queue!(
         out,
         MoveTo(2, height - 2),
         SetForegroundColor(Color::White),
         SetAttribute(Attribute::Bold),
-        Print("  Answer [A / B / C / D]  or  [q] to quit: "),
+        Print("  Answer [1 / 2 / 3 / 4]  or  [q] to quit:"),
         ResetColor
     );
     // initial fuse (full) — occupies rows h-6, h-5, h-4
@@ -690,23 +675,24 @@ fn show_question_beat(
 
 // ─── Beat question loop ───────────────────────────────────────────────────────
 
-enum BeatResult {
-    Answer(String, f64), // chosen letter, elapsed seconds
+enum TimedResult {
+    Answer(usize, f64), // chosen index (0-based), elapsed seconds
     Timeout,
     Quit,
 }
 
-fn run_beat_question(
+fn run_timed_question(
     out: &mut impl Write,
     q: &Question,
+    answers: &[String],
     q_num: usize,
     total: usize,
-    bs: &BeatState,
+    bs: &TimedState,
     width: u16,
     height: u16,
     beat_time: f64,
-) -> BeatResult {
-    show_question_beat(out, q, q_num, total, bs, width, height, beat_time);
+) -> TimedResult {
+    show_question_timed(out, q, answers, q_num, total, bs, width, height, beat_time);
     let start = Instant::now();
     let mut tick: usize = 0;
 
@@ -715,35 +701,32 @@ fn run_beat_question(
         let remaining = (beat_time - elapsed).max(0.0);
         let pct = remaining / beat_time;
 
-        // update just the dynamic rows (fuse + combo), no full clear
         draw_fuse(out, width, height - 6, pct, tick, beat_time);
         draw_combo_row(out, width, height - 3, bs, tick);
         out.flush().unwrap();
 
         if remaining <= 0.0 {
-            return BeatResult::Timeout;
+            return TimedResult::Timeout;
         }
 
-        // poll for 50 ms
         if event::poll(Duration::from_millis(50)).unwrap_or(false) {
             match event::read() {
                 Ok(Event::Key(k)) => {
-                    let ch = match k.code {
-                        KeyCode::Char('a') | KeyCode::Char('A') => "A",
-                        KeyCode::Char('b') | KeyCode::Char('B') => "B",
-                        KeyCode::Char('c') | KeyCode::Char('C') => "C",
-                        KeyCode::Char('d') | KeyCode::Char('D') => "D",
-                        KeyCode::Char('q') | KeyCode::Esc => return BeatResult::Quit,
-                        _ => {
-                            tick += 1;
-                            continue;
-                        }
+                    let idx = match k.code {
+                        KeyCode::Char('1') => 0usize,
+                        KeyCode::Char('2') => 1,
+                        KeyCode::Char('3') => 2,
+                        KeyCode::Char('4') => 3,
+                        KeyCode::Char('q') | KeyCode::Esc => return TimedResult::Quit,
+                        _ => { tick += 1; continue; }
                     };
-                    return BeatResult::Answer(ch.to_string(), elapsed);
+                    if idx < answers.len() {
+                        return TimedResult::Answer(idx, elapsed);
+                    }
+                    tick += 1;
                 }
                 Ok(Event::Resize(w2, h2)) => {
-                    show_question_beat(out, q, q_num, total, bs, w2, h2, beat_time);
-                    // redraw fuse at new size
+                    show_question_timed(out, q, answers, q_num, total, bs, w2, h2, beat_time);
                     draw_fuse(out, w2, h2 - 6, 1.0 - (start.elapsed().as_secs_f64() / beat_time).clamp(0.0, 1.0), tick, beat_time);
                 }
                 _ => {}
@@ -855,51 +838,6 @@ fn show_correct(out: &mut impl Write, q: &Question, width: u16, height: u16) {
     wait_for_key();
 }
 
-fn show_correct_beat(out: &mut impl Write, q: &Question, pts: u64, bs: &BeatState, width: u16, height: u16) {
-    burst_animation(out, width, height);
-    let _ = queue!(out, Clear(ClearType::All));
-    let cx = width / 2;
-    let usable_w = (width as usize).saturating_sub(8);
-    let mut row = 2u16;
-
-    let hdr = "✓  CORRECT!";
-    let _ = queue!(out, MoveTo(cx.saturating_sub(hdr.len() as u16 / 2), row), SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold), Print(hdr), ResetColor);
-    row += 2;
-
-    // Points + combo callout
-    let pts_str = format!("+{}  pts", fmt_score(pts));
-    let _ = queue!(out, MoveTo(cx.saturating_sub(pts_str.len() as u16 / 2), row), SetForegroundColor(Color::Yellow), SetAttribute(Attribute::Bold), Print(&pts_str), ResetColor);
-    row += 1;
-
-    if bs.combo >= 2 {
-        let combo_str = format!("Combo: {}", bs.combo_label());
-        let _ = queue!(out, MoveTo(cx.saturating_sub(combo_str.len() as u16 / 2), row), SetForegroundColor(bs.combo_color()), SetAttribute(Attribute::Bold), Print(&combo_str), ResetColor);
-    }
-    row += 3;
-
-    let _ = queue!(out, MoveTo(2, row), SetForegroundColor(Color::DarkGrey), Print("─".repeat((width as usize).saturating_sub(4))), ResetColor);
-    row += 2;
-
-    let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Cyan), SetAttribute(Attribute::Bold), Print("Answer:"), ResetColor);
-    row += 1;
-
-    if let Some(ans) = q.answers.get(&q.correct) {
-        for line in word_wrap(ans, usable_w) {
-            if row >= height.saturating_sub(4) { break; }
-            let _ = queue!(out, MoveTo(3, row), Print(line));
-            row += 1;
-        }
-    }
-
-    let total_str = format!("Total: {} pts", fmt_score(bs.score));
-    let _ = queue!(out, MoveTo(cx.saturating_sub(total_str.len() as u16 / 2), height - 3), SetForegroundColor(Color::DarkGrey), Print(&total_str), ResetColor);
-
-    let cont = "[ press any key ]";
-    let _ = queue!(out, MoveTo(cx.saturating_sub(cont.len() as u16 / 2), height - 2), SetForegroundColor(Color::DarkGrey), Print(cont), ResetColor);
-    out.flush().unwrap();
-    wait_for_key();
-}
-
 fn show_wrong(out: &mut impl Write, q: &Question, chosen: &str, width: u16, height: u16) {
     let _ = queue!(out, Clear(ClearType::All));
     let mut rng = rand::thread_rng();
@@ -918,9 +856,10 @@ fn show_wrong(out: &mut impl Write, q: &Question, chosen: &str, width: u16, heig
     let _ = queue!(out, MoveTo(2, row), SetForegroundColor(Color::DarkGrey), Print("─".repeat((width as usize).saturating_sub(4))), ResetColor);
     row += 2;
 
-    if let Some(ans_text) = q.answers.get(&q.correct) {
-        let label = format!("  Correct ({})  ", q.correct);
-        let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold), Print(&label), ResetColor);
+    {
+        let ans_text = &q.correct;
+        let label = "  Correct:  ";
+        let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold), Print(label), ResetColor);
         let ans_lines = word_wrap(ans_text, usable_w.saturating_sub(label.len()));
         if let Some(first) = ans_lines.first() {
             let _ = queue!(out, MoveTo(3 + label.len() as u16, row), Print(first));
@@ -943,51 +882,6 @@ fn show_wrong(out: &mut impl Write, q: &Question, chosen: &str, width: u16, heig
     }
 
     let cont = "[ press any key for next question ]";
-    let _ = queue!(out, MoveTo(cx.saturating_sub(cont.len() as u16 / 2), height - 2), SetForegroundColor(Color::DarkGrey), Print(cont), ResetColor);
-    out.flush().unwrap();
-    wait_for_key();
-}
-
-fn show_wrong_beat(out: &mut impl Write, q: &Question, chosen: &str, prev_combo: usize, width: u16, height: u16) {
-    let _ = queue!(out, Clear(ClearType::All));
-    let mut rng = rand::thread_rng();
-    let taunt = WRONG_MSGS[rng.gen_range(0..WRONG_MSGS.len())];
-    let cx = width / 2;
-    let usable_w = (width as usize).saturating_sub(8);
-    let mut row = 2u16;
-
-    // COMBO BROKEN banner if they had a streak
-    if prev_combo >= 2 {
-        let broken = format!("COMBO BROKEN  (was ×{})", prev_combo);
-        let _ = queue!(out, MoveTo(cx.saturating_sub(broken.len() as u16 / 2), row), SetForegroundColor(Color::Red), SetAttribute(Attribute::Bold), Print(&broken), ResetColor);
-        row += 2;
-    }
-
-    let hdr = format!("✗  WRONG  ─  You chose {}  ─  Correct: {}", chosen, q.correct);
-    let _ = queue!(out, MoveTo(cx.saturating_sub(hdr.len() as u16 / 2), row), SetForegroundColor(Color::Red), SetAttribute(Attribute::Bold), Print(&hdr), ResetColor);
-    row += 2;
-
-    let _ = queue!(out, MoveTo(cx.saturating_sub(taunt.len() as u16 / 2), row), SetForegroundColor(Color::Red), Print(taunt), ResetColor);
-    row += 3;
-
-    let _ = queue!(out, MoveTo(2, row), SetForegroundColor(Color::DarkGrey), Print("─".repeat((width as usize).saturating_sub(4))), ResetColor);
-    row += 2;
-
-    if let Some(ans_text) = q.answers.get(&q.correct) {
-        let label = format!("  Correct ({})  ", q.correct);
-        let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold), Print(&label), ResetColor);
-        let ans_lines = word_wrap(ans_text, usable_w.saturating_sub(label.len()));
-        if let Some(first) = ans_lines.first() {
-            let _ = queue!(out, MoveTo(3 + label.len() as u16, row), Print(first));
-        }
-        row += 1;
-        for extra in ans_lines.iter().skip(1) {
-            let _ = queue!(out, MoveTo(3 + label.len() as u16, row), Print(extra));
-            row += 1;
-        }
-    }
-
-    let cont = "[ press any key ]";
     let _ = queue!(out, MoveTo(cx.saturating_sub(cont.len() as u16 / 2), height - 2), SetForegroundColor(Color::DarkGrey), Print(cont), ResetColor);
     out.flush().unwrap();
     wait_for_key();
@@ -1016,16 +910,14 @@ fn show_timeout(out: &mut impl Write, q: &Question, width: u16, height: u16) {
     let _ = queue!(out, MoveTo(2, row), SetForegroundColor(Color::DarkGrey), Print("─".repeat((width as usize).saturating_sub(4))), ResetColor);
     row += 2;
 
-    let correct_label = format!("  Correct answer was {}:  ", q.correct);
-    let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold), Print(&correct_label), ResetColor);
+    let correct_label = "  Correct answer:  ";
+    let _ = queue!(out, MoveTo(3, row), SetForegroundColor(Color::Green), SetAttribute(Attribute::Bold), Print(correct_label), ResetColor);
     row += 1;
 
-    if let Some(ans) = q.answers.get(&q.correct) {
-        for line in word_wrap(ans, usable_w) {
-            if row >= height.saturating_sub(4) { break; }
-            let _ = queue!(out, MoveTo(3, row), Print(line));
-            row += 1;
-        }
+    for line in word_wrap(&q.correct, usable_w) {
+        if row >= height.saturating_sub(4) { break; }
+        let _ = queue!(out, MoveTo(3, row), Print(line));
+        row += 1;
     }
 
     let cont = "[ press any key ]";
@@ -1080,7 +972,7 @@ fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, heig
     wait_for_key();
 }
 
-fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total: usize, width: u16, height: u16, deck: &str, mode: GameMode) {
+fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, total: usize, width: u16, height: u16, deck: &str, mode: GameMode) {
     let _ = queue!(out, Clear(ClearType::All));
     let cx = width / 2;
     let cy = height / 2;
@@ -1106,14 +998,14 @@ fn show_final_beat(out: &mut impl Write, bs: &BeatState, answered: usize, total:
         total: answered,
         max_combo: bs.max_combo,
         avg_time: bs.avg_time(),
-        hard: mode == GameMode::BeatHard,
+        hard: mode == GameMode::Deathmatch,
         deck: deck.to_string(),
     };
     let lb = add_to_leaderboard(entry);
 
-    let mode_label = if mode == GameMode::BeatHard { "DEATHMATCH" } else { "BEAT" };
+    let mode_label = if mode == GameMode::Deathmatch { "DEATHMATCH" } else { "HARD" };
     let mut lines = vec![
-        format!("--  BEAT MODE OVER! [{}]  --", mode_label),
+        format!("--  SESSION OVER  [{}]  --", mode_label),
         String::new(),
         format!("  Score          {:>10} pts", fmt_score(bs.score)),
         format!("  Questions      {:>4} / {}", answered, total),
@@ -1190,7 +1082,8 @@ fn flash_result_deathmatch(out: &mut impl Write, correct: bool, pts: u64, width:
 // ─── File picker ─────────────────────────────────────────────────────────────
 
 fn find_json_files() -> Vec<PathBuf> {
-    let mut files: Vec<PathBuf> = std::fs::read_dir(".")
+    let dir = if std::path::Path::new("decks").is_dir() { "decks" } else { "." };
+    let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
         .into_iter()
         .flatten()
         .flatten()
@@ -1299,21 +1192,24 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         None => return Ok(()),
     };
 
+    let mut rng = rand::thread_rng();
+
     // ── Normal mode ──────────────────────────────────────────────────────────
     if mode == GameMode::Normal {
         let mut score = 0usize;
         for (idx, q) in questions.iter().enumerate() {
+            let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
             let (w, h) = terminal::size()?;
-            show_question_normal(&mut out, q, idx + 1, total, score, w, h);
+            show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w, h);
 
-            let chosen = loop {
+            let chosen_idx = loop {
                 match event::read()? {
                     Event::Key(k) => {
-                        let ch = match k.code {
-                            KeyCode::Char('a') | KeyCode::Char('A') => "A",
-                            KeyCode::Char('b') | KeyCode::Char('B') => "B",
-                            KeyCode::Char('c') | KeyCode::Char('C') => "C",
-                            KeyCode::Char('d') | KeyCode::Char('D') => "D",
+                        let i = match k.code {
+                            KeyCode::Char('1') => 0usize,
+                            KeyCode::Char('2') => 1,
+                            KeyCode::Char('3') => 2,
+                            KeyCode::Char('4') => 3,
                             KeyCode::Char('q') | KeyCode::Esc => {
                                 execute!(out, LeaveAlternateScreen, Show)?;
                                 terminal::disable_raw_mode()?;
@@ -1322,53 +1218,54 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                             }
                             _ => continue,
                         };
-                        break ch;
+                        if i < shuffled.len() { break i; }
                     }
                     Event::Resize(w2, h2) => {
-                        show_question_normal(&mut out, q, idx + 1, total, score, w2, h2);
+                        show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w2, h2);
                     }
                     _ => continue,
                 }
             };
 
             let (w, h) = terminal::size()?;
-            if chosen == q.correct {
+            if chosen_idx == correct_idx {
                 score += 1;
                 show_correct(&mut out, q, w, h);
             } else {
-                show_wrong(&mut out, q, chosen, w, h);
+                show_wrong(&mut out, q, &shuffled[chosen_idx], w, h);
             }
         }
         let (w, h) = terminal::size()?;
         show_final(&mut out, score, total, w, h);
 
-    // ── Beat mode ────────────────────────────────────────────────────────────
+    // ── Timed modes (Hard / Deathmatch) ──────────────────────────────────────
     } else {
         let beat_time = mode.beat_time();
-        let mut bs = BeatState::new();
+        let mut bs = TimedState::new();
         let mut answered = 0usize;
 
         'outer: for (idx, q) in questions.iter().enumerate() {
+            let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
             let (w, h) = terminal::size()?;
-            let result = run_beat_question(&mut out, q, idx + 1, total, &bs, w, h, beat_time);
+            let result = run_timed_question(&mut out, q, &shuffled, idx + 1, total, &bs, w, h, beat_time);
 
             match result {
-                BeatResult::Quit => {
+                TimedResult::Quit => {
                     let (w, h) = terminal::size()?;
-                    show_final_beat(&mut out, &bs, answered, total, w, h, &deck_name, mode);
+                    show_final_timed(&mut out, &bs, answered, total, w, h, &deck_name, mode);
                     break 'outer;
                 }
-                BeatResult::Timeout => {
+                TimedResult::Timeout => {
                     bs.timeouts += 1;
                     bs.combo = 0;
                     answered += 1;
                     let (w, h) = terminal::size()?;
                     show_timeout(&mut out, q, w, h);
                 }
-                BeatResult::Answer(chosen, elapsed) => {
+                TimedResult::Answer(chosen_idx, elapsed) => {
                     answered += 1;
-                    if chosen == q.correct {
-                        let pts = BeatState::calc_points(elapsed, beat_time, bs.combo);
+                    if chosen_idx == correct_idx {
+                        let pts = TimedState::calc_points(elapsed, beat_time, bs.combo);
                         bs.score += pts;
                         bs.combo += 1;
                         bs.max_combo = bs.max_combo.max(bs.combo);
@@ -1376,22 +1273,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                         bs.last_pts = pts;
                         bs.response_times.push(elapsed);
                         let (w, h) = terminal::size()?;
-                        if mode == GameMode::BeatHard {
-                            flash_result_deathmatch(&mut out, true, pts, w, h);
-                        } else {
-                            show_correct_beat(&mut out, q, pts, &bs, w, h);
-                        }
+                        flash_result_deathmatch(&mut out, true, pts, w, h);
                     } else {
-                        let prev_combo = bs.combo;
                         bs.combo = 0;
                         bs.wrong += 1;
                         bs.last_pts = 0;
                         let (w, h) = terminal::size()?;
-                        if mode == GameMode::BeatHard {
-                            flash_result_deathmatch(&mut out, false, 0, w, h);
-                        } else {
-                            show_wrong_beat(&mut out, q, &chosen, prev_combo, w, h);
-                        }
+                        flash_result_deathmatch(&mut out, false, 0, w, h);
                     }
                 }
             }
@@ -1400,7 +1288,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         // completed all questions
         if answered == total {
             let (w, h) = terminal::size()?;
-            show_final_beat(&mut out, &bs, answered, total, w, h, &deck_name, mode);
+            show_final_timed(&mut out, &bs, answered, total, w, h, &deck_name, mode);
         }
     }
 
@@ -1415,5 +1303,109 @@ fn main() {
         let _ = terminal::disable_raw_mode();
         eprintln!("Error: {}", e);
         std::process::exit(1);
+    }
+}
+
+// ─── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::Path;
+
+    fn load_deck(path: &str) -> QBank {
+        let raw = std::fs::read_to_string(path)
+            .unwrap_or_else(|_| panic!("Cannot read {}", path));
+        serde_json::from_str(&raw)
+            .unwrap_or_else(|e| panic!("Invalid JSON in {}: {}", path, e))
+    }
+
+    fn validate_deck(bank: &QBank, path: &str) {
+        assert!(!bank.name.is_empty(), "{}: 'name' field is empty", path);
+        assert!(!bank.questions.is_empty(), "{}: no questions", path);
+
+        for (i, q) in bank.questions.iter().enumerate() {
+            let ctx = format!("{}[{}]", path, i);
+            assert!(!q.question.is_empty(), "{}: empty question", ctx);
+            assert!(!q.domain.is_empty(), "{}: empty domain", ctx);
+            assert!(!q.explanation.is_empty(), "{}: empty explanation", ctx);
+            assert!(q.answers.len() >= 2, "{}: fewer than 2 answers", ctx);
+            assert!(
+                q.answers.iter().any(|a| a == &q.correct),
+                "{}: correct answer '{}' not found in answers list",
+                ctx, q.correct
+            );
+            for ans in &q.answers {
+                assert!(!ans.is_empty(), "{}: answer text is empty", ctx);
+            }
+        }
+    }
+
+    #[test]
+    fn deck_security_plus_full_valid() {
+        let path = "decks/security-plus-full.json";
+        if !Path::new(path).exists() { return; }
+        let bank = load_deck(path);
+        validate_deck(&bank, path);
+    }
+
+    #[test]
+    fn deck_security_plus_acronyms_valid() {
+        let path = "decks/security-plus-acronyms.json";
+        if !Path::new(path).exists() { return; }
+        let bank = load_deck(path);
+        validate_deck(&bank, path);
+    }
+
+    #[test]
+    fn all_decks_in_decks_dir_valid() {
+        let dir = Path::new("decks");
+        if !dir.exists() { return; }
+        let jsons: Vec<_> = std::fs::read_dir(dir).unwrap()
+            .flatten()
+            .map(|e| e.path())
+            .filter(|p| p.extension().and_then(|e| e.to_str()) == Some("json"))
+            .collect();
+        assert!(!jsons.is_empty(), "No JSON files found in decks/");
+        for path in &jsons {
+            let bank = load_deck(path.to_str().unwrap());
+            validate_deck(&bank, path.to_str().unwrap());
+        }
+    }
+
+    #[test]
+    fn shuffle_always_contains_correct() {
+        let q = Question {
+            domain: "Test".into(),
+            question: "Q?".into(),
+            answers: vec!["A".into(), "B".into(), "C".into(), "D".into()],
+            correct: "C".into(),
+            explanation: "Because C.".into(),
+        };
+        let mut rng = rand::thread_rng();
+        for _ in 0..20 {
+            let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
+            assert_eq!(shuffled[correct_idx], "C");
+            assert_eq!(shuffled.len(), 4);
+        }
+    }
+
+    #[test]
+    fn calc_points_range() {
+        // instant answer, no combo → 500 pts (5x time * 1x combo * 100)
+        assert_eq!(TimedState::calc_points(0.0, 10.0, 0), 500);
+        // slow answer → 100 pts minimum
+        assert_eq!(TimedState::calc_points(10.0, 10.0, 0), 100);
+        // instant + max combo (10+) → 1500
+        assert_eq!(TimedState::calc_points(0.0, 10.0, 10), 1500);
+    }
+
+    #[test]
+    fn game_mode_timings() {
+        assert_eq!(GameMode::Hard.beat_time(), 10.0);
+        assert_eq!(GameMode::Deathmatch.beat_time(), 5.0);
+        assert!(GameMode::Hard.is_timed());
+        assert!(GameMode::Deathmatch.is_timed());
+        assert!(!GameMode::Normal.is_timed());
     }
 }
