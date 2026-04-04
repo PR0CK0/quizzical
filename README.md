@@ -4,7 +4,7 @@
 
 ![demo](demo.png)
 
-A terminal quiz game for certification exam prep. Built in Rust with a full-screen TUI, physics-based animations, and a beat mode with a burning fuse timer and combo scoring.
+A terminal quiz game for certification exam prep. Built in Rust with a full-screen TUI, physics-based animations, and timed modes with a burning fuse timer and combo scoring.
 
 ## Install
 
@@ -30,22 +30,25 @@ cargo build --release
 ./target/release/quizzical
 
 # jump straight to a deck
-./target/release/quizzical --file security-plus.json
-./target/release/quizzical --file acronyms.json
+./target/release/quizzical --file decks/security-plus-full.json
 ```
 
-From the title screen, use `←` / `→` (or `B` / `Tab`) to toggle between **NORMAL** and **⚡ BEAT** mode, then `Enter` to start.
+From the title screen, use `←` / `→` to cycle modes, then `Enter` to start.
 
 ## Decks
 
+Decks live in the `decks/` folder. Quizzical auto-discovers all `.json` files there at startup.
+
 | File | Description |
 |---|---|
-| `security-plus.json` | 333 CompTIA Security+ SY0-701 ABCD questions |
-| `acronyms.json` | 100 acronym flashcards (SPF, AES, SIEM, ...) |
+| `decks/security-plus-full.json` | 333 CompTIA Security+ SY0-701 questions |
+| `decks/security-plus-acronyms.json` | 100 acronym flashcards (SPF, AES, SIEM, ...) |
+
+Answer order is randomized on every question — no memorizing positions.
 
 ### Adding a deck
 
-Create any `.json` file in the same directory following this schema:
+Drop a `.json` file into `decks/` following this schema:
 
 ```json
 {
@@ -54,40 +57,56 @@ Create any `.json` file in the same directory following this schema:
     {
       "domain": "Category Name",
       "question": "What does XYZ stand for?",
-      "answers": {
-        "A": "Option one",
-        "B": "Option two",
-        "C": "Option three",
-        "D": "Option four"
-      },
-      "correct": "A",
-      "explanation": "XYZ stands for option one because..."
+      "answers": [
+        "The correct expansion of XYZ",
+        "A plausible wrong answer",
+        "Another wrong answer",
+        "Yet another wrong answer"
+      ],
+      "correct": "The correct expansion of XYZ",
+      "explanation": "XYZ stands for this because..."
     }
   ]
 }
 ```
 
-The `name` field appears on the title screen as `{name} edition`. The file picker lists all `.json` files in the current directory automatically.
+**Schema rules:**
+- `name` — shown on the title screen as `{name} edition`
+- `answers` — array of answer strings (2–4 supported); order doesn't matter, they're shuffled at runtime
+- `correct` — must be the **exact text** of one of the answers
+- `domain` — category label shown above the question
+- `explanation` — shown after answering in Normal mode
+
+Run `cargo test` to validate all decks in `decks/` before playing.
 
 ## Modes
 
 ### Normal
-Standard flashcard quiz. One question at a time, immediate feedback, particle explosion on correct answers.
+Standard flashcard quiz. One question at a time, immediate feedback with explanation, particle explosion on correct answers. Press `1`–`4` to answer.
 
-### Beat ⚡
-Timed mode. A burning fuse counts down per question (default 20s).
+### Hard ⚡
+Timed mode with 10s per question. Answer fast for a higher score multiplier (up to 5×). Chain correct answers for a combo bonus (up to 3×). Max 1,500 pts per question.
 
-- **Answer fast** → higher point multiplier (up to 5×)
-- **Build a streak** → combo multiplier (up to 3×)
-- **Max score per question**: 1,500 pts (5× speed × 3× combo)
+### Deathmatch ☠
+5s per question. No result screens between questions — just a quick flash and straight to the next one. The goal is to break you.
+
 - Wrong answer or timeout resets your combo
-- Quit early with `q` — you still get a full stats screen
+- Quit early with `q` — you still get a full stats screen with leaderboard
+
+Scores are saved to `~/Library/Application Support/quizzical/scores.json` (top 10 runs per OS data dir).
 
 ## Controls
 
 | Key | Action |
 |---|---|
-| `A` `B` `C` `D` | Select answer |
-| `q` | Quit / end session |
-| `←` `→` or `B` `Tab` | Toggle mode on title screen |
-| `Enter` | Confirm on title screen |
+| `1` `2` `3` `4` | Select answer |
+| `q` / `Esc` | Quit / end session |
+| `←` `→` | Cycle mode on title screen |
+| `Enter` | Start |
+
+## Development
+
+```bash
+cargo test        # validate decks + unit tests
+cargo build --release
+```
