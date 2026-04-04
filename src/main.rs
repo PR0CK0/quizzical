@@ -1004,43 +1004,56 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
     let lb = add_to_leaderboard(entry);
 
     let mode_label = if mode == GameMode::Deathmatch { "DEATHMATCH" } else { "HARD" };
+    let s = |label: &str, val: String| format!("  {:<14}{}", label, val);
     let mut lines = vec![
         format!("--  SESSION OVER  [{}]  --", mode_label),
         String::new(),
-        format!("  Score          {:>10} pts", fmt_score(bs.score)),
-        format!("  Questions      {:>4} / {}", answered, total),
-        format!("  Correct        {:>4}   Wrong: {}   Timeouts: {}", bs.correct, bs.wrong, bs.timeouts),
-        format!("  Avg. Time      {:>7.2}s", bs.avg_time()),
-        format!("  Max Combo      ×{}", bs.max_combo),
+        s("Score:",     format!("{} pts", fmt_score(bs.score))),
+        s("Questions:", format!("{} / {}", answered, total)),
+        s("Correct:",   bs.correct.to_string()),
+        s("Wrong:",     bs.wrong.to_string()),
+        s("Timeouts:",  bs.timeouts.to_string()),
+        s("Avg. Time:", format!("{:.2}s", bs.avg_time())),
+        s("Max Combo:", format!("×{}", bs.max_combo)),
         String::new(),
         grade.to_string(),
         sub.to_string(),
         String::new(),
         "-- TOP 10 --------------------------------------".to_string(),
+        "   #          score  combo  M  deck".to_string(),
     ];
 
     for (i, e) in lb.iter().enumerate() {
-        let flag = if e.hard { "H" } else { " " };
-        lines.push(format!("  {:>2}.  {:>10} pts  ×{}  {}  [{}]",
-            i + 1, fmt_score(e.score), e.max_combo, flag, e.deck));
+        let score_str = format!("{} pts", fmt_score(e.score));
+        let combo_str = format!("×{}", e.max_combo);
+        let mode_char = if e.hard { "H" } else { "D" };
+        lines.push(format!("  {:>2}.  {:>12}  {:>5}  {}  [{}]",
+            i + 1, score_str, combo_str, mode_char, e.deck));
     }
     lines.push(String::new());
     lines.push("[ press any key to exit ]".to_string());
 
+    // Use a fixed x for all table lines (index 13+) so columns align
+    let table_x = {
+        let max_w = lines[13..].iter().map(|l| l.len()).max().unwrap_or(0);
+        cx.saturating_sub(max_w as u16 / 2)
+    };
+
     let start = cy.saturating_sub(lines.len() as u16 / 2);
     for (i, line) in lines.iter().enumerate() {
-        let x = cx.saturating_sub(line.len() as u16 / 2);
+        let x = if i >= 13 { table_x } else { cx.saturating_sub(line.len() as u16 / 2) };
         let y = start + i as u16;
         let line_color = match i {
             0 => color,
-            2..=6 => Color::White,
-            8 => color,
-            9 => Color::DarkGrey,
-            11 => Color::Cyan,
-            12.. => Color::White,
+            2..=8 => Color::White,
+            10 => color,
+            11 => Color::DarkGrey,
+            13 => Color::Cyan,
+            14 => Color::DarkGrey,  // column header
+            15.. => Color::White,
             _ => Color::DarkGrey,
         };
-        let bold = matches!(i, 0 | 8 | 11);
+        let bold = matches!(i, 0 | 10 | 13);
         if bold {
             let _ = queue!(out, MoveTo(x, y), SetForegroundColor(line_color), SetAttribute(Attribute::Bold), Print(line), ResetColor);
         } else {
@@ -1051,20 +1064,45 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
     wait_for_key();
 }
 
+fn drain_events() {
+    while crossterm::event::poll(std::time::Duration::from_millis(0)).unwrap_or(false) {
+        let _ = crossterm::event::read();
+    }
+}
+
 fn flash_result_deathmatch(out: &mut impl Write, correct: bool, pts: u64, width: u16, height: u16) {
     let (msg, color) = if correct {
         (format!("  +{}  CORRECT  ", fmt_score(pts)), Color::Green)
     } else {
         ("  WRONG  ".to_string(), Color::Red)
     };
-    // flash 3 times over ~300ms, overlaying on the prompt row
-    for i in 0..6 {
+    let cy = height / 2;
+    let cx = width / 2;
+
+    // spawn particles for correct answers
+    let mut rng = rand::thread_rng();
+    let p_chars = ['+', '*', '.'];
+    let p_colors = [Color::Green, Color::Yellow, Color::Cyan];
+    let n = 10usize;
+    // burst active for frames 0-4, fade frames 5-6, gone frame 7
+    let mut ps: Vec<(f64, f64, f64, f64, char, Color)> = if correct {
+        (0..n).map(|i| {
+            let angle = (i as f64 / n as f64) * 2.0 * PI + rng.gen_range(-0.1..0.1);
+            let speed = rng.gen_range(0.3..0.8);
+            (cx as f64, cy as f64,
+             angle.cos() * speed * 1.3, angle.sin() * speed * 0.6,
+             p_chars[i % p_chars.len()], p_colors[i % p_colors.len()])
+        }).collect()
+    } else { vec![] };
+
+    // 8 frames × 50ms = 400ms
+    for i in 0..8u8 {
         let show = i % 2 == 0;
-        let _ = queue!(out, MoveTo(0, height - 2), Print(" ".repeat(width as usize)));
+        let _ = queue!(out, MoveTo(0, cy), Print(" ".repeat(width as usize)));
         if show {
-            let x = (width / 2).saturating_sub(msg.len() as u16 / 2);
+            let x = cx.saturating_sub(msg.len() as u16 / 2);
             let _ = queue!(out,
-                MoveTo(x, height - 2),
+                MoveTo(x, cy),
                 SetBackgroundColor(color),
                 SetForegroundColor(Color::Black),
                 SetAttribute(Attribute::Bold),
@@ -1072,10 +1110,23 @@ fn flash_result_deathmatch(out: &mut impl Write, correct: bool, pts: u64, width:
                 ResetColor
             );
         }
+        // burst: full frames 0-4, fade frame 5 (dim + tiny char), gone frame 6+
+        if i <= 5 && !ps.is_empty() {
+            let fading = i >= 5;
+            for (px, py, vx, vy, ch, pc) in &mut ps {
+                *px += *vx;
+                *py += *vy;
+                if *px >= 1.0 && *px < (width - 1) as f64 && *py >= 1.0 && *py < (height - 1) as f64 && *py as u16 != cy {
+                    let (draw_ch, draw_color) = if fading { ('.', Color::DarkGrey) } else { (*ch, *pc) };
+                    let _ = queue!(out, MoveTo(*px as u16, *py as u16),
+                        SetForegroundColor(draw_color), Print(draw_ch), ResetColor);
+                }
+            }
+        }
         out.flush().unwrap();
         thread::sleep(Duration::from_millis(50));
     }
-    let _ = queue!(out, MoveTo(0, height - 2), Print(" ".repeat(width as usize)));
+    let _ = queue!(out, MoveTo(0, cy), Print(" ".repeat(width as usize)));
     out.flush().unwrap();
 }
 
@@ -1274,12 +1325,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                         bs.response_times.push(elapsed);
                         let (w, h) = terminal::size()?;
                         flash_result_deathmatch(&mut out, true, pts, w, h);
+                        drain_events();
                     } else {
                         bs.combo = 0;
                         bs.wrong += 1;
                         bs.last_pts = 0;
                         let (w, h) = terminal::size()?;
                         flash_result_deathmatch(&mut out, false, 0, w, h);
+                        drain_events();
                     }
                 }
             }
