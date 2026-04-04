@@ -1,0 +1,1307 @@
+{
+  "name": "security+ acronyms",
+  "exam": "CompTIA Security+ \u2014 Acronym Drill",
+  "total": 100,
+  "questions": [
+    {
+      "id": 1,
+      "domain": "Email Security",
+      "question": "What does SPF stand for?",
+      "answers": [
+        "Sender Policy Framework",
+        "Secure Packet Filter",
+        "Spam Prevention Framework",
+        "Simple Protocol Firewall"
+      ],
+      "correct": "Sender Policy Framework",
+      "explanation": "SPF (Sender Policy Framework) is a DNS record listing all mail servers authorized to send email for a domain."
+    },
+    {
+      "id": 2,
+      "domain": "Email Security",
+      "question": "What does DKIM stand for?",
+      "answers": [
+        "Dynamic Key Identity Management",
+        "DomainKeys Identified Mail",
+        "Distributed Keystore Integrity Monitor",
+        "Domain Key Infrastructure Method"
+      ],
+      "correct": "DomainKeys Identified Mail",
+      "explanation": "DKIM (DomainKeys Identified Mail) allows a mail server to digitally sign outgoing email; the public key is published in DNS for verification."
+    },
+    {
+      "id": 3,
+      "domain": "Email Security",
+      "question": "What does DMARC stand for?",
+      "answers": [
+        "Domain Mail Access and Routing Control",
+        "Distributed Message Authentication Relay Check",
+        "Domain-based Message Authentication, Reporting, and Conformance",
+        "Dynamic Mail Abuse Reporting Configuration"
+      ],
+      "correct": "Domain-based Message Authentication, Reporting, and Conformance",
+      "explanation": "DMARC specifies what to DO with email that fails SPF/DKIM checks \u2014 accept, quarantine, or reject. It's the policy engine on top of SPF and DKIM."
+    },
+    {
+      "id": 4,
+      "domain": "Authentication",
+      "question": "What does LDAP stand for?",
+      "answers": [
+        "Layered Data Access Protocol",
+        "Local Directory Authentication Process",
+        "Lightweight Directory Access Protocol",
+        "Linked Data Aggregation Platform"
+      ],
+      "correct": "Lightweight Directory Access Protocol",
+      "explanation": "LDAP (Lightweight Directory Access Protocol) is the standard protocol for accessing and maintaining distributed directory services such as Active Directory."
+    },
+    {
+      "id": 5,
+      "domain": "Authentication",
+      "question": "What does RADIUS stand for?",
+      "answers": [
+        "Remote Access Dial-In User Security",
+        "Remote Authentication Dial-In User Service",
+        "Routed Authentication and Directory Identity User System",
+        "Role-based Access and Directory Identification User Service"
+      ],
+      "correct": "Remote Authentication Dial-In User Service",
+      "explanation": "RADIUS (Remote Authentication Dial-In User Service) provides centralized AAA (Authentication, Authorization, Accounting) for users connecting to a network."
+    },
+    {
+      "id": 6,
+      "domain": "Authentication",
+      "question": "What does TACACS+ stand for?",
+      "answers": [
+        "Terminal Access Controller Access Control System Plus",
+        "Total Authentication Control and Centralized Security Plus",
+        "Trusted Access Controller Authentication and Command System Plus",
+        "Terminal Authentication Control and Centralized Session Plus"
+      ],
+      "correct": "Terminal Access Controller Access Control System Plus",
+      "explanation": "TACACS+ (Terminal Access Controller Access Control System Plus) is a Cisco-developed AAA protocol that separates authentication, authorization, and accounting."
+    },
+    {
+      "id": 7,
+      "domain": "Authentication",
+      "question": "What does SAML stand for?",
+      "answers": [
+        "Secure Application Markup Language",
+        "System Access Management Layer",
+        "Security Assertion Markup Language",
+        "Simple Authentication and Messaging Layer"
+      ],
+      "correct": "Security Assertion Markup Language",
+      "explanation": "SAML (Security Assertion Markup Language) is an XML-based standard for exchanging authentication and authorization data between identity providers and service providers \u2014 the backbone of many SSO systems."
+    },
+    {
+      "id": 8,
+      "domain": "Authentication",
+      "question": "What does SSO stand for?",
+      "answers": [
+        "Secure Session Override",
+        "System Security Object",
+        "Single Sign-On",
+        "Shared Session Originator"
+      ],
+      "correct": "Single Sign-On",
+      "explanation": "SSO (Single Sign-On) lets a user authenticate once and access multiple applications without re-entering credentials."
+    },
+    {
+      "id": 9,
+      "domain": "Authentication",
+      "question": "What does MFA stand for?",
+      "answers": [
+        "Managed Firewall Access",
+        "Multi-Factor Authentication",
+        "Master File Authorization",
+        "Multi-Function Authenticator"
+      ],
+      "correct": "Multi-Factor Authentication",
+      "explanation": "MFA (Multi-Factor Authentication) requires two or more different factor types \u2014 something you know, have, or are \u2014 to authenticate."
+    },
+    {
+      "id": 10,
+      "domain": "Authentication",
+      "question": "What does TOTP stand for?",
+      "answers": [
+        "Token-Oriented Trust Protocol",
+        "Timed One-Time Passphrase",
+        "Time-based One-Time Password",
+        "Trusted OTP Provider"
+      ],
+      "correct": "Time-based One-Time Password",
+      "explanation": "TOTP (Time-based One-Time Password) generates short-lived codes using a shared secret and the current time \u2014 used in authenticator apps as a second factor."
+    },
+    {
+      "id": 11,
+      "domain": "Authentication",
+      "question": "What does PAM stand for (in the context of security architecture)?",
+      "answers": [
+        "Password and Access Management",
+        "Privileged Access Management",
+        "Policy Assertion Module",
+        "Protected Account Manager"
+      ],
+      "correct": "Privileged Access Management",
+      "explanation": "PAM (Privileged Access Management) controls, monitors, and audits privileged accounts and sessions \u2014 admin accounts, service accounts, and the like."
+    },
+    {
+      "id": 12,
+      "domain": "Authentication",
+      "question": "What does IAM stand for?",
+      "answers": [
+        "Internet Access Management",
+        "Integrated Authentication Module",
+        "Identity and Access Management",
+        "Internal Account Monitoring"
+      ],
+      "correct": "Identity and Access Management",
+      "explanation": "IAM (Identity and Access Management) encompasses the policies and technologies for managing digital identities and controlling access to resources."
+    },
+    {
+      "id": 13,
+      "domain": "Cryptography",
+      "question": "What does AES stand for?",
+      "answers": [
+        "Authenticated Encryption System",
+        "Advanced Encryption Standard",
+        "Asymmetric Encryption Scheme",
+        "Applied Encryption Standard"
+      ],
+      "correct": "Advanced Encryption Standard",
+      "explanation": "AES (Advanced Encryption Standard) is the current symmetric encryption standard, supporting 128, 192, and 256-bit key lengths."
+    },
+    {
+      "id": 14,
+      "domain": "Cryptography",
+      "question": "What does RSA stand for?",
+      "answers": [
+        "Routing Security Algorithm",
+        "Remote Symmetric Authentication",
+        "Rivest-Shamir-Adleman",
+        "Randomized Signing Algorithm"
+      ],
+      "correct": "Rivest-Shamir-Adleman",
+      "explanation": "RSA stands for Rivest-Shamir-Adleman, the surnames of its inventors. It is the most widely used asymmetric (public-key) encryption algorithm."
+    },
+    {
+      "id": 15,
+      "domain": "Cryptography",
+      "question": "What does ECC stand for?",
+      "answers": [
+        "Enhanced Cipher Chain",
+        "Elliptic Curve Cryptography",
+        "Encrypted Certificate Control",
+        "Extended Cipher Check"
+      ],
+      "correct": "Elliptic Curve Cryptography",
+      "explanation": "ECC (Elliptic Curve Cryptography) uses mathematical properties of elliptic curves to provide strong asymmetric encryption with shorter key lengths than RSA."
+    },
+    {
+      "id": 16,
+      "domain": "Cryptography",
+      "question": "What does TLS stand for?",
+      "answers": [
+        "Trusted Layer Security",
+        "Token Link Service",
+        "Transport Layer Security",
+        "Terminal Layered Session"
+      ],
+      "correct": "Transport Layer Security",
+      "explanation": "TLS (Transport Layer Security) is the cryptographic protocol securing most internet traffic, replacing the deprecated SSL."
+    },
+    {
+      "id": 17,
+      "domain": "Cryptography",
+      "question": "What does PKI stand for?",
+      "answers": [
+        "Protected Key Interface",
+        "Public Key Infrastructure",
+        "Private Key Identification",
+        "Protocol Key Integration"
+      ],
+      "correct": "Public Key Infrastructure",
+      "explanation": "PKI (Public Key Infrastructure) is the framework of hardware, software, policies, and procedures used to create, manage, distribute, and revoke digital certificates."
+    },
+    {
+      "id": 18,
+      "domain": "Cryptography",
+      "question": "What does CA stand for (in PKI)?",
+      "answers": [
+        "Cipher Authority",
+        "Centralized Authentication",
+        "Certificate Authority",
+        "Control Access"
+      ],
+      "correct": "Certificate Authority",
+      "explanation": "A CA (Certificate Authority) is a trusted entity that issues and manages digital certificates, vouching for the identity of certificate holders."
+    },
+    {
+      "id": 19,
+      "domain": "Cryptography",
+      "question": "What does CRL stand for?",
+      "answers": [
+        "Certificate Revocation List",
+        "Centralized Record Log",
+        "Cryptographic Reference Library",
+        "Certificate Renewal Ledger"
+      ],
+      "correct": "Certificate Revocation List",
+      "explanation": "A CRL (Certificate Revocation List) is a list published by a CA of certificates that have been invalidated before their expiration date."
+    },
+    {
+      "id": 20,
+      "domain": "Cryptography",
+      "question": "What does OCSP stand for?",
+      "answers": [
+        "Online Certificate Status Protocol",
+        "Outbound Cipher Status Process",
+        "Organizational Certificate Security Policy",
+        "Offline Cert Signing Protocol"
+      ],
+      "correct": "Online Certificate Status Protocol",
+      "explanation": "OCSP (Online Certificate Status Protocol) allows real-time checking of a certificate's revocation status, as an alternative to downloading a full CRL."
+    },
+    {
+      "id": 21,
+      "domain": "Cryptography",
+      "question": "What does HMAC stand for?",
+      "answers": [
+        "Hybrid Message Authentication Check",
+        "Hash-based Message Authentication Code",
+        "Hardware-Managed Access Control",
+        "Host Message Authentication Cipher"
+      ],
+      "correct": "Hash-based Message Authentication Code",
+      "explanation": "HMAC (Hash-based Message Authentication Code) combines a cryptographic hash function with a shared secret key to verify both data integrity and authenticity."
+    },
+    {
+      "id": 22,
+      "domain": "Cryptography",
+      "question": "What does PGP stand for?",
+      "answers": [
+        "Private Gateway Protocol",
+        "Public Group Policy",
+        "Pretty Good Privacy",
+        "Protected Group Passphrase"
+      ],
+      "correct": "Pretty Good Privacy",
+      "explanation": "PGP (Pretty Good Privacy) is an encryption program providing end-to-end encryption and digital signatures for email and files using a web-of-trust model."
+    },
+    {
+      "id": 23,
+      "domain": "Cryptography",
+      "question": "What does HSM stand for?",
+      "answers": [
+        "Host Security Monitor",
+        "Hardware Security Module",
+        "Hybrid Session Manager",
+        "Hashed Secret Manager"
+      ],
+      "correct": "Hardware Security Module",
+      "explanation": "An HSM (Hardware Security Module) is a physical device that securely stores cryptographic keys and performs crypto operations in a tamper-resistant environment."
+    },
+    {
+      "id": 24,
+      "domain": "Cryptography",
+      "question": "What does SHA stand for?",
+      "answers": [
+        "Symmetric Hash Algorithm",
+        "Secure Hashing Authentication",
+        "Secure Hash Algorithm",
+        "Standard Hashing Arrangement"
+      ],
+      "correct": "Secure Hash Algorithm",
+      "explanation": "SHA (Secure Hash Algorithm) is a family of cryptographic hash functions. SHA-256 and SHA-3 are current standards for data integrity verification."
+    },
+    {
+      "id": 25,
+      "domain": "Cryptography",
+      "question": "What does IV stand for in encryption?",
+      "answers": [
+        "Identity Verification",
+        "Initialization Vector",
+        "Integrity Validation",
+        "Incremental Value"
+      ],
+      "correct": "Initialization Vector",
+      "explanation": "An IV (Initialization Vector) is a random value used alongside an encryption key to ensure identical plaintexts produce different ciphertexts each time."
+    },
+    {
+      "id": 26,
+      "domain": "Network Security",
+      "question": "What does VPN stand for?",
+      "answers": [
+        "Virtual Perimeter Node",
+        "Verified Private Network",
+        "Virtual Private Network",
+        "Validated Packet Network"
+      ],
+      "correct": "Virtual Private Network",
+      "explanation": "A VPN (Virtual Private Network) creates an encrypted tunnel over a public network, allowing secure remote access to private resources."
+    },
+    {
+      "id": 27,
+      "domain": "Network Security",
+      "question": "What does VLAN stand for?",
+      "answers": [
+        "Verified Local Area Network",
+        "Virtual Local Area Network",
+        "Virtual Linked Access Node",
+        "Variable Layer Area Network"
+      ],
+      "correct": "Virtual Local Area Network",
+      "explanation": "A VLAN (Virtual Local Area Network) logically segments a physical network into isolated groups, improving security and reducing broadcast domains."
+    },
+    {
+      "id": 28,
+      "domain": "Network Security",
+      "question": "What does DMZ stand for?",
+      "answers": [
+        "Data Management Zone",
+        "Distributed Monitoring Zone",
+        "Demilitarized Zone",
+        "Dynamic Multi-Zone"
+      ],
+      "correct": "Demilitarized Zone",
+      "explanation": "A DMZ (Demilitarized Zone) is a network segment between the internet and the internal network that hosts public-facing services like web and mail servers."
+    },
+    {
+      "id": 29,
+      "domain": "Network Security",
+      "question": "What does NAT stand for?",
+      "answers": [
+        "Network Access Token",
+        "Network Address Translation",
+        "Node Authentication Table",
+        "Nested Access Tunnel"
+      ],
+      "correct": "Network Address Translation",
+      "explanation": "NAT (Network Address Translation) maps private IP addresses to a public IP, allowing multiple internal devices to share a single external address."
+    },
+    {
+      "id": 30,
+      "domain": "Network Security",
+      "question": "What does SDN stand for?",
+      "answers": [
+        "Secure Data Node",
+        "System Defense Network",
+        "Software-Defined Networking",
+        "Structured Defense Node"
+      ],
+      "correct": "Software-Defined Networking",
+      "explanation": "SDN (Software-Defined Networking) separates the control plane from the data plane, allowing centralized, programmable control of network infrastructure."
+    },
+    {
+      "id": 31,
+      "domain": "Network Security",
+      "question": "What does SD-WAN stand for?",
+      "answers": [
+        "Secure Data Wide Area Node",
+        "Software-Defined Wide Area Network",
+        "Structured Defense Wireless Access Network",
+        "System-Defined WAN"
+      ],
+      "correct": "Software-Defined Wide Area Network",
+      "explanation": "SD-WAN (Software-Defined Wide Area Network) uses software to dynamically route traffic across WAN connections, optimizing connectivity to cloud services."
+    },
+    {
+      "id": 32,
+      "domain": "Network Security",
+      "question": "What does NAC stand for?",
+      "answers": [
+        "Network Authentication Cipher",
+        "Node Access Control",
+        "Network Access Control",
+        "Nested Authentication Check"
+      ],
+      "correct": "Network Access Control",
+      "explanation": "NAC (Network Access Control) enforces security policy compliance on devices before granting them access to a network."
+    },
+    {
+      "id": 33,
+      "domain": "Network Security",
+      "question": "What does SASE stand for?",
+      "answers": [
+        "Security Access Service Edge",
+        "Secure Application Service Engine",
+        "Secure Access Service Edge",
+        "Software Access Security Engine"
+      ],
+      "correct": "Secure Access Service Edge",
+      "explanation": "SASE (Secure Access Service Edge) converges network security (CASB, FWaaS, ZTNA, SWG) with WAN capabilities into a unified cloud-delivered service."
+    },
+    {
+      "id": 34,
+      "domain": "Network Security",
+      "question": "What does DNS stand for?",
+      "answers": [
+        "Dynamic Network Security",
+        "Domain Name System",
+        "Distributed Node Service",
+        "Data Naming Standard"
+      ],
+      "correct": "Domain Name System",
+      "explanation": "DNS (Domain Name System) translates human-readable domain names (like google.com) into IP addresses that computers use to communicate."
+    },
+    {
+      "id": 35,
+      "domain": "Network Security",
+      "question": "What does DNSSEC stand for?",
+      "answers": [
+        "Dynamic Name Server Security Certificate",
+        "Domain Name System Security Extensions",
+        "DNS Secure Encryption Cipher",
+        "Distributed Name Service Security Control"
+      ],
+      "correct": "Domain Name System Security Extensions",
+      "explanation": "DNSSEC (DNS Security Extensions) adds cryptographic signatures to DNS records, allowing resolvers to verify response authenticity and prevent DNS poisoning."
+    },
+    {
+      "id": 36,
+      "domain": "Network Security",
+      "question": "What does NTP stand for?",
+      "answers": [
+        "Network Transfer Protocol",
+        "Node Timing Process",
+        "Network Time Protocol",
+        "Networked Token Provider"
+      ],
+      "correct": "Network Time Protocol",
+      "explanation": "NTP (Network Time Protocol) synchronizes clocks across network devices. It runs over UDP port 123 and is critical for accurate log timestamps and Kerberos authentication."
+    },
+    {
+      "id": 37,
+      "domain": "Network Security",
+      "question": "What does SSH stand for?",
+      "answers": [
+        "Secure Shell",
+        "System Security Host",
+        "Safe Session Handler",
+        "Secure Service Hub"
+      ],
+      "correct": "Secure Shell",
+      "explanation": "SSH (Secure Shell) provides encrypted remote command-line access, file transfer (SCP/SFTP), and tunneling, replacing the insecure Telnet protocol. Runs on TCP port 22."
+    },
+    {
+      "id": 38,
+      "domain": "Network Security",
+      "question": "What does ICMP stand for?",
+      "answers": [
+        "Internal Control Message Protocol",
+        "Internet Control Message Protocol",
+        "Integrated Cipher Management Protocol",
+        "Inter-Connection Monitoring Protocol"
+      ],
+      "correct": "Internet Control Message Protocol",
+      "explanation": "ICMP (Internet Control Message Protocol) is used for network diagnostics (ping, traceroute) and error reporting. It operates at Layer 3 and is often blocked at firewalls."
+    },
+    {
+      "id": 39,
+      "domain": "Network Security",
+      "question": "What does BGP stand for?",
+      "answers": [
+        "Boundary Gateway Process",
+        "Basic Gateway Protocol",
+        "Border Gateway Protocol",
+        "Bridged Gateway Path"
+      ],
+      "correct": "Border Gateway Protocol",
+      "explanation": "BGP (Border Gateway Protocol) is the routing protocol of the internet. BGP hijacking can redirect global internet traffic through an attacker-controlled path."
+    },
+    {
+      "id": 40,
+      "domain": "Network Security",
+      "question": "What does SNMP stand for?",
+      "answers": [
+        "Secure Network Monitoring Protocol",
+        "Simple Network Management Protocol",
+        "System Node Messaging Protocol",
+        "Standard Network Monitoring Policy"
+      ],
+      "correct": "Simple Network Management Protocol",
+      "explanation": "SNMP (Simple Network Management Protocol) is used to monitor and manage network devices. Older versions (v1/v2) transmit community strings in plaintext; v3 adds encryption."
+    },
+    {
+      "id": 41,
+      "domain": "Security Operations",
+      "question": "What does SIEM stand for?",
+      "answers": [
+        "Security Infrastructure Event Manager",
+        "System Intrusion and Encryption Monitor",
+        "Security Information and Event Management",
+        "Secure Integration Engine Monitor"
+      ],
+      "correct": "Security Information and Event Management",
+      "explanation": "SIEM (Security Information and Event Management) aggregates and correlates log data from across an environment to detect threats and support incident investigation."
+    },
+    {
+      "id": 42,
+      "domain": "Security Operations",
+      "question": "What does SOAR stand for?",
+      "answers": [
+        "Security Operations Automation and Response",
+        "Security Orchestration, Automation, and Response",
+        "System Orchestration and Alert Response",
+        "Secure Operations and Risk Review"
+      ],
+      "correct": "Security Orchestration, Automation, and Response",
+      "explanation": "SOAR (Security Orchestration, Automation, and Response) integrates security tools and automates incident response workflows to reduce response time."
+    },
+    {
+      "id": 43,
+      "domain": "Security Operations",
+      "question": "What does EDR stand for?",
+      "answers": [
+        "Enterprise Defense Router",
+        "Event Detection and Response",
+        "Endpoint Detection and Response",
+        "Encrypted Data Repository"
+      ],
+      "correct": "Endpoint Detection and Response",
+      "explanation": "EDR (Endpoint Detection and Response) continuously monitors endpoints for threats, providing visibility, detection, and response capabilities at the device level."
+    },
+    {
+      "id": 44,
+      "domain": "Security Operations",
+      "question": "What does XDR stand for?",
+      "answers": [
+        "External Detection and Response",
+        "Extended Detection and Response",
+        "Extreme Defense and Risk",
+        "Cross-Domain Response"
+      ],
+      "correct": "Extended Detection and Response",
+      "explanation": "XDR (Extended Detection and Response) extends EDR by correlating telemetry across endpoints, networks, cloud, and email into a unified detection and response platform."
+    },
+    {
+      "id": 45,
+      "domain": "Security Operations",
+      "question": "What does NDR stand for?",
+      "answers": [
+        "Node Detection and Response",
+        "Network Defense Relay",
+        "Network Detection and Response",
+        "Non-repudiation Detection Record"
+      ],
+      "correct": "Network Detection and Response",
+      "explanation": "NDR (Network Detection and Response) detects threats by analyzing network traffic patterns and behaviors using machine learning and behavioral analytics."
+    },
+    {
+      "id": 46,
+      "domain": "Security Operations",
+      "question": "What does UEBA stand for?",
+      "answers": [
+        "Unified Endpoint Behavior Analysis",
+        "User Entity Baseline Assessment",
+        "User and Entity Behavior Analytics",
+        "Unauthorized Event Behavior Alerts"
+      ],
+      "correct": "User and Entity Behavior Analytics",
+      "explanation": "UEBA (User and Entity Behavior Analytics) establishes behavioral baselines and uses machine learning to detect anomalies that may indicate insider threats or compromised accounts."
+    },
+    {
+      "id": 47,
+      "domain": "Security Operations",
+      "question": "What does SOC stand for?",
+      "answers": [
+        "System Operations Center",
+        "Security Operations Center",
+        "Secure Online Control",
+        "Service Orchestration Core"
+      ],
+      "correct": "Security Operations Center",
+      "explanation": "A SOC (Security Operations Center) is a centralized team that monitors, detects, and responds to cybersecurity incidents around the clock."
+    },
+    {
+      "id": 48,
+      "domain": "Security Operations",
+      "question": "What does CSIRT stand for?",
+      "answers": [
+        "Cyber Security Incident Reporting Team",
+        "Computer Security Incident Response Team",
+        "Centralized Security Incident Review Team",
+        "Corporate Security Incident and Risk Team"
+      ],
+      "correct": "Computer Security Incident Response Team",
+      "explanation": "A CSIRT (Computer Security Incident Response Team) coordinates the detection, analysis, containment, and recovery for security incidents."
+    },
+    {
+      "id": 49,
+      "domain": "Security Operations",
+      "question": "What does IOC stand for?",
+      "answers": [
+        "Indicator of Compromise",
+        "Instance of Control",
+        "Integrity Observation Check",
+        "Index of Cyberthreats"
+      ],
+      "correct": "Indicator of Compromise",
+      "explanation": "An IOC (Indicator of Compromise) is observable evidence \u2014 a file hash, IP address, domain, registry key \u2014 suggesting a system may have been breached."
+    },
+    {
+      "id": 50,
+      "domain": "Security Operations",
+      "question": "What does IOA stand for?",
+      "answers": [
+        "Index of Attacks",
+        "Integrity of Access",
+        "Indicator of Attack",
+        "Instance of Anomaly"
+      ],
+      "correct": "Indicator of Attack",
+      "explanation": "An IOA (Indicator of Attack) focuses on attacker behaviors and TTPs in real time \u2014 detecting attacks as they happen rather than after a compromise is complete."
+    },
+    {
+      "id": 51,
+      "domain": "Security Operations",
+      "question": "What does TTP stand for?",
+      "answers": [
+        "Technical Threat Profile",
+        "Tactics, Techniques, and Procedures",
+        "Threat Tracking Protocol",
+        "Targeted Threat Parameters"
+      ],
+      "correct": "Tactics, Techniques, and Procedures",
+      "explanation": "TTPs (Tactics, Techniques, and Procedures) describe how threat actors operate \u2014 their goals, the specific methods they use, and their standard operating procedures."
+    },
+    {
+      "id": 52,
+      "domain": "Security Operations",
+      "question": "What does IDS stand for?",
+      "answers": [
+        "Intrusion Detection System",
+        "Internal Defense Shield",
+        "Integrated Defense Scanner",
+        "Identity Detection Service"
+      ],
+      "correct": "Intrusion Detection System",
+      "explanation": "An IDS (Intrusion Detection System) monitors network or system activity and generates alerts when suspicious activity is detected \u2014 but does not actively block it."
+    },
+    {
+      "id": 53,
+      "domain": "Security Operations",
+      "question": "What does IPS stand for?",
+      "answers": [
+        "Internet Protection Shield",
+        "Intrusion Prevention System",
+        "Identity Provisioning Service",
+        "Internal Packet Scanner"
+      ],
+      "correct": "Intrusion Prevention System",
+      "explanation": "An IPS (Intrusion Prevention System) detects AND actively blocks malicious traffic inline, unlike an IDS which only alerts."
+    },
+    {
+      "id": 54,
+      "domain": "Security Operations",
+      "question": "What does WAF stand for?",
+      "answers": [
+        "Wireless Access Filter",
+        "Wide Area Firewall",
+        "Web Application Firewall",
+        "Workload Access Framework"
+      ],
+      "correct": "Web Application Firewall",
+      "explanation": "A WAF (Web Application Firewall) inspects HTTP/HTTPS traffic to protect web applications from attacks like SQL injection, XSS, and CSRF."
+    },
+    {
+      "id": 55,
+      "domain": "Security Operations",
+      "question": "What does CASB stand for?",
+      "answers": [
+        "Cloud Application Security Baseline",
+        "Centralized Access Security Broker",
+        "Cloud Access Security Broker",
+        "Certificate Authority Security Bridge"
+      ],
+      "correct": "Cloud Access Security Broker",
+      "explanation": "A CASB (Cloud Access Security Broker) sits between cloud users and cloud providers, enforcing security policies, providing visibility, and protecting data in cloud environments."
+    },
+    {
+      "id": 56,
+      "domain": "Security Operations",
+      "question": "What does DLP stand for?",
+      "answers": [
+        "Data Loss Prevention",
+        "Distributed Logging Platform",
+        "Dynamic Layer Protection",
+        "Data Link Protocol"
+      ],
+      "correct": "Data Loss Prevention",
+      "explanation": "DLP (Data Loss Prevention) tools monitor and block unauthorized transfer or disclosure of sensitive data, preventing breaches and compliance violations."
+    },
+    {
+      "id": 57,
+      "domain": "Security Operations",
+      "question": "What does UTM stand for?",
+      "answers": [
+        "Universal Threat Monitor",
+        "Unified Threat Management",
+        "User Token Manager",
+        "Unified Traffic Monitor"
+      ],
+      "correct": "Unified Threat Management",
+      "explanation": "UTM (Unified Threat Management) combines multiple security functions \u2014 firewall, IPS, antivirus, VPN, content filtering \u2014 into a single appliance."
+    },
+    {
+      "id": 58,
+      "domain": "Security Operations",
+      "question": "What does NGFW stand for?",
+      "answers": [
+        "Network Gateway Firewall",
+        "Next-Generation Firewall",
+        "Node Guard Framework",
+        "Networked Global Firewall"
+      ],
+      "correct": "Next-Generation Firewall",
+      "explanation": "An NGFW (Next-Generation Firewall) adds deep packet inspection, application awareness, user identity integration, and SSL inspection to traditional stateful firewall capabilities."
+    },
+    {
+      "id": 59,
+      "domain": "Security Operations",
+      "question": "What does HIPS stand for?",
+      "answers": [
+        "Host-based Intrusion Prevention System",
+        "Hybrid Intrusion Protection Service",
+        "High-security Identity Protection System",
+        "Host Infrastructure Protection Suite"
+      ],
+      "correct": "Host-based Intrusion Prevention System",
+      "explanation": "A HIPS (Host-based Intrusion Prevention System) monitors and protects a single host for malicious activity \u2014 useful for catching threats even when a device is off the corporate network."
+    },
+    {
+      "id": 60,
+      "domain": "Risk Management",
+      "question": "What does ARO stand for?",
+      "answers": [
+        "Annual Risk Overview",
+        "Annualized Rate of Occurrence",
+        "Asset Risk Outcome",
+        "Average Risk Offset"
+      ],
+      "correct": "Annualized Rate of Occurrence",
+      "explanation": "ARO (Annualized Rate of Occurrence) is the estimated number of times a specific loss event is expected to occur per year. ARO \u00d7 SLE = ALE."
+    },
+    {
+      "id": 61,
+      "domain": "Risk Management",
+      "question": "What does ALE stand for?",
+      "answers": [
+        "Annual Loss Expectancy",
+        "Asset Liability Estimate",
+        "Annualized Loss Event",
+        "Average Loss Exposure"
+      ],
+      "correct": "Annual Loss Expectancy",
+      "explanation": "ALE (Annual Loss Expectancy) is the expected yearly financial loss from a specific risk. ALE = SLE \u00d7 ARO."
+    },
+    {
+      "id": 62,
+      "domain": "Risk Management",
+      "question": "What does SLE stand for?",
+      "answers": [
+        "Security Level Evaluation",
+        "System Loss Estimate",
+        "Single Loss Expectancy",
+        "Standard Loss Event"
+      ],
+      "correct": "Single Loss Expectancy",
+      "explanation": "SLE (Single Loss Expectancy) is the financial cost of a single occurrence of a specific risk event. SLE \u00d7 ARO = ALE."
+    },
+    {
+      "id": 63,
+      "domain": "Risk Management",
+      "question": "What does RTO stand for?",
+      "answers": [
+        "Recovery Time Objective",
+        "Risk Transfer Option",
+        "Residual Threat Outcome",
+        "Risk Tolerance Output"
+      ],
+      "correct": "Recovery Time Objective",
+      "explanation": "RTO (Recovery Time Objective) defines the maximum acceptable time to restore a system or process after a disruption."
+    },
+    {
+      "id": 64,
+      "domain": "Risk Management",
+      "question": "What does RPO stand for?",
+      "answers": [
+        "Risk Priority Order",
+        "Recovery Point Objective",
+        "Residual Protection Output",
+        "Redundancy Planning Overview"
+      ],
+      "correct": "Recovery Point Objective",
+      "explanation": "RPO (Recovery Point Objective) defines the maximum acceptable amount of data loss measured in time \u2014 it determines how frequently backups must be taken."
+    },
+    {
+      "id": 65,
+      "domain": "Risk Management",
+      "question": "What does BCP stand for?",
+      "answers": [
+        "Business Continuity Plan",
+        "Baseline Configuration Policy",
+        "Breach Containment Protocol",
+        "Business Compliance Program"
+      ],
+      "correct": "Business Continuity Plan",
+      "explanation": "A BCP (Business Continuity Plan) ensures critical business functions can continue during and after a major disruption or disaster."
+    },
+    {
+      "id": 66,
+      "domain": "Risk Management",
+      "question": "What does DRP stand for?",
+      "answers": [
+        "Data Recovery Platform",
+        "Defense Response Plan",
+        "Disaster Recovery Plan",
+        "Dynamic Risk Profile"
+      ],
+      "correct": "Disaster Recovery Plan",
+      "explanation": "A DRP (Disaster Recovery Plan) defines procedures for restoring IT systems and operations after a disruptive event like a cyberattack or natural disaster."
+    },
+    {
+      "id": 67,
+      "domain": "Risk Management",
+      "question": "What does MTTR stand for?",
+      "answers": [
+        "Mean Time to Respond",
+        "Maximum Tolerable Time to Recover",
+        "Mean Time to Repair",
+        "Minimum Threat Tolerance Ratio"
+      ],
+      "correct": "Mean Time to Repair",
+      "explanation": "MTTR (Mean Time to Repair) is the average time required to repair a failed system or component and restore it to normal operation."
+    },
+    {
+      "id": 68,
+      "domain": "Risk Management",
+      "question": "What does MTBF stand for?",
+      "answers": [
+        "Maximum Tolerable Baseline Failure",
+        "Mean Time Between Failures",
+        "Minimum Threshold Before Failover",
+        "Mean Time Before Fix"
+      ],
+      "correct": "Mean Time Between Failures",
+      "explanation": "MTBF (Mean Time Between Failures) is the average time between system failures. Higher MTBF means higher reliability."
+    },
+    {
+      "id": 69,
+      "domain": "Compliance",
+      "question": "What does GDPR stand for?",
+      "answers": [
+        "Global Data Privacy Requirements",
+        "General Defense Protection Regulation",
+        "General Data Protection Regulation",
+        "Government Digital Privacy Rules"
+      ],
+      "correct": "General Data Protection Regulation",
+      "explanation": "GDPR (General Data Protection Regulation) is an EU regulation governing the collection, processing, and storage of personal data of EU residents."
+    },
+    {
+      "id": 70,
+      "domain": "Compliance",
+      "question": "What does HIPAA stand for?",
+      "answers": [
+        "Health Information Privacy and Accountability Act",
+        "Health Insurance Portability and Accountability Act",
+        "Healthcare Infrastructure Protection and Assurance Act",
+        "Health Information Protection and Authorization Act"
+      ],
+      "correct": "Health Insurance Portability and Accountability Act",
+      "explanation": "HIPAA (Health Insurance Portability and Accountability Act) protects the privacy and security of protected health information (PHI) in the United States."
+    },
+    {
+      "id": 71,
+      "domain": "Compliance",
+      "question": "What does PCI-DSS stand for?",
+      "answers": [
+        "Private Compliance Infrastructure Data Security Standard",
+        "Public Card Industry Defense Security Standard",
+        "Payment Card Industry Data Security Standard",
+        "Personal Credit Information Data Security System"
+      ],
+      "correct": "Payment Card Industry Data Security Standard",
+      "explanation": "PCI-DSS (Payment Card Industry Data Security Standard) defines security requirements for organizations that handle credit card transactions to protect cardholder data."
+    },
+    {
+      "id": 72,
+      "domain": "Compliance",
+      "question": "What does CMMC stand for?",
+      "answers": [
+        "Centralized Maturity Model Certification",
+        "Cybersecurity Maturity Model Certification",
+        "Compliance Management and Monitoring Control",
+        "Corporate Minimum Maturity Certification"
+      ],
+      "correct": "Cybersecurity Maturity Model Certification",
+      "explanation": "CMMC (Cybersecurity Maturity Model Certification) is a tiered framework for assessing and certifying cybersecurity practices, required for US Department of Defense contractors."
+    },
+    {
+      "id": 73,
+      "domain": "Compliance",
+      "question": "What does NIST stand for?",
+      "answers": [
+        "National Infrastructure Security Team",
+        "Network Intelligence and Security Technology",
+        "National Institute of Standards and Technology",
+        "Non-classified Information Security Threshold"
+      ],
+      "correct": "National Institute of Standards and Technology",
+      "explanation": "NIST (National Institute of Standards and Technology) publishes widely adopted security frameworks and guidelines, including the NIST Cybersecurity Framework (CSF) and NIST SP 800 series."
+    },
+    {
+      "id": 74,
+      "domain": "Mobile Security",
+      "question": "What does MDM stand for?",
+      "answers": [
+        "Mobile Data Management",
+        "Multi-Device Manager",
+        "Mobile Device Management",
+        "Managed Deployment Model"
+      ],
+      "correct": "Mobile Device Management",
+      "explanation": "MDM (Mobile Device Management) allows organizations to remotely manage, configure, enforce policies, and wipe mobile devices."
+    },
+    {
+      "id": 75,
+      "domain": "Mobile Security",
+      "question": "What does BYOD stand for?",
+      "answers": [
+        "Build Your Own Device",
+        "Bring Your Own Device",
+        "Baseline Your Own Deployment",
+        "Buy Your Operational Device"
+      ],
+      "correct": "Bring Your Own Device",
+      "explanation": "BYOD (Bring Your Own Device) is a policy where employees use their personally-owned devices for work purposes."
+    },
+    {
+      "id": 76,
+      "domain": "Mobile Security",
+      "question": "What does COPE stand for?",
+      "answers": [
+        "Corporate Operations and Personal Equipment",
+        "Centrally Owned Personal Endpoint",
+        "Corporate-Owned, Personally Enabled",
+        "Company-Operated Personal Environment"
+      ],
+      "correct": "Corporate-Owned, Personally Enabled",
+      "explanation": "COPE (Corporate-Owned, Personally Enabled) means the company owns and manages the device, but the employee can also use it for personal purposes."
+    },
+    {
+      "id": 77,
+      "domain": "Mobile Security",
+      "question": "What does CYOD stand for?",
+      "answers": [
+        "Configure Your Own Device",
+        "Choose Your Own Device",
+        "Certify Your Operational Device",
+        "Corporate Yield on Devices"
+      ],
+      "correct": "Choose Your Own Device",
+      "explanation": "CYOD (Choose Your Own Device) allows employees to select their preferred device from a company-approved list. The company purchases and manages it."
+    },
+    {
+      "id": 78,
+      "domain": "Vulnerabilities",
+      "question": "What does CVE stand for?",
+      "answers": [
+        "Critical Vulnerability Exposure",
+        "Common Vulnerabilities and Exposures",
+        "Centralized Vulnerability Enumeration",
+        "Cyber Vulnerability Exchange"
+      ],
+      "correct": "Common Vulnerabilities and Exposures",
+      "explanation": "CVE (Common Vulnerabilities and Exposures) is a standardized list of publicly disclosed cybersecurity vulnerabilities, each assigned a unique ID (e.g., CVE-2021-44228)."
+    },
+    {
+      "id": 79,
+      "domain": "Vulnerabilities",
+      "question": "What does CVSS stand for?",
+      "answers": [
+        "Cyber Vulnerability Security Standard",
+        "Common Vulnerability Severity Score",
+        "Common Vulnerability Scoring System",
+        "Centralized Vulnerability Scan Service"
+      ],
+      "correct": "Common Vulnerability Scoring System",
+      "explanation": "CVSS (Common Vulnerability Scoring System) provides a standardized 0\u201310 numerical score measuring the severity and characteristics of security vulnerabilities."
+    },
+    {
+      "id": 80,
+      "domain": "Vulnerabilities",
+      "question": "What does OWASP stand for?",
+      "answers": [
+        "Open Web Application Security Project",
+        "Operational Web Application Security Protocol",
+        "Organized Web Attack Surface Project",
+        "Online Web Application Standards Panel"
+      ],
+      "correct": "Open Web Application Security Project",
+      "explanation": "OWASP (Open Web Application Security Project) is a nonprofit producing the widely used OWASP Top 10 \u2014 a regularly updated list of the most critical web application security risks."
+    },
+    {
+      "id": 81,
+      "domain": "Vulnerabilities",
+      "question": "What does XXE stand for?",
+      "answers": [
+        "Extended XML Execution",
+        "XML External Entity",
+        "Cross XML Exploit",
+        "External XML Exchange"
+      ],
+      "correct": "XML External Entity",
+      "explanation": "XXE (XML External Entity) is an attack exploiting misconfigured XML parsers to access internal files, perform SSRF, or cause denial of service."
+    },
+    {
+      "id": 82,
+      "domain": "Vulnerabilities",
+      "question": "What does SSRF stand for?",
+      "answers": [
+        "Secure Server Request Forwarding",
+        "System-Side Request Forgery",
+        "Server-Side Request Forgery",
+        "Session-Side Resource Fetch"
+      ],
+      "correct": "Server-Side Request Forgery",
+      "explanation": "SSRF (Server-Side Request Forgery) causes a server to make HTTP requests to unintended destinations \u2014 often used to probe internal services or cloud metadata endpoints."
+    },
+    {
+      "id": 83,
+      "domain": "Vulnerabilities",
+      "question": "What does IDOR stand for?",
+      "answers": [
+        "Indirect Data Object Reference",
+        "Insecure Direct Object Reference",
+        "Internal Data Override Request",
+        "Invalid Directory Object Routing"
+      ],
+      "correct": "Insecure Direct Object Reference",
+      "explanation": "IDOR (Insecure Direct Object Reference) occurs when an application exposes internal object references (like user IDs in a URL) without verifying the requester is authorized."
+    },
+    {
+      "id": 84,
+      "domain": "Vulnerabilities",
+      "question": "What does CSRF stand for?",
+      "answers": [
+        "Cross-Site Request Forgery",
+        "Centralized Session Request Fraud",
+        "Client-Side Resource Fetch",
+        "Cross-Server Request Failure"
+      ],
+      "correct": "Cross-Site Request Forgery",
+      "explanation": "CSRF (Cross-Site Request Forgery) tricks an authenticated user's browser into sending unauthorized requests to a web app, exploiting the app's trust in the user's session."
+    },
+    {
+      "id": 85,
+      "domain": "Vulnerabilities",
+      "question": "What does XSS stand for?",
+      "answers": [
+        "Cross-Site Scripting",
+        "Extended Security Scanning",
+        "Cross-Server Session",
+        "External Script Execution"
+      ],
+      "correct": "Cross-Site Scripting",
+      "explanation": "XSS (Cross-Site Scripting) injects malicious client-side scripts into web pages viewed by other users, potentially stealing session cookies or redirecting users."
+    },
+    {
+      "id": 86,
+      "domain": "General Security Concepts",
+      "question": "What does CIA stand for (in the security triad)?",
+      "answers": [
+        "Control, Identification, Authentication",
+        "Confidentiality, Integrity, Availability",
+        "Certification, Integrity, Assurance",
+        "Confidentiality, Identification, Authorization"
+      ],
+      "correct": "Confidentiality, Integrity, Availability",
+      "explanation": "The CIA triad \u2014 Confidentiality, Integrity, Availability \u2014 is the foundational model for information security. Every security control maps back to protecting one or more of these three properties."
+    },
+    {
+      "id": 87,
+      "domain": "General Security Concepts",
+      "question": "What does AAA stand for (in network security)?",
+      "answers": [
+        "Authentication, Authorization, and Accounting",
+        "Access, Auditing, and Authentication",
+        "Authorization, Accountability, and Assurance",
+        "Authentication, Access, and Auditing"
+      ],
+      "correct": "Authentication, Authorization, and Accounting",
+      "explanation": "AAA stands for Authentication (verify identity), Authorization (determine access rights), and Accounting (track user activity). RADIUS and TACACS+ implement AAA."
+    },
+    {
+      "id": 88,
+      "domain": "Security Program Management",
+      "question": "What does MOU stand for?",
+      "answers": [
+        "Memorandum of Understanding",
+        "Method of Utilization",
+        "Management Oversight Unit",
+        "Mutual Operations Update"
+      ],
+      "correct": "Memorandum of Understanding",
+      "explanation": "An MOU (Memorandum of Understanding) is a non-binding document recording mutual understanding between parties \u2014 less formal than a contract, more formal than a handshake."
+    },
+    {
+      "id": 89,
+      "domain": "Security Program Management",
+      "question": "What does MOA stand for?",
+      "answers": [
+        "Method of Access",
+        "Memorandum of Agreement",
+        "Managed Operations Arrangement",
+        "Mutual Obligation Agreement"
+      ],
+      "correct": "Memorandum of Agreement",
+      "explanation": "An MOA (Memorandum of Agreement) is a formal document where two parties agree on broad goals and objectives \u2014 stronger than an MOU, but often less specific than a full contract."
+    },
+    {
+      "id": 90,
+      "domain": "Security Program Management",
+      "question": "What does SLA stand for?",
+      "answers": [
+        "Security Layer Architecture",
+        "Service Licensing Agreement",
+        "Service Level Agreement",
+        "Standard Liability Assessment"
+      ],
+      "correct": "Service Level Agreement",
+      "explanation": "An SLA (Service Level Agreement) is a contract defining minimum service standards \u2014 uptime, response times, support windows \u2014 between a provider and customer."
+    },
+    {
+      "id": 91,
+      "domain": "Security Program Management",
+      "question": "What does SOW stand for?",
+      "answers": [
+        "Scope of Work",
+        "Statement of Work",
+        "Security Operations Workflow",
+        "System Oversight Window"
+      ],
+      "correct": "Statement of Work",
+      "explanation": "An SOW (Statement of Work) defines the specific tasks, deliverables, timelines, and requirements for a project or engagement between parties."
+    },
+    {
+      "id": 92,
+      "domain": "Security Program Management",
+      "question": "What does NDA stand for?",
+      "answers": [
+        "Network Defense Architecture",
+        "Non-Disclosure Agreement",
+        "Node Data Authorization",
+        "National Defense Act"
+      ],
+      "correct": "Non-Disclosure Agreement",
+      "explanation": "An NDA (Non-Disclosure Agreement) is a legal contract preventing parties from disclosing confidential information to unauthorized third parties."
+    },
+    {
+      "id": 93,
+      "domain": "Threats",
+      "question": "What does APT stand for?",
+      "answers": [
+        "Automated Penetration Test",
+        "Advanced Persistent Threat",
+        "Active Protocol Threat",
+        "Application Permission Token"
+      ],
+      "correct": "Advanced Persistent Threat",
+      "explanation": "An APT (Advanced Persistent Threat) is a sophisticated, long-term, targeted attack \u2014 often nation-state sponsored \u2014 where attackers maintain covert access for extended periods."
+    },
+    {
+      "id": 94,
+      "domain": "Threats",
+      "question": "What does C2 stand for (in the context of malware)?",
+      "answers": [
+        "Code and Cipher",
+        "Centralized Control",
+        "Command and Control",
+        "Covert Channel 2"
+      ],
+      "correct": "Command and Control",
+      "explanation": "C2 (Command and Control) refers to the attacker-controlled infrastructure used to issue commands to and receive data from compromised systems (bots/implants)."
+    },
+    {
+      "id": 95,
+      "domain": "Threats",
+      "question": "What does LotL stand for?",
+      "answers": [
+        "Lateral over the LAN",
+        "Living off the Land",
+        "Logging of Threat Laterals",
+        "Layer of the Layer"
+      ],
+      "correct": "Living off the Land",
+      "explanation": "LotL (Living off the Land) attacks use legitimate built-in OS tools (PowerShell, WMI, certutil) for malicious purposes, making detection much harder."
+    },
+    {
+      "id": 96,
+      "domain": "Network Security",
+      "question": "What does SDP stand for (in zero trust networking)?",
+      "answers": [
+        "Secure Data Platform",
+        "Software-Defined Perimeter",
+        "System Defense Protocol",
+        "Segmented Defense Policy"
+      ],
+      "correct": "Software-Defined Perimeter",
+      "explanation": "SDP (Software-Defined Perimeter) creates an identity-centric, dynamic security boundary \u2014 making infrastructure invisible to unauthorized users until they are verified."
+    },
+    {
+      "id": 97,
+      "domain": "Authentication",
+      "question": "What does FIDO2 stand for?",
+      "answers": [
+        "Federal Identity and Data Operations 2",
+        "Fast Identification Online 2",
+        "Fast Identity Online 2",
+        "Federated Identity Distribution Object 2"
+      ],
+      "correct": "Fast Identity Online 2",
+      "explanation": "FIDO2 (Fast Identity Online 2) is an open standard enabling passwordless authentication using hardware security keys and public key cryptography."
+    },
+    {
+      "id": 98,
+      "domain": "Network Security",
+      "question": "What does SSE stand for (in cloud security)?",
+      "answers": [
+        "Secure Session Encryption",
+        "Security Service Edge",
+        "Software Security Engine",
+        "Structured Security Environment"
+      ],
+      "correct": "Security Service Edge",
+      "explanation": "SSE (Security Service Edge) delivers cloud-based security services \u2014 SWG, CASB, ZTNA \u2014 protecting users and data regardless of location, without WAN capability (unlike SASE)."
+    },
+    {
+      "id": 99,
+      "domain": "Cryptography",
+      "question": "What does TPM stand for?",
+      "answers": [
+        "Trusted Platform Module",
+        "Token Protection Manager",
+        "Terminal Policy Module",
+        "Trusted Permission Manager"
+      ],
+      "correct": "Trusted Platform Module",
+      "explanation": "A TPM (Trusted Platform Module) is a hardware chip providing secure cryptographic key storage, secure boot integrity measurement, and remote attestation for platform security."
+    },
+    {
+      "id": 100,
+      "domain": "Network Security",
+      "question": "What does SFTP stand for?",
+      "answers": [
+        "Secure FTP Tunnel Protocol",
+        "Simple File Transfer Protocol",
+        "SSH File Transfer Protocol",
+        "Secure Forwarding Transfer Protocol"
+      ],
+      "correct": "SSH File Transfer Protocol",
+      "explanation": "SFTP (SSH File Transfer Protocol) provides secure file transfer over an SSH connection. It is entirely separate from FTPS (FTP with TLS) despite the similar name."
+    }
+  ]
+}
