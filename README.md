@@ -31,9 +31,17 @@ cargo build --release
 
 # jump straight to a deck
 ./target/release/quizzical --file decks/security-plus-full.json
+
+# enable text-to-speech (Normal mode only, macOS only)
+./target/release/quizzical --tts
+./target/release/quizzical --file decks/security-plus-full.json --tts
 ```
 
 From the title screen, use `←` / `→` to cycle modes, then `Enter` to start.
+
+## Text-to-Speech (macOS only)
+
+Pass `--tts` to have each question and its answer options read aloud in Normal mode. Uses the built-in macOS `say` command — no extra dependencies or API keys required. Speech stops automatically when you answer or quit. On other platforms the flag is silently ignored.
 
 ## Decks
 

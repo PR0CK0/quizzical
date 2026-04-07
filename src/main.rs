@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use std::f64::consts::PI;
 use std::io::{stdout, Write};
 use std::path::PathBuf;
+use std::process::{Child, Command};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -1202,6 +1203,30 @@ fn pick_file(out: &mut impl Write, width: u16, height: u16) -> Option<PathBuf> {
     }
 }
 
+// ─── TTS ──────────────────────────────────────────────────────────────────────
+
+/// Speak `text` via macOS `say`. Kills any in-progress utterance first.
+/// No-ops silently on non-macOS or if `say` is not found.
+fn tts_speak(text: &str, prev: &mut Option<Child>) {
+    if let Some(mut child) = prev.take() {
+        let _ = child.kill();
+        let _ = child.wait();
+    }
+    match Command::new("say").arg("-r").arg("210").arg("--").arg(text).spawn() {
+        Ok(child) => *prev = Some(child),
+        Err(_) => {}  // say not available (non-macOS)
+    }
+}
+
+fn tts_script(q: &Question, answers: &[String]) -> String {
+    let labels = ["One", "Two", "Three", "Four"];
+    let opts: String = answers.iter().enumerate()
+        .map(|(i, a)| format!("{}: {}.", labels[i], a))
+        .collect::<Vec<_>>()
+        .join("  ");
+    format!("{}  {}", q.question, opts)
+}
+
 // ─── Entry ────────────────────────────────────────────────────────────────────
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -1209,6 +1234,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let cli_path = args.windows(2)
         .find(|w| w[0] == "--file")
         .map(|w| PathBuf::from(&w[1]));
+    let tts = args.contains(&"--tts".to_string());
 
     let mut out = stdout();
     terminal::enable_raw_mode()?;
@@ -1248,10 +1274,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     // ── Normal mode ──────────────────────────────────────────────────────────
     if mode == GameMode::Normal {
         let mut score = 0usize;
+        let mut tts_proc: Option<Child> = None;
         for (idx, q) in questions.iter().enumerate() {
             let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
             let (w, h) = terminal::size()?;
             show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w, h);
+            if tts { tts_speak(&tts_script(q, &shuffled), &mut tts_proc); }
 
             let chosen_idx = loop {
                 match event::read()? {
@@ -1262,6 +1290,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                             KeyCode::Char('3') => 2,
                             KeyCode::Char('4') => 3,
                             KeyCode::Char('q') | KeyCode::Esc => {
+                                if tts { tts_speak("", &mut tts_proc); }
                                 execute!(out, LeaveAlternateScreen, Show)?;
                                 terminal::disable_raw_mode()?;
                                 println!("\nBailed early. Score: {}/{}", score, idx);
@@ -1277,6 +1306,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     _ => continue,
                 }
             };
+            if tts { tts_speak("", &mut tts_proc); } // stop speech before result screen
 
             let (w, h) = terminal::size()?;
             if chosen_idx == correct_idx {
