@@ -438,8 +438,9 @@ fn draw_combo_row(out: &mut impl Write, width: u16, y: u16, bs: &TimedState, tic
 
 // ─── Screens ─────────────────────────────────────────────────────────────────
 
-fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_name: &str) -> Option<GameMode> {
+fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_name: &str, tts_default: bool) -> Option<(GameMode, bool)> {
     let mut mode = GameMode::Normal;
+    let mut tts_on = tts_default;
     let cx = width / 2;
     let cy = height / 2;
 
@@ -536,11 +537,20 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
             let _ = queue!(out, MoveTo(cx.saturating_sub(beat_info.len() as u16 / 2), toggle_y + 5), SetForegroundColor(color), Print(&beat_info), ResetColor);
         }
 
+        // TTS toggle — Normal mode only
+        if mode == GameMode::Normal {
+            let tts_label = if tts_on { "  [ T ]  TTS: ON   " } else { "  [ T ]  TTS: off  " };
+            let tts_color = if tts_on { Color::Green } else { Color::DarkGrey };
+            let _ = queue!(out,
+                MoveTo(cx.saturating_sub(tts_label.len() as u16 / 2), toggle_y + 5),
+                SetForegroundColor(tts_color), Print(tts_label), ResetColor);
+        }
+
         out.flush().unwrap();
 
         match event::read().ok() {
             Some(Event::Key(k)) => match k.code {
-                KeyCode::Enter => return Some(mode),
+                KeyCode::Enter => return Some((mode, tts_on)),
                 KeyCode::Char('q') | KeyCode::Esc => return None,
                 KeyCode::Char('b') | KeyCode::Char('B') | KeyCode::Right | KeyCode::Tab => {
                     mode = match mode {
@@ -555,6 +565,9 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
                         GameMode::Hard => GameMode::Normal,
                         GameMode::Deathmatch => GameMode::Hard,
                     };
+                }
+                KeyCode::Char('t') | KeyCode::Char('T') => {
+                    if mode == GameMode::Normal { tts_on = !tts_on; }
                 }
                 _ => {}
             },
@@ -1264,8 +1277,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let total = questions.len();
 
     let (w, h) = terminal::size()?;
-    let mode = match show_title(&mut out, w, h, total, &deck_name) {
-        Some(m) => m,
+    let (mode, tts) = match show_title(&mut out, w, h, total, &deck_name, tts) {
+        Some(r) => r,
         None => return Ok(()),
     };
 
@@ -1306,13 +1319,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     _ => continue,
                 }
             };
-            if tts { tts_speak("", &mut tts_proc); } // stop speech before result screen
-
             let (w, h) = terminal::size()?;
             if chosen_idx == correct_idx {
                 score += 1;
+                if tts { tts_speak("Correct!", &mut tts_proc); }
                 show_correct(&mut out, q, w, h);
             } else {
+                if tts { tts_speak("Incorrect!", &mut tts_proc); }
                 show_wrong(&mut out, q, &shuffled[chosen_idx], w, h);
             }
         }
