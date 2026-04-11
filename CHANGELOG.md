@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.1] - 2026-04-10
+
+### Fixed
+- Rewrote distractors for 172 `security-plus-full.json` questions where the correct answer was consistently the longest option (~89% of questions), making the right choice obvious by length alone
+
+---
+
 ## [0.3.0] - 2026-04-03
 
 ### Added
