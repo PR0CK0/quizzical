@@ -695,6 +695,11 @@ enum TimedResult {
     Quit,
 }
 
+enum EndAction {
+    Quit,
+    Retry(Vec<Question>),
+}
+
 fn run_timed_question(
     out: &mut impl Write,
     q: &Question,
@@ -940,7 +945,7 @@ fn show_timeout(out: &mut impl Write, q: &Question, width: u16, height: u16) {
     wait_for_key();
 }
 
-fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, height: u16) {
+fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, height: u16, wrong_questions: &[Question]) -> EndAction {
     let _ = queue!(out, Clear(ClearType::All));
     let pct = if total > 0 { score * 100 / total } else { 0 };
     let cx = width / 2;
@@ -968,13 +973,11 @@ fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, heig
         ("", Color::Reset, false),
         (grade, color, true),
         (sub, Color::DarkGrey, false),
-        ("", Color::Reset, false),
-        ("[ press any key to exit ]", Color::DarkGrey, false),
     ];
 
     let start = cy.saturating_sub(lines.len() as u16 / 2);
     for (i, (line, clr, bold)) in lines.iter().enumerate() {
-        let x = cx.saturating_sub(line.len() as u16 / 2);
+        let x = cx.saturating_sub(line.chars().count() as u16 / 2);
         let y = start + i as u16;
         if *bold {
             let _ = queue!(out, MoveTo(x, y), SetForegroundColor(*clr), SetAttribute(Attribute::Bold), Print(line), ResetColor);
@@ -982,11 +985,28 @@ fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, heig
             let _ = queue!(out, MoveTo(x, y), SetForegroundColor(*clr), Print(line), ResetColor);
         }
     }
+
+    let retry_prompt = if !wrong_questions.is_empty() {
+        format!("[ R ] retry wrong answers ({})  |  [ any key ] exit", wrong_questions.len())
+    } else {
+        "[ any key to exit ]".to_string()
+    };
+    let _ = queue!(out,
+        MoveTo(cx.saturating_sub(retry_prompt.len() as u16 / 2), height - 2),
+        SetForegroundColor(Color::DarkGrey), Print(&retry_prompt), ResetColor);
     out.flush().unwrap();
-    wait_for_key();
+
+    loop {
+        if let Ok(Event::Key(k)) = event::read() {
+            if matches!(k.code, KeyCode::Char('r') | KeyCode::Char('R')) && !wrong_questions.is_empty() {
+                return EndAction::Retry(wrong_questions.to_vec());
+            }
+            return EndAction::Quit;
+        }
+    }
 }
 
-fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, total: usize, width: u16, height: u16, deck: &str, mode: GameMode) {
+fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, total: usize, width: u16, height: u16, deck: &str, mode: GameMode, wrong_questions: &[Question]) -> EndAction {
     let _ = queue!(out, Clear(ClearType::All));
     let cx = width / 2;
     let cy = height / 2;
@@ -1045,7 +1065,12 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
             i + 1, score_str, combo_str, mode_char, e.deck));
     }
     lines.push(String::new());
-    lines.push("[ press any key to exit ]".to_string());
+    let retry_prompt = if !wrong_questions.is_empty() {
+        format!("[ R ] retry wrong answers ({})  |  [ any key ] exit", wrong_questions.len())
+    } else {
+        "[ any key to exit ]".to_string()
+    };
+    lines.push(retry_prompt);
 
     // Use a fixed x for all table lines (index 13+) so columns align
     let table_x = {
@@ -1075,7 +1100,14 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
         }
     }
     out.flush().unwrap();
-    wait_for_key();
+    loop {
+        if let Ok(Event::Key(k)) = event::read() {
+            if matches!(k.code, KeyCode::Char('r') | KeyCode::Char('R')) && !wrong_questions.is_empty() {
+                return EndAction::Retry(wrong_questions.to_vec());
+            }
+            return EndAction::Quit;
+        }
+    }
 }
 
 fn drain_events() {
@@ -1272,121 +1304,150 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .map_err(|_| format!("Cannot read {:?}", json_path))?;
     let bank: QBank = serde_json::from_str(&raw)?;
     let deck_name = if bank.name.is_empty() { "quiz".to_string() } else { bank.name.clone() };
-    let mut questions = bank.questions;
-    questions.shuffle(&mut rand::thread_rng());
-    let total = questions.len();
-
-    let (w, h) = terminal::size()?;
-    let (mode, tts) = match show_title(&mut out, w, h, total, &deck_name, tts) {
-        Some(r) => r,
-        None => return Ok(()),
-    };
-
+    let questions_orig = bank.questions;
     let mut rng = rand::thread_rng();
+    let mut tts_default = tts;
 
-    // ── Normal mode ──────────────────────────────────────────────────────────
-    if mode == GameMode::Normal {
-        let mut score = 0usize;
-        let mut tts_proc: Option<Child> = None;
-        for (idx, q) in questions.iter().enumerate() {
-            let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
-            let (w, h) = terminal::size()?;
-            show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w, h);
-            if tts { tts_speak(&tts_script(q, &shuffled), &mut tts_proc); }
+    'app: loop {
+        let mut questions = questions_orig.clone();
+        questions.shuffle(&mut rng);
 
-            let chosen_idx = loop {
-                match event::read()? {
-                    Event::Key(k) => {
-                        let i = match k.code {
-                            KeyCode::Char('1') => 0usize,
-                            KeyCode::Char('2') => 1,
-                            KeyCode::Char('3') => 2,
-                            KeyCode::Char('4') => 3,
-                            KeyCode::Char('q') | KeyCode::Esc => {
-                                if tts { tts_speak("", &mut tts_proc); }
-                                execute!(out, LeaveAlternateScreen, Show)?;
-                                terminal::disable_raw_mode()?;
-                                println!("\nBailed early. Score: {}/{}", score, idx);
-                                return Ok(());
-                            }
-                            _ => continue,
-                        };
-                        if i < shuffled.len() { break i; }
-                    }
-                    Event::Resize(w2, h2) => {
-                        show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w2, h2);
-                    }
-                    _ => continue,
-                }
-            };
-            let (w, h) = terminal::size()?;
-            if chosen_idx == correct_idx {
-                score += 1;
-                if tts { tts_speak("Correct!", &mut tts_proc); }
-                show_correct(&mut out, q, w, h);
-            } else {
-                if tts { tts_speak("Incorrect!", &mut tts_proc); }
-                show_wrong(&mut out, q, &shuffled[chosen_idx], w, h);
-            }
-        }
         let (w, h) = terminal::size()?;
-        show_final(&mut out, score, total, w, h);
+        let (mode, tts) = match show_title(&mut out, w, h, questions.len(), &deck_name, tts_default) {
+            Some(r) => r,
+            None => break 'app,
+        };
+        tts_default = tts;
 
-    // ── Timed modes (Hard / Deathmatch) ──────────────────────────────────────
-    } else {
-        let beat_time = mode.beat_time();
-        let mut bs = TimedState::new();
-        let mut answered = 0usize;
+    loop {
+        let total = questions.len();
 
-        'outer: for (idx, q) in questions.iter().enumerate() {
-            let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
+        // ── Normal mode ──────────────────────────────────────────────────────────
+        if mode == GameMode::Normal {
+            let mut score = 0usize;
+            let mut wrong_questions: Vec<Question> = vec![];
+            let mut tts_proc: Option<Child> = None;
+            'questions: for (idx, q) in questions.iter().enumerate() {
+                let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
+                let (w, h) = terminal::size()?;
+                show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w, h);
+                if tts { tts_speak(&tts_script(q, &shuffled), &mut tts_proc); }
+
+                let chosen_idx = loop {
+                    match event::read()? {
+                        Event::Key(k) => {
+                            let i = match k.code {
+                                KeyCode::Char('1') => 0usize,
+                                KeyCode::Char('2') => 1,
+                                KeyCode::Char('3') => 2,
+                                KeyCode::Char('4') => 3,
+                                KeyCode::Char('q') | KeyCode::Esc => {
+                                    if tts { tts_speak("", &mut tts_proc); }
+                                    break 'questions;
+                                }
+                                _ => continue,
+                            };
+                            if i < shuffled.len() { break i; }
+                        }
+                        Event::Resize(w2, h2) => {
+                            show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w2, h2);
+                        }
+                        _ => continue,
+                    }
+                };
+                let (w, h) = terminal::size()?;
+                if chosen_idx == correct_idx {
+                    score += 1;
+                    if tts { tts_speak("Correct!", &mut tts_proc); }
+                    show_correct(&mut out, q, w, h);
+                } else {
+                    wrong_questions.push(q.clone());
+                    if tts { tts_speak("Incorrect!", &mut tts_proc); }
+                    show_wrong(&mut out, q, &shuffled[chosen_idx], w, h);
+                }
+            }
             let (w, h) = terminal::size()?;
-            let result = run_timed_question(&mut out, q, &shuffled, idx + 1, total, &bs, w, h, beat_time);
+            match show_final(&mut out, score, total, w, h, &wrong_questions) {
+                EndAction::Quit => break,
+                EndAction::Retry(wrongs) => {
+                    questions = wrongs;
+                    questions.shuffle(&mut rng);
+                }
+            }
 
-            match result {
-                TimedResult::Quit => {
-                    let (w, h) = terminal::size()?;
-                    show_final_timed(&mut out, &bs, answered, total, w, h, &deck_name, mode);
-                    break 'outer;
-                }
-                TimedResult::Timeout => {
-                    bs.timeouts += 1;
-                    bs.combo = 0;
-                    answered += 1;
-                    let (w, h) = terminal::size()?;
-                    show_timeout(&mut out, q, w, h);
-                }
-                TimedResult::Answer(chosen_idx, elapsed) => {
-                    answered += 1;
-                    if chosen_idx == correct_idx {
-                        let pts = TimedState::calc_points(elapsed, beat_time, bs.combo);
-                        bs.score += pts;
-                        bs.combo += 1;
-                        bs.max_combo = bs.max_combo.max(bs.combo);
-                        bs.correct += 1;
-                        bs.last_pts = pts;
-                        bs.response_times.push(elapsed);
+        // ── Timed modes (Hard / Deathmatch) ──────────────────────────────────────
+        } else {
+            let beat_time = mode.beat_time();
+            let mut bs = TimedState::new();
+            let mut answered = 0usize;
+            let mut wrong_questions: Vec<Question> = vec![];
+            let mut final_action: Option<EndAction> = None;
+
+            'outer: for (idx, q) in questions.iter().enumerate() {
+                let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
+                let (w, h) = terminal::size()?;
+                let result = run_timed_question(&mut out, q, &shuffled, idx + 1, total, &bs, w, h, beat_time);
+
+                match result {
+                    TimedResult::Quit => {
                         let (w, h) = terminal::size()?;
-                        flash_result_deathmatch(&mut out, true, pts, w, h);
-                        drain_events();
-                    } else {
+                        final_action = Some(show_final_timed(&mut out, &bs, answered, total, w, h, &deck_name, mode, &wrong_questions));
+                        break 'outer;
+                    }
+                    TimedResult::Timeout => {
+                        bs.timeouts += 1;
                         bs.combo = 0;
-                        bs.wrong += 1;
-                        bs.last_pts = 0;
+                        answered += 1;
+                        wrong_questions.push(q.clone());
                         let (w, h) = terminal::size()?;
-                        flash_result_deathmatch(&mut out, false, 0, w, h);
-                        drain_events();
+                        show_timeout(&mut out, q, w, h);
+                    }
+                    TimedResult::Answer(chosen_idx, elapsed) => {
+                        answered += 1;
+                        if chosen_idx == correct_idx {
+                            let pts = TimedState::calc_points(elapsed, beat_time, bs.combo);
+                            bs.score += pts;
+                            bs.combo += 1;
+                            bs.max_combo = bs.max_combo.max(bs.combo);
+                            bs.correct += 1;
+                            bs.last_pts = pts;
+                            bs.response_times.push(elapsed);
+                            let (w, h) = terminal::size()?;
+                            flash_result_deathmatch(&mut out, true, pts, w, h);
+                            drain_events();
+                        } else {
+                            bs.combo = 0;
+                            bs.wrong += 1;
+                            bs.last_pts = 0;
+                            wrong_questions.push(q.clone());
+                            let (w, h) = terminal::size()?;
+                            flash_result_deathmatch(&mut out, false, 0, w, h);
+                            drain_events();
+                        }
                     }
                 }
             }
-        }
 
-        // completed all questions
-        if answered == total {
-            let (w, h) = terminal::size()?;
-            show_final_timed(&mut out, &bs, answered, total, w, h, &deck_name, mode);
+            let action = if let Some(a) = final_action {
+                a
+            } else if answered == total {
+                let (w, h) = terminal::size()?;
+                show_final_timed(&mut out, &bs, answered, total, w, h, &deck_name, mode, &wrong_questions)
+            } else {
+                EndAction::Quit
+            };
+
+            match action {
+                EndAction::Quit => break,
+                EndAction::Retry(wrongs) => {
+                    questions = wrongs;
+                    questions.shuffle(&mut rng);
+                }
+            }
         }
-    }
+    } // end retry loop
+
+    } // end 'app loop
 
     execute!(out, LeaveAlternateScreen, Show)?;
     terminal::disable_raw_mode()?;

@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.4.0] - 2026-04-15
+
+### Added
+- **Retry wrong answers** — after any session ends, press `R` to immediately re-run a new quiz containing only the questions you answered wrong (or timed out on). Keeps looping until you nail them all or exit. Works in all three modes.
+
+### Fixed
+- `q` mid-quiz in Normal mode now goes to the score screen instead of killing the app
+- Score screen `q` returns to the title screen instead of exiting; only `q` on the title screen exits
+- Normal mode end screen box (`╔═╗`) was misaligned due to Unicode byte-length miscalculation in centering
+
+---
+
 ## [0.3.1] - 2026-04-10
 
 ### Fixed
