@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.5.0] - 2026-04-15
+
+### Added
+- **Security+ Ports deck** (`decks/security-plus-ports.json`) — 62 questions covering all major port numbers tested on Security+ SY0-701: services, protocols, secure vs. insecure variants, and scenario-based questions
+
+---
+
 ## [0.4.1] - 2026-04-15
 
 ### Added

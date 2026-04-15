@@ -1,0 +1,761 @@
+{
+  "name": "security+ ports",
+  "questions": [
+    {
+      "domain": "Remote Access",
+      "question": "What service runs on TCP port 22 by default?",
+      "answers": [
+        "SSH (Secure Shell) — provides encrypted remote login and file transfer",
+        "Telnet — provides unencrypted remote terminal access over TCP",
+        "RDP — Microsoft's protocol for graphical remote access to Windows",
+        "RSH — a legacy Unix remote shell with no encryption support"
+      ],
+      "correct": "SSH (Secure Shell) — provides encrypted remote login and file transfer",
+      "explanation": "Port 22 is SSH. It replaced Telnet and RSH by encrypting authentication and session data. SFTP and SCP also run over port 22 as SSH subsystems."
+    },
+    {
+      "domain": "Remote Access",
+      "question": "What service uses TCP port 23?",
+      "answers": [
+        "Telnet — unencrypted remote terminal protocol; transmits credentials in cleartext",
+        "SSH — encrypted remote terminal protocol with strong authentication",
+        "RSH — legacy remote shell used on early Unix network systems",
+        "RDP — Microsoft remote desktop protocol for Windows graphical sessions"
+      ],
+      "correct": "Telnet — unencrypted remote terminal protocol; transmits credentials in cleartext",
+      "explanation": "Port 23 is Telnet. It sends all data including usernames and passwords in plaintext. SSH on port 22 is its encrypted replacement and should be used instead."
+    },
+    {
+      "domain": "Web Services",
+      "question": "What service runs on TCP port 80?",
+      "answers": [
+        "HTTP — Hypertext Transfer Protocol for unencrypted web traffic",
+        "HTTPS — HTTP over TLS providing encrypted web communication",
+        "FTP — File Transfer Protocol for uploading and downloading files",
+        "SMTP — Simple Mail Transfer Protocol for sending email messages"
+      ],
+      "correct": "HTTP — Hypertext Transfer Protocol for unencrypted web traffic",
+      "explanation": "Port 80 is HTTP. Traffic is unencrypted and vulnerable to interception. Organizations should redirect HTTP to HTTPS (port 443) to enforce encryption across all web traffic."
+    },
+    {
+      "domain": "Web Services",
+      "question": "What service runs on TCP port 443?",
+      "answers": [
+        "HTTPS — HTTP over TLS/SSL providing encrypted web communication",
+        "HTTP — standard unencrypted Hypertext Transfer Protocol",
+        "FTPS — FTP over SSL providing encrypted file transfers",
+        "SSH — Secure Shell for encrypted remote system administration"
+      ],
+      "correct": "HTTPS — HTTP over TLS/SSL providing encrypted web communication",
+      "explanation": "Port 443 is HTTPS. It uses TLS to encrypt traffic between browsers and servers, protecting data from eavesdropping and tampering. All public-facing web services should use 443."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What service uses TCP port 25?",
+      "answers": [
+        "SMTP — Simple Mail Transfer Protocol for server-to-server mail relay",
+        "POP3 — Post Office Protocol for downloading email from mail servers",
+        "IMAP — Internet Message Access Protocol for remote mailbox access",
+        "SMTPS — SMTP over TLS for encrypted mail server communication"
+      ],
+      "correct": "SMTP — Simple Mail Transfer Protocol for server-to-server mail relay",
+      "explanation": "Port 25 is SMTP relay, used between mail servers. It should be blocked for outbound connections from end-user workstations to prevent spam. Clients should use port 587 for authenticated submission."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What port should email clients use to submit outbound mail to a mail server?",
+      "answers": [
+        "TCP port 587 — SMTP submission port requiring client authentication",
+        "TCP port 25 — SMTP relay port intended for server-to-server traffic",
+        "TCP port 465 — SMTPS legacy port using implicit SSL/TLS encryption",
+        "TCP port 110 — POP3 port for downloading mail from a server"
+      ],
+      "correct": "TCP port 587 — SMTP submission port requiring client authentication",
+      "explanation": "Port 587 is the SMTP submission port. Unlike port 25 (server relay), port 587 requires authentication, making it the correct port for mail clients sending outbound messages."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What is TCP port 465 used for?",
+      "answers": [
+        "SMTPS — SMTP over implicit SSL/TLS for encrypted mail submission",
+        "SMTP submission — authenticated outbound mail from email clients",
+        "IMAPS — IMAP over TLS for encrypted retrieval of mail messages",
+        "POP3S — POP3 over TLS for encrypted download of mail messages"
+      ],
+      "correct": "SMTPS — SMTP over implicit SSL/TLS for encrypted mail submission",
+      "explanation": "Port 465 is SMTPS, using implicit SSL. While port 587 with STARTTLS is now preferred, many servers still support 465 for legacy compatibility."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What service uses TCP port 110?",
+      "answers": [
+        "POP3 — Post Office Protocol v3 for downloading email (unencrypted)",
+        "IMAP — Internet Message Access Protocol for remote mailbox management",
+        "SMTP — Simple Mail Transfer Protocol for sending and relaying email",
+        "POP3S — POP3 over TLS providing encrypted email download sessions"
+      ],
+      "correct": "POP3 — Post Office Protocol v3 for downloading email (unencrypted)",
+      "explanation": "Port 110 is POP3. It downloads mail from the server to the client and typically deletes server copies. Port 995 (POP3S) is the encrypted version."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What service uses TCP port 143?",
+      "answers": [
+        "IMAP — Internet Message Access Protocol for remote mailbox management",
+        "POP3 — Post Office Protocol for downloading email to local clients",
+        "SMTP — Simple Mail Transfer Protocol for sending outbound email",
+        "IMAPS — IMAP over TLS for encrypted remote mailbox access"
+      ],
+      "correct": "IMAP — Internet Message Access Protocol for remote mailbox management",
+      "explanation": "Port 143 is IMAP. Unlike POP3, IMAP keeps mail on the server and syncs across multiple clients. Port 993 (IMAPS) is the TLS-encrypted version."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What port does IMAPS (IMAP over TLS) use?",
+      "answers": [
+        "TCP port 993 — IMAP with TLS encryption for secure mailbox access",
+        "TCP port 995 — POP3 with TLS encryption for secure mail download",
+        "TCP port 465 — SMTP with SSL encryption for secure mail submission",
+        "TCP port 636 — LDAP with TLS encryption for secure directory access"
+      ],
+      "correct": "TCP port 993 — IMAP with TLS encryption for secure mailbox access",
+      "explanation": "Port 993 is IMAPS. It encrypts the entire IMAP session using TLS. Organizations should disable plaintext IMAP on port 143 and enforce IMAPS."
+    },
+    {
+      "domain": "Email Protocols",
+      "question": "What port does POP3S (POP3 over TLS) use?",
+      "answers": [
+        "TCP port 995 — POP3 with TLS encryption for secure mail download",
+        "TCP port 993 — IMAP with TLS encryption for secure mailbox access",
+        "TCP port 465 — SMTP with SSL encryption for secure mail submission",
+        "TCP port 587 — SMTP submission with authentication for outbound mail"
+      ],
+      "correct": "TCP port 995 — POP3 with TLS encryption for secure mail download",
+      "explanation": "Port 995 is POP3S. It uses TLS to protect the session. Plaintext POP3 on port 110 should be disabled and POP3S or IMAPS enforced."
+    },
+    {
+      "domain": "File Transfer",
+      "question": "What service uses TCP port 21?",
+      "answers": [
+        "FTP control — command channel for FTP session setup and control",
+        "FTP data — data transfer channel for file content and directory listings",
+        "SSH — encrypted remote shell and file transfer over a single port",
+        "TFTP — Trivial File Transfer Protocol using UDP for simple transfers"
+      ],
+      "correct": "FTP control — command channel for FTP session setup and control",
+      "explanation": "Port 21 is the FTP control channel where commands are sent. Port 20 carries file data in active mode FTP. FTP sends credentials in plaintext and should be replaced with SFTP or FTPS."
+    },
+    {
+      "domain": "File Transfer",
+      "question": "What service uses TCP port 20?",
+      "answers": [
+        "FTP data — transfers file content and directory listings in active mode",
+        "FTP control — command channel for FTP authentication and control",
+        "SSH — encrypted remote shell that also handles file transfers via SFTP",
+        "TFTP — Trivial File Transfer Protocol for diskless client booting"
+      ],
+      "correct": "FTP data — transfers file content and directory listings in active mode",
+      "explanation": "Port 20 is the FTP active-mode data channel. The server initiates from port 20 to deliver file data. In passive mode, a random ephemeral port is negotiated instead."
+    },
+    {
+      "domain": "File Transfer",
+      "question": "What service uses UDP port 69?",
+      "answers": [
+        "TFTP — Trivial File Transfer Protocol for booting and simple transfers",
+        "FTP — File Transfer Protocol for full-featured client-server file sharing",
+        "SFTP — SSH File Transfer Protocol for encrypted file management",
+        "NFS — Network File System for mounting remote file systems"
+      ],
+      "correct": "TFTP — Trivial File Transfer Protocol for booting and simple transfers",
+      "explanation": "Port 69 UDP is TFTP. It has no authentication and no encryption, making it unsuitable for sensitive data. It is commonly used for PXE boot and transferring network device firmware/configs."
+    },
+    {
+      "domain": "File Transfer",
+      "question": "What port does FTPS (FTP over SSL) use for the control channel?",
+      "answers": [
+        "TCP port 990 — FTPS control channel using implicit TLS encryption",
+        "TCP port 989 — FTPS data channel for encrypted file transfers",
+        "TCP port 21 — standard FTP control channel (unencrypted)",
+        "TCP port 22 — SSH port used by SFTP for encrypted transfers"
+      ],
+      "correct": "TCP port 990 — FTPS control channel using implicit TLS encryption",
+      "explanation": "Port 990 is FTPS control (implicit TLS). Port 989 carries FTPS data. SFTP is a completely different protocol over port 22 and is generally preferred over FTPS."
+    },
+    {
+      "domain": "File Transfer",
+      "question": "What port does FTPS use for data transfers?",
+      "answers": [
+        "TCP port 989 — FTPS data channel with implicit TLS encryption",
+        "TCP port 990 — FTPS control channel for session setup and commands",
+        "TCP port 20 — unencrypted FTP active-mode data channel",
+        "TCP port 21 — unencrypted FTP control channel for commands"
+      ],
+      "correct": "TCP port 989 — FTPS data channel with implicit TLS encryption",
+      "explanation": "Port 989 is the FTPS data channel. FTPS uses 990 for control and 989 for data, both over TLS. This is distinct from FTP (20/21) and SFTP (22)."
+    },
+    {
+      "domain": "Network Services",
+      "question": "What service uses UDP or TCP port 53?",
+      "answers": [
+        "DNS — Domain Name System for resolving hostnames to IP addresses",
+        "DHCP — Dynamic Host Configuration Protocol for IP address assignment",
+        "NTP — Network Time Protocol for synchronizing clocks across systems",
+        "SNMP — Simple Network Management Protocol for device monitoring"
+      ],
+      "correct": "DNS — Domain Name System for resolving hostnames to IP addresses",
+      "explanation": "Port 53 is DNS. UDP is used for most queries; TCP is used for zone transfers and large responses. DNS is a common data exfiltration channel and should be monitored closely."
+    },
+    {
+      "domain": "Network Services",
+      "question": "What service uses UDP port 67?",
+      "answers": [
+        "DHCP server — receives discovery and request messages from clients",
+        "DHCP client — receives address assignment offers from DHCP servers",
+        "DNS server — receives name resolution queries from client systems",
+        "TFTP server — receives file transfer requests from network clients"
+      ],
+      "correct": "DHCP server — receives discovery and request messages from clients",
+      "explanation": "Port 67 UDP is the DHCP server port. Clients broadcast to this port. Rogue DHCP servers exploiting port 67 can redirect traffic by assigning malicious gateway and DNS settings."
+    },
+    {
+      "domain": "Network Services",
+      "question": "What service uses UDP port 68?",
+      "answers": [
+        "DHCP client — receives IP address offers from DHCP servers",
+        "DHCP server — listens for discovery and request messages from clients",
+        "DNS client — sends hostname resolution queries to DNS servers",
+        "TFTP client — receives file data transferred from a TFTP server"
+      ],
+      "correct": "DHCP client — receives IP address offers from DHCP servers",
+      "explanation": "Port 68 UDP is the DHCP client port. The server sends offers and ACKs to this port. A rogue DHCP server can intercept DHCP to assign attacker-controlled gateway and DNS addresses."
+    },
+    {
+      "domain": "Network Services",
+      "question": "What service uses UDP port 123?",
+      "answers": [
+        "NTP — Network Time Protocol for clock synchronization across systems",
+        "SNMP — Simple Network Management Protocol for device monitoring",
+        "Syslog — remote logging protocol for forwarding system event messages",
+        "TFTP — Trivial File Transfer Protocol for simple file transfers"
+      ],
+      "correct": "NTP — Network Time Protocol for clock synchronization across systems",
+      "explanation": "Port 123 UDP is NTP. Accurate time is critical for security — Kerberos fails if clocks differ by more than 5 minutes, and log correlation requires synchronized timestamps across systems."
+    },
+    {
+      "domain": "Network Management",
+      "question": "What service uses UDP port 161?",
+      "answers": [
+        "SNMP — agent port for polling and reading network device information",
+        "SNMP trap — port for unsolicited alerts sent from agents to managers",
+        "Syslog — port for collecting remote system log messages",
+        "NTP — port for network time synchronization requests"
+      ],
+      "correct": "SNMP — agent port for polling and reading network device information",
+      "explanation": "Port 161 UDP is SNMP. Managers poll agents on 161 to read MIB data. SNMPv1/v2c use cleartext community strings; SNMPv3 adds authentication and encryption and should be used instead."
+    },
+    {
+      "domain": "Network Management",
+      "question": "What service uses UDP port 162?",
+      "answers": [
+        "SNMP trap — unsolicited alerts sent from agents to network managers",
+        "SNMP polling — manager-initiated queries to read device MIB data",
+        "Syslog — remote system log message forwarding to a central server",
+        "NTP — time synchronization response messages from time servers"
+      ],
+      "correct": "SNMP trap — unsolicited alerts sent from agents to network managers",
+      "explanation": "Port 162 UDP is SNMP traps. Unlike normal SNMP (161) where the manager polls the agent, traps are agent-initiated to notify the manager of events like interface failures or threshold alerts."
+    },
+    {
+      "domain": "Network Management",
+      "question": "What service uses UDP port 514?",
+      "answers": [
+        "Syslog — protocol for forwarding system log messages to a remote server",
+        "SNMP — protocol for monitoring and managing network device status",
+        "TFTP — protocol for simple file transfers without authentication",
+        "NTP — protocol for synchronizing clocks across networked systems"
+      ],
+      "correct": "Syslog — protocol for forwarding system log messages to a remote server",
+      "explanation": "Port 514 UDP is Syslog. Devices forward log events to a central syslog server. Basic Syslog has no authentication or integrity protection; syslog-ng and rsyslog support TLS-encrypted transport."
+    },
+    {
+      "domain": "Directory Services",
+      "question": "What service uses TCP port 389?",
+      "answers": [
+        "LDAP — Lightweight Directory Access Protocol for directory queries (unencrypted)",
+        "LDAPS — LDAP over TLS for encrypted directory access",
+        "Kerberos — network authentication protocol using tickets",
+        "RADIUS — remote authentication and authorization service"
+      ],
+      "correct": "LDAP — Lightweight Directory Access Protocol for directory queries (unencrypted)",
+      "explanation": "Port 389 is LDAP. It provides access to directory services like Active Directory in plaintext. Port 636 (LDAPS) or LDAP with STARTTLS should be used to encrypt directory credentials and queries."
+    },
+    {
+      "domain": "Directory Services",
+      "question": "What service uses TCP port 636?",
+      "answers": [
+        "LDAPS — LDAP over TLS providing encrypted directory access",
+        "LDAP — Lightweight Directory Access Protocol for unencrypted queries",
+        "Kerberos — ticket-based network authentication protocol",
+        "TACACS+ — terminal access control for device administration"
+      ],
+      "correct": "LDAPS — LDAP over TLS providing encrypted directory access",
+      "explanation": "Port 636 is LDAPS (LDAP Secure). It wraps LDAP in TLS to protect directory queries and credentials. Disabling port 389 and enforcing LDAPS is a standard hardening practice."
+    },
+    {
+      "domain": "Directory Services",
+      "question": "What service uses TCP port 88?",
+      "answers": [
+        "Kerberos — ticket-based authentication protocol used in Active Directory",
+        "LDAP — Lightweight Directory Access Protocol for directory services",
+        "RADIUS — Remote Authentication Dial-In User Service",
+        "TACACS+ — Terminal Access Controller Access Control System Plus"
+      ],
+      "correct": "Kerberos — ticket-based authentication protocol used in Active Directory",
+      "explanation": "Port 88 is Kerberos. Active Directory relies on Kerberos for authentication. The Key Distribution Center (KDC) issues tickets so passwords are never sent directly across the network."
+    },
+    {
+      "domain": "Directory Services",
+      "question": "What service uses TCP port 3268?",
+      "answers": [
+        "LDAP Global Catalog — allows searching all objects in an AD forest",
+        "LDAPS Global Catalog — encrypted AD forest-wide directory searches",
+        "LDAP — standard directory access within a single AD domain",
+        "Kerberos — ticket-based authentication for Active Directory domains"
+      ],
+      "correct": "LDAP Global Catalog — allows searching all objects in an AD forest",
+      "explanation": "Port 3268 is the LDAP Global Catalog. It enables clients to query any object across all domains in an AD forest. Port 3269 is the encrypted (LDAPS) version of the Global Catalog."
+    },
+    {
+      "domain": "Remote Access",
+      "question": "What service uses TCP port 3389?",
+      "answers": [
+        "RDP — Remote Desktop Protocol for graphical remote access to Windows",
+        "VNC — Virtual Network Computing for remote desktop across platforms",
+        "SSH — Secure Shell for encrypted command-line remote administration",
+        "Telnet — unencrypted remote terminal protocol for legacy systems"
+      ],
+      "correct": "RDP — Remote Desktop Protocol for graphical remote access to Windows",
+      "explanation": "Port 3389 is RDP. It is a frequent attack target for brute force and credential stuffing. Best practice is to keep RDP behind a VPN or restrict it to a jump host — never expose it directly to the internet."
+    },
+    {
+      "domain": "Remote Access",
+      "question": "What service uses TCP port 5900?",
+      "answers": [
+        "VNC — Virtual Network Computing for cross-platform remote desktop access",
+        "RDP — Remote Desktop Protocol for Windows remote desktop sessions",
+        "SSH — Secure Shell for encrypted remote command-line administration",
+        "X11 — X Window System for forwarding graphical apps over a network"
+      ],
+      "correct": "VNC — Virtual Network Computing for cross-platform remote desktop access",
+      "explanation": "Port 5900 is VNC. Older VNC implementations have weak authentication. VNC should always be tunneled through SSH or accessed only over a VPN to prevent unauthorized access."
+    },
+    {
+      "domain": "Windows Networking",
+      "question": "What service uses TCP port 445?",
+      "answers": [
+        "SMB — Server Message Block for Windows file and printer sharing",
+        "NetBIOS Session Service — legacy Windows session service over TCP",
+        "LDAP — Lightweight Directory Access Protocol for Active Directory",
+        "RPC — Remote Procedure Call for Windows service communication"
+      ],
+      "correct": "SMB — Server Message Block for Windows file and printer sharing",
+      "explanation": "Port 445 is SMB. The EternalBlue exploit (MS17-010), which powered WannaCry and NotPetya, targeted this port. Port 445 should be blocked at perimeter firewalls and patched on all internal hosts."
+    },
+    {
+      "domain": "Windows Networking",
+      "question": "What service uses TCP/UDP port 137?",
+      "answers": [
+        "NetBIOS Name Service — resolves NetBIOS names to IP addresses",
+        "NetBIOS Datagram Service — connectionless NetBIOS data transfers",
+        "NetBIOS Session Service — connection-oriented NetBIOS sessions",
+        "SMB — Server Message Block for Windows file and print sharing"
+      ],
+      "correct": "NetBIOS Name Service — resolves NetBIOS names to IP addresses",
+      "explanation": "Port 137 is NetBIOS Name Service (NBNS). It resolves NetBIOS names, similar to DNS. It should be blocked at perimeter firewalls as it exposes internal hostnames to attackers."
+    },
+    {
+      "domain": "Windows Networking",
+      "question": "What service uses TCP/UDP port 139?",
+      "answers": [
+        "NetBIOS Session Service — connection-oriented NetBIOS sessions",
+        "NetBIOS Name Service — resolves NetBIOS names to IP addresses",
+        "NetBIOS Datagram Service — connectionless NetBIOS communications",
+        "SMB — modern Server Message Block direct hosting on Windows"
+      ],
+      "correct": "NetBIOS Session Service — connection-oriented NetBIOS sessions",
+      "explanation": "Port 139 is NetBIOS Session Service, used for SMB over NetBIOS on legacy Windows. Modern Windows uses port 445 directly. Both 139 and 445 should be blocked from internet exposure."
+    },
+    {
+      "domain": "Windows Networking",
+      "question": "What service uses TCP port 135?",
+      "answers": [
+        "MS RPC — Microsoft Remote Procedure Call endpoint mapper",
+        "SMB — Server Message Block for Windows file and printer sharing",
+        "NetBIOS — legacy Windows network name and session services",
+        "WinRM — Windows Remote Management for PowerShell remoting"
+      ],
+      "correct": "MS RPC — Microsoft Remote Procedure Call endpoint mapper",
+      "explanation": "Port 135 is the MS RPC endpoint mapper. Many Windows services use RPC and register with the endpoint mapper on port 135. It should be blocked at perimeter firewalls — it is not needed externally."
+    },
+    {
+      "domain": "Routing Protocols",
+      "question": "What service uses TCP port 179?",
+      "answers": [
+        "BGP — Border Gateway Protocol for inter-autonomous system routing",
+        "OSPF — Open Shortest Path First for intra-domain link-state routing",
+        "RIP — Routing Information Protocol for simple distance-vector routing",
+        "EIGRP — Enhanced Interior Gateway Routing Protocol by Cisco"
+      ],
+      "correct": "BGP — Border Gateway Protocol for inter-autonomous system routing",
+      "explanation": "Port 179 is BGP, the routing protocol of the internet. BGP hijacking can redirect global traffic. BGP sessions should be protected with TCP MD5 or TCP-AO authentication."
+    },
+    {
+      "domain": "VPN & Tunneling",
+      "question": "What service uses UDP port 500?",
+      "answers": [
+        "IKE/ISAKMP — IPSec key exchange for establishing VPN tunnel security associations",
+        "L2TP — Layer 2 Tunneling Protocol for VPN encapsulation",
+        "PPTP — Point-to-Point Tunneling Protocol for legacy VPN connections",
+        "GRE — Generic Routing Encapsulation for IP tunneling"
+      ],
+      "correct": "IKE/ISAKMP — IPSec key exchange for establishing VPN tunnel security associations",
+      "explanation": "Port 500 UDP is IKE (Internet Key Exchange), used to negotiate IPSec security associations. IPSec also uses UDP 4500 for NAT Traversal to work through NAT devices."
+    },
+    {
+      "domain": "VPN & Tunneling",
+      "question": "What service uses UDP port 1701?",
+      "answers": [
+        "L2TP — Layer 2 Tunneling Protocol, typically paired with IPSec",
+        "PPTP — Point-to-Point Tunneling Protocol for legacy VPN tunnels",
+        "IKE — Internet Key Exchange for IPSec tunnel negotiation",
+        "OpenVPN — open-source VPN using TLS for key exchange and encryption"
+      ],
+      "correct": "L2TP — Layer 2 Tunneling Protocol, typically paired with IPSec",
+      "explanation": "Port 1701 UDP is L2TP. L2TP provides no encryption on its own and is typically combined with IPSec (L2TP/IPSec) for security. It is supported natively by Windows VPN clients."
+    },
+    {
+      "domain": "VPN & Tunneling",
+      "question": "What service uses TCP port 1723?",
+      "answers": [
+        "PPTP — Point-to-Point Tunneling Protocol for legacy VPN connections",
+        "L2TP — Layer 2 Tunneling Protocol for VPN tunneling paired with IPSec",
+        "IKE — Internet Key Exchange for IPSec security association setup",
+        "SSL VPN — VPN over HTTPS using TLS for encrypted remote access"
+      ],
+      "correct": "PPTP — Point-to-Point Tunneling Protocol for legacy VPN connections",
+      "explanation": "Port 1723 is PPTP. PPTP is considered insecure due to weaknesses in MS-CHAPv2 authentication and MPPE encryption. L2TP/IPSec, IKEv2, or OpenVPN should be used instead."
+    },
+    {
+      "domain": "VPN & Tunneling",
+      "question": "What port does OpenVPN use by default?",
+      "answers": [
+        "UDP port 1194 — OpenVPN default for fast, reliable VPN tunneling",
+        "TCP port 443 — alternative for OpenVPN to blend with HTTPS traffic",
+        "UDP port 500 — IKE port used for IPSec key exchange negotiations",
+        "UDP port 1701 — L2TP port for Layer 2 VPN encapsulation"
+      ],
+      "correct": "UDP port 1194 — OpenVPN default for fast, reliable VPN tunneling",
+      "explanation": "OpenVPN defaults to UDP 1194. It can also run on TCP 443 to bypass firewalls blocking VPN traffic. OpenVPN uses TLS for authentication and key exchange with the OpenSSL library."
+    },
+    {
+      "domain": "VPN & Tunneling",
+      "question": "Which port pair does IPSec use when NAT Traversal (NAT-T) is required?",
+      "answers": [
+        "UDP 500 (IKE) and UDP 4500 (NAT-T) for IPSec through NAT devices",
+        "UDP 500 (IKE) and TCP 1723 (PPTP) for combined VPN tunneling",
+        "UDP 1701 (L2TP) and UDP 500 (IKE) for L2TP/IPSec connections",
+        "TCP 443 (HTTPS) and UDP 500 (IKE) for SSL VPN with IPSec fallback"
+      ],
+      "correct": "UDP 500 (IKE) and UDP 4500 (NAT-T) for IPSec through NAT devices",
+      "explanation": "IPSec uses UDP 500 for IKE and UDP 4500 for NAT Traversal. NAT-T encapsulates ESP packets in UDP so they can traverse NAT devices, which would otherwise break IPSec integrity checks."
+    },
+    {
+      "domain": "Database",
+      "question": "What service uses TCP port 3306?",
+      "answers": [
+        "MySQL / MariaDB — open-source relational database server",
+        "Microsoft SQL Server — Microsoft's enterprise relational database",
+        "Oracle Database — Oracle's enterprise relational database listener",
+        "PostgreSQL — open-source object-relational database system"
+      ],
+      "correct": "MySQL / MariaDB — open-source relational database server",
+      "explanation": "Port 3306 is MySQL (and its fork MariaDB). Database ports should never be exposed to the internet. Firewall rules should restrict access to application servers only."
+    },
+    {
+      "domain": "Database",
+      "question": "What service uses TCP port 1433?",
+      "answers": [
+        "Microsoft SQL Server — Microsoft's enterprise relational database engine",
+        "MySQL — open-source relational database management system",
+        "Oracle Database — Oracle's enterprise relational database listener",
+        "PostgreSQL — open-source relational database management system"
+      ],
+      "correct": "Microsoft SQL Server — Microsoft's enterprise relational database engine",
+      "explanation": "Port 1433 is Microsoft SQL Server. A SQL Server instance exposed to the internet can be attacked via brute force or SQL injection. This port should be firewalled and never internet-facing."
+    },
+    {
+      "domain": "Database",
+      "question": "What service uses TCP port 1521?",
+      "answers": [
+        "Oracle Database — Oracle's default listener port for database connections",
+        "Microsoft SQL Server — Microsoft's enterprise database engine port",
+        "MySQL — open-source database widely used in web applications",
+        "IBM DB2 — IBM's enterprise relational database management system"
+      ],
+      "correct": "Oracle Database — Oracle's default listener port for database connections",
+      "explanation": "Port 1521 is Oracle Database's default listener. Like all database ports, it must be firewalled from external access and restricted to authorized application servers by network ACL."
+    },
+    {
+      "domain": "Voice & Video",
+      "question": "What service uses TCP/UDP port 5060?",
+      "answers": [
+        "SIP — Session Initiation Protocol for VoIP call signaling (unencrypted)",
+        "SIP over TLS — encrypted SIP signaling for secure VoIP sessions",
+        "H.323 — legacy VoIP signaling protocol for video conferencing",
+        "RTP — Real-time Transport Protocol for voice and video media streams"
+      ],
+      "correct": "SIP — Session Initiation Protocol for VoIP call signaling (unencrypted)",
+      "explanation": "Port 5060 is SIP. It sets up, manages, and terminates VoIP calls in cleartext. Port 5061 uses TLS. Exposed SIP ports are targets for eavesdropping, toll fraud, and SIP flooding attacks."
+    },
+    {
+      "domain": "Voice & Video",
+      "question": "What service uses TCP port 5061?",
+      "answers": [
+        "SIP over TLS — encrypted SIP signaling for secure VoIP sessions",
+        "SIP — unencrypted Session Initiation Protocol for VoIP signaling",
+        "H.323 — legacy video conferencing and VoIP signaling protocol",
+        "MGCP — Media Gateway Control Protocol for VoIP gateways"
+      ],
+      "correct": "SIP over TLS — encrypted SIP signaling for secure VoIP sessions",
+      "explanation": "Port 5061 is SIPS (SIP Secure). It encrypts SIP signaling with TLS. Note that SRTP must also be used to encrypt the media stream (RTP) for full end-to-end VoIP security."
+    },
+    {
+      "domain": "Voice & Video",
+      "question": "What service uses TCP port 1720?",
+      "answers": [
+        "H.323 — legacy VoIP and video conferencing signaling protocol",
+        "SIP — Session Initiation Protocol for modern VoIP communications",
+        "RTP — Real-time Transport Protocol for audio and video media streams",
+        "MGCP — Media Gateway Control Protocol for telephony gateways"
+      ],
+      "correct": "H.323 — legacy VoIP and video conferencing signaling protocol",
+      "explanation": "Port 1720 is H.323, an older VoIP and video conferencing protocol. It has largely been replaced by SIP. H.323 uses multiple dynamic ports for media channels, complicating firewall configuration."
+    },
+    {
+      "domain": "Authentication",
+      "question": "What service uses UDP port 1812?",
+      "answers": [
+        "RADIUS authentication — remote authentication and authorization service",
+        "RADIUS accounting — tracks session data for billing and auditing",
+        "TACACS+ — terminal access controller access control system",
+        "Kerberos — ticket-based authentication for network services"
+      ],
+      "correct": "RADIUS authentication — remote authentication and authorization service",
+      "explanation": "Port 1812 UDP is RADIUS authentication. RADIUS centralizes authentication for Wi-Fi, VPN, and switch access. It supports EAP for 802.1X. Port 1813 is used for RADIUS accounting."
+    },
+    {
+      "domain": "Authentication",
+      "question": "What service uses UDP port 1813?",
+      "answers": [
+        "RADIUS accounting — logs session start, stop, and usage statistics",
+        "RADIUS authentication — verifies credentials for network access",
+        "TACACS+ — Cisco's alternative to RADIUS for device administration",
+        "Diameter — next-generation AAA protocol replacing RADIUS in LTE"
+      ],
+      "correct": "RADIUS accounting — logs session start, stop, and usage statistics",
+      "explanation": "Port 1813 UDP is RADIUS accounting. It tracks when users log in and out and how much data they use — useful for billing, compliance, and forensic analysis of network access events."
+    },
+    {
+      "domain": "Authentication",
+      "question": "What service uses TCP port 49?",
+      "answers": [
+        "TACACS+ — Terminal Access Controller Access Control System Plus",
+        "RADIUS — Remote Authentication Dial-In User Service",
+        "Kerberos — MIT-developed ticket-based authentication protocol",
+        "LDAP — Lightweight Directory Access Protocol for directory queries"
+      ],
+      "correct": "TACACS+ — Terminal Access Controller Access Control System Plus",
+      "explanation": "Port 49 is TACACS+. Unlike RADIUS which combines authentication and authorization, TACACS+ separates them and encrypts the entire packet body. It is preferred for managing router and switch access."
+    },
+    {
+      "domain": "File Services",
+      "question": "What service uses TCP/UDP port 2049?",
+      "answers": [
+        "NFS — Network File System for mounting remote file systems",
+        "SMB — Server Message Block for Windows file and printer sharing",
+        "FTP — File Transfer Protocol for client-server file transfers",
+        "iSCSI — Internet Small Computer System Interface for block storage"
+      ],
+      "correct": "NFS — Network File System for mounting remote file systems",
+      "explanation": "Port 2049 is NFS. Used primarily in Unix/Linux environments to mount remote file systems. Older NFS versions lack strong authentication; NFSv4 with Kerberos (GSSAPI) provides much stronger security."
+    },
+    {
+      "domain": "Network Services",
+      "question": "What service uses TCP port 119?",
+      "answers": [
+        "NNTP — Network News Transfer Protocol for Usenet newsgroup access",
+        "IMAP — Internet Message Access Protocol for email retrieval",
+        "POP3 — Post Office Protocol for downloading email from servers",
+        "SMTP — Simple Mail Transfer Protocol for sending email messages"
+      ],
+      "correct": "NNTP — Network News Transfer Protocol for Usenet newsgroup access",
+      "explanation": "Port 119 is NNTP (Network News Transfer Protocol) for Usenet. While largely replaced by web forums, it appears on Security+ exam port lists and should be recognized."
+    },
+    {
+      "domain": "Web Services",
+      "question": "What service typically runs on TCP port 8080?",
+      "answers": [
+        "HTTP alternate — used by web proxies, app servers, and dev environments",
+        "HTTPS alternate — encrypted web traffic on a non-standard port",
+        "SMTP alternate — mail relay on a non-standard port for ISP bypass",
+        "SSH alternate — remote shell moved to a non-standard port"
+      ],
+      "correct": "HTTP alternate — used by web proxies, app servers, and dev environments",
+      "explanation": "Port 8080 is a common HTTP alternate used by proxies (Squid), app servers (Tomcat), and dev environments. Traffic is unencrypted like port 80. It should not be used for production HTTPS traffic."
+    },
+    {
+      "domain": "Web Services",
+      "question": "What service is typically associated with TCP port 8443?",
+      "answers": [
+        "HTTPS alternate — encrypted web traffic on a non-standard port",
+        "HTTP alternate — unencrypted web traffic on a non-standard port",
+        "SMTP alternate — encrypted mail relay on a non-standard port",
+        "SSH alternate — encrypted remote shell on a non-standard port"
+      ],
+      "correct": "HTTPS alternate — encrypted web traffic on a non-standard port",
+      "explanation": "Port 8443 is an alternate HTTPS port used by Tomcat, Jenkins, and other application servers. It carries TLS-encrypted traffic the same as standard port 443."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "Which port is associated with Metasploit's default Meterpreter listener?",
+      "answers": [
+        "TCP port 4444 — Metasploit's default reverse shell handler port",
+        "TCP port 443 — HTTPS port often used for C2 traffic to blend in",
+        "TCP port 8080 — HTTP alternate port used by some web shells",
+        "TCP port 1337 — informal port associated with hacking culture"
+      ],
+      "correct": "TCP port 4444 — Metasploit's default reverse shell handler port",
+      "explanation": "Port 4444 is Metasploit's default Meterpreter listener. Attackers often switch to port 443 or 80 to evade firewalls. Unexpected traffic to/from port 4444 should trigger a security alert."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "A firewall rule blocks all outbound TCP port 25 from workstations. What is the primary security benefit?",
+      "answers": [
+        "Prevents workstations from acting as spam relays or botnet mail nodes",
+        "Stops users from browsing unencrypted HTTP websites",
+        "Blocks unauthorized SSH tunnels from internal workstations",
+        "Prevents DNS tunneling used to exfiltrate data externally"
+      ],
+      "correct": "Prevents workstations from acting as spam relays or botnet mail nodes",
+      "explanation": "Blocking outbound TCP 25 from workstations prevents malware from sending spam or C2 traffic directly via SMTP. Legitimate mail clients should use port 587 (submission) through the corporate mail server."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "An attacker exploits MS17-010 (EternalBlue). Which port was most likely exposed?",
+      "answers": [
+        "TCP port 445 — SMB vulnerability exploited by WannaCry and NotPetya",
+        "TCP port 3389 — RDP vulnerability allowing remote code execution",
+        "TCP port 139 — NetBIOS Session Service for legacy Windows sharing",
+        "TCP port 135 — MS RPC endpoint mapper for Windows services"
+      ],
+      "correct": "TCP port 445 — SMB vulnerability exploited by WannaCry and NotPetya",
+      "explanation": "EternalBlue targets SMBv1 on port 445. It powered both WannaCry and NotPetya ransomware. Port 445 must be blocked at perimeter firewalls and SMBv1 disabled on all internal hosts."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "An admin discovers inbound connections on port 23 from an external IP. What is the primary concern?",
+      "answers": [
+        "Cleartext credential exposure — Telnet transmits all data including passwords unencrypted",
+        "Brute force against SSH — encrypted remote shell targeted by credential stuffing",
+        "Web application attack — unencrypted HTTP exploited to steal session tokens",
+        "SNMP community string leak — network management data exposed externally"
+      ],
+      "correct": "Cleartext credential exposure — Telnet transmits all data including passwords unencrypted",
+      "explanation": "Port 23 is Telnet. Any external connection here risks credential interception via a man-in-the-middle attack or network capture. Telnet should be disabled entirely and replaced with SSH."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "A penetration tester finds port 1433 open on an internet-facing server. What is the primary risk?",
+      "answers": [
+        "Direct database access — attacker can brute force or exploit SQL Server remotely",
+        "Web application attack — port 1433 exposes an HTTP interface to attackers",
+        "RDP brute force — attackers attempt password guessing on remote desktop",
+        "DNS hijacking — attackers intercept and modify DNS resolution responses"
+      ],
+      "correct": "Direct database access — attacker can brute force or exploit SQL Server remotely",
+      "explanation": "Port 1433 (MSSQL) exposed to the internet allows direct database attacks including brute force, credential stuffing, and exploitation of unpatched vulnerabilities. Database ports must never be internet-facing."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "Which port, if open on an internet-facing server, poses the greatest risk due to cleartext credential transmission?",
+      "answers": [
+        "TCP port 23 (Telnet) — transmits all data including passwords unencrypted",
+        "TCP port 22 (SSH) — uses strong encryption for all session data",
+        "TCP port 443 (HTTPS) — encrypts all traffic using TLS",
+        "TCP port 3389 (RDP) — uses TLS to encrypt remote desktop sessions"
+      ],
+      "correct": "TCP port 23 (Telnet) — transmits all data including passwords unencrypted",
+      "explanation": "Port 23 (Telnet) is the highest risk because credentials travel in plaintext. SSH (22), HTTPS (443), and modern RDP (3389) all encrypt session traffic. Telnet must never be exposed to the internet."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "DNS primarily uses UDP port 53. When is TCP port 53 used instead?",
+      "answers": [
+        "Zone transfers and responses over 512 bytes require TCP port 53",
+        "All DNS queries from Windows clients default to TCP port 53",
+        "DNSSEC-signed responses always use TCP for reliable delivery",
+        "DNS-over-HTTPS uses TCP port 53 for encrypted name resolution"
+      ],
+      "correct": "Zone transfers and responses over 512 bytes require TCP port 53",
+      "explanation": "DNS uses UDP 53 for standard queries. TCP 53 is used for zone transfers (AXFR) and large responses. Zone transfers should be restricted to authorized secondary name servers only."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "Why is TFTP (port 69) considered insecure for production environments?",
+      "answers": [
+        "TFTP has no authentication and no encryption — any host can request any file",
+        "TFTP uses TCP which creates overhead making it slower and less reliable",
+        "TFTP requires root privileges to bind privileged ports below 1024",
+        "TFTP cleartext credentials can be captured by any network sniffer"
+      ],
+      "correct": "TFTP has no authentication and no encryption — any host can request any file",
+      "explanation": "TFTP (UDP 69) has zero authentication — no username, no password. Any reachable host can request any file. TFTP should be isolated on management VLANs and never exposed externally or to untrusted hosts."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "Which of the following represents the most secure replacement for FTP on port 21?",
+      "answers": [
+        "SFTP on port 22 — SSH File Transfer Protocol with full encryption and authentication",
+        "FTPS on port 990 — FTP over SSL adding TLS encryption to standard FTP",
+        "TFTP on port 69 — Trivial FTP for simple transfers without authentication",
+        "SCP on port 22 — Secure Copy using SSH for one-way file transfer only"
+      ],
+      "correct": "SFTP on port 22 — SSH File Transfer Protocol with full encryption and authentication",
+      "explanation": "SFTP (port 22) is the most secure FTP replacement. It runs as an SSH subsystem providing strong authentication, full encryption, and a rich feature set. FTPS (990) is also acceptable but requires separate PKI."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "A security audit flags port 161 as open on a core router with public access. What is the risk?",
+      "answers": [
+        "SNMP information disclosure — MIB data reveals topology, routes, and config details",
+        "FTP credential theft — unencrypted login credentials exposed to attackers",
+        "Telnet session hijacking — cleartext remote admin sessions intercepted",
+        "DNS cache poisoning — spoofed responses redirect users to attacker sites"
+      ],
+      "correct": "SNMP information disclosure — MIB data reveals topology, routes, and config details",
+      "explanation": "SNMP on port 161 can expose detailed network topology, interface stats, ARP tables, and routing data. SNMPv1/v2c use cleartext community strings. SNMPv3 with authPriv should be used and public access blocked."
+    },
+    {
+      "domain": "Security Concepts",
+      "question": "An organization wants to ensure email clients submit mail securely with authentication. Which port should be required?",
+      "answers": [
+        "TCP port 587 — SMTP submission with mandatory authentication and STARTTLS",
+        "TCP port 25 — SMTP relay used between mail servers without authentication",
+        "TCP port 465 — SMTPS with implicit SSL, deprecated in favor of 587",
+        "TCP port 993 — IMAPS for encrypted mailbox access and retrieval"
+      ],
+      "correct": "TCP port 587 — SMTP submission with mandatory authentication and STARTTLS",
+      "explanation": "Port 587 is the current standard for authenticated email submission. It requires client credentials and supports STARTTLS for encryption. Port 25 should be reserved for server-to-server relay only."
+    }
+  ]
+}
