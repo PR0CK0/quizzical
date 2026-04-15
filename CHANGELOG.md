@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.4.1] - 2026-04-15
+
+### Added
+- **Deck navigation** — `q` / `Esc` on the title screen returns to the deck picker instead of exiting; only `q` on the picker exits the app
+
+---
+
 ## [0.4.0] - 2026-04-15
 
 ### Added

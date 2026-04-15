@@ -522,7 +522,7 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
         };
 
         let hint1 = "[ ← → ] or [ B ] to cycle mode";
-        let hint2 = "[ Enter ] to start   [ q ] to quit";
+        let hint2 = "[ Enter ] to start   [ q / Esc ] back to decks";
         let _ = queue!(
             out,
             MoveTo(cx.saturating_sub(hint1.len() as u16 / 2), toggle_y + 2),
@@ -1285,39 +1285,36 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     terminal::enable_raw_mode()?;
     execute!(out, EnterAlternateScreen, Hide)?;
 
-    let json_path = if let Some(p) = cli_path {
-        p
-    } else {
-        let (w, h) = terminal::size()?;
-        match pick_file(&mut out, w, h) {
-            Some(p) => p,
-            None => {
-                execute!(out, LeaveAlternateScreen, Show)?;
-                terminal::disable_raw_mode()?;
-                println!("No deck selected.");
-                return Ok(());
-            }
-        }
-    };
-
-    let raw = std::fs::read_to_string(&json_path)
-        .map_err(|_| format!("Cannot read {:?}", json_path))?;
-    let bank: QBank = serde_json::from_str(&raw)?;
-    let deck_name = if bank.name.is_empty() { "quiz".to_string() } else { bank.name.clone() };
-    let questions_orig = bank.questions;
     let mut rng = rand::thread_rng();
     let mut tts_default = tts;
 
-    'app: loop {
-        let mut questions = questions_orig.clone();
-        questions.shuffle(&mut rng);
-
-        let (w, h) = terminal::size()?;
-        let (mode, tts) = match show_title(&mut out, w, h, questions.len(), &deck_name, tts_default) {
-            Some(r) => r,
-            None => break 'app,
+    'deck: loop {
+        let json_path = if let Some(ref p) = cli_path {
+            p.clone()
+        } else {
+            let (w, h) = terminal::size()?;
+            match pick_file(&mut out, w, h) {
+                Some(p) => p,
+                None => break 'deck,
+            }
         };
-        tts_default = tts;
+
+        let raw = std::fs::read_to_string(&json_path)
+            .map_err(|_| format!("Cannot read {:?}", json_path))?;
+        let bank: QBank = serde_json::from_str(&raw)?;
+        let deck_name = if bank.name.is_empty() { "quiz".to_string() } else { bank.name.clone() };
+        let questions_orig = bank.questions;
+
+        'session: loop {
+            let mut questions = questions_orig.clone();
+            questions.shuffle(&mut rng);
+
+            let (w, h) = terminal::size()?;
+            let (mode, tts) = match show_title(&mut out, w, h, questions.len(), &deck_name, tts_default) {
+                Some(r) => r,
+                None => break 'session,
+            };
+            tts_default = tts;
 
     loop {
         let total = questions.len();
@@ -1445,9 +1442,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
         }
-    } // end retry loop
+        } // end retry loop
 
-    } // end 'app loop
+        } // end 'session loop
+
+        if cli_path.is_some() { break 'deck; }
+    } // end 'deck loop
 
     execute!(out, LeaveAlternateScreen, Show)?;
     terminal::disable_raw_mode()?;
