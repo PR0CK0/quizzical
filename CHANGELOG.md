@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.5.2] - 2026-04-29
+
+### Fixed
+- Removed duplicate UEBA question; replaced with a new vulnerability scan vs. penetration test question
+- Sharpened NBA (Network Behavioral Analysis) answer to be clearly distinct from UEBA
+
+---
+
 ## [0.5.1] - 2026-04-15
 
 ### Fixed

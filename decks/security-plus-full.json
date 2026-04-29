@@ -2192,12 +2192,12 @@
       "domain": "Security Operations",
       "question": "What is the purpose of network behavioral analysis (NBA)?",
       "answers": [
-        "Detecting network anomalies by comparing current traffic to established behavioral baselines",
-        "Tracking overall bandwidth consumption patterns to support capacity planning and network upgrades",
-        "Monitoring individual employee browsing patterns to enforce acceptable use policy compliance",
-        "Analyzing the performance and error characteristics of network hardware components over time"
+        "Monitoring network traffic flows and protocols to identify anomalous patterns indicating threats",
+        "Monitoring individual user login events and file access to detect insider threats",
+        "Scanning hosts for known vulnerability signatures using a continuously updated database",
+        "Capturing and replaying network packets to reconstruct and analyze past attack sessions"
       ],
-      "correct": "Detecting network anomalies by comparing current traffic to established behavioral baselines",
+      "correct": "Monitoring network traffic flows and protocols to identify anomalous patterns indicating threats",
       "explanation": "NBA establishes baselines of normal network behavior and detects deviations that may indicate security threats, malware, or unauthorized activity."
     },
     {
@@ -3007,17 +3007,16 @@
       "explanation": "Network forensics involves capturing, recording, and analyzing network traffic to investigate security incidents, detect intrusions, and gather evidence."
     },
     {
-      "id": 232,
-      "domain": "Security Architecture",
-      "question": "What is the purpose of a UEBA (User and Entity Behavior Analytics) system?",
+      "domain": "Threats, Vulnerabilities, and Mitigations",
+      "question": "What is the difference between a vulnerability scan and a penetration test?",
       "answers": [
-        "To detect threats by identifying anomalous behavior patterns compared to established baselines",
-        "To monitor and report user browsing and application usage habits for compliance with acceptable use policies",
-        "To define and enforce entity relationships and access hierarchies within identity management databases",
-        "To collect and analyze end-user experience data to improve security product usability and adoption"
+        "A vulnerability scan identifies and reports weaknesses; a penetration test actively exploits them to demonstrate real-world impact",
+        "A vulnerability scan exploits weaknesses to measure damage; a penetration test only identifies them",
+        "A vulnerability scan requires physical access to systems; a penetration test is always conducted remotely",
+        "A vulnerability scan is performed by attackers; a penetration test is performed by automated scanning tools"
       ],
-      "correct": "To detect threats by identifying anomalous behavior patterns compared to established baselines",
-      "explanation": "UEBA uses machine learning to establish normal behavior baselines for users and entities, then alerts on deviations that may indicate compromised accounts or insider threats."
+      "correct": "A vulnerability scan identifies and reports weaknesses; a penetration test actively exploits them to demonstrate real-world impact",
+      "explanation": "Vulnerability scans are automated and non-intrusive \u2014 they find and report flaws without exploiting them. Penetration tests go further: a human tester actively attempts to exploit vulnerabilities to prove they are exploitable and measure real impact."
     },
     {
       "id": 233,
