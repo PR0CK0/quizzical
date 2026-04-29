@@ -9,9 +9,9 @@
       "question": "Which of the following BEST describes the principle of least privilege?",
       "answers": [
         "Users are granted only the minimum access required to perform their job functions",
-        "Users are given access to every system they might ever need to maximize productivity",
-        "Administrators retain full access to all systems and delegate as they see appropriate",
-        "Access rights are determined by employment duration rather than actual job duties"
+        "Users get access to all systems they could ever need",
+        "Administrators retain full access to everything and delegate permissions at their discretion based on perceived need",
+        "Access rights are based on how long someone has been employed"
       ],
       "correct": "Users are granted only the minimum access required to perform their job functions",
       "explanation": "Least privilege means giving users only the permissions necessary to do their jobs, reducing the attack surface."
@@ -87,9 +87,9 @@
       "question": "Which of the following is an example of multifactor authentication (MFA)?",
       "answers": [
         "Using a password and a hardware token",
-        "Using a username and a remembered passphrase as the only credential",
-        "Using a PIN and a backup email code sent to the same device",
-        "Using two separate memorized passwords for the same account"
+        "Using only a username and passphrase to log in",
+        "Using a PIN and a code delivered to the same registered device",
+        "Using two different passwords for the same account"
       ],
       "correct": "Using a password and a hardware token",
       "explanation": "MFA requires two or more different factor types: something you know (password), something you have (hardware token), or something you are (biometric). A password and hardware token combine 'know' and 'have'."
@@ -256,9 +256,9 @@
       "question": "What is the purpose of a digital signature?",
       "answers": [
         "To authenticate the sender and verify data integrity",
-        "To encrypt the message contents so only the intended recipient can read the transmitted data",
-        "To provide confidentiality by wrapping data in a cryptographic envelope during transmission",
-        "To establish a shared symmetric key between sender and recipient for message encryption"
+        "To encrypt message contents so only the intended recipient can read it",
+        "To provide confidentiality by wrapping data in a cryptographic envelope",
+        "To establish a shared symmetric key between sender and recipient"
       ],
       "correct": "To authenticate the sender and verify data integrity",
       "explanation": "Digital signatures use asymmetric cryptography to authenticate the sender's identity and verify that the message has not been altered."
@@ -347,9 +347,9 @@
       "question": "What is SQL injection?",
       "answers": [
         "Inserting malicious SQL code into an input field to manipulate a database",
-        "Executing SQL queries against a database using specially crafted network packets that bypass authentication",
-        "Exploiting improper database permissions to elevate privileges and gain administrative database access",
-        "Using automated tools to enumerate database schema and extract all stored records without authentication"
+        "Executing crafted SQL queries via network packets to bypass authentication",
+        "Exploiting misconfigured database permissions to gain administrative access",
+        "Using automated tools to enumerate a database schema and extract records"
       ],
       "correct": "Inserting malicious SQL code into an input field to manipulate a database",
       "explanation": "SQL injection is an attack where malicious SQL code is inserted into input fields to manipulate the underlying database, potentially accessing or modifying data."
@@ -359,10 +359,10 @@
       "domain": "Security Program Management",
       "question": "What is the difference between a vulnerability assessment and penetration testing?",
       "answers": [
-        "They are functionally identical; both terms describe the same engagement methodology",
         "A vulnerability assessment identifies weaknesses; penetration testing actively exploits them",
-        "Vulnerability assessment exploits weaknesses; penetration testing only identifies them",
-        "Vulnerability assessments are always performed externally by third-party vendors only"
+        "They are the same thing under different names",
+        "Vulnerability assessments exploit weaknesses while penetration testing only identifies and catalogs them for later remediation",
+        "Vulnerability assessments must always be performed by external third parties"
       ],
       "correct": "A vulnerability assessment identifies weaknesses; penetration testing actively exploits them",
       "explanation": "Vulnerability assessments identify and categorize security weaknesses. Penetration testing goes further by actively attempting to exploit those vulnerabilities."
@@ -399,9 +399,9 @@
       "question": "What is the difference between an IDS and an IPS?",
       "answers": [
         "IDS detects and alerts on attacks; IPS can actively block attacks",
-        "IDS only monitors encrypted traffic; IPS processes both encrypted and unencrypted network communications",
-        "IDS is deployed at the network perimeter; IPS is deployed only inside the internal network segments",
-        "IDS analyzes historical log data for patterns; IPS analyzes only real-time traffic without logging"
+        "IDS only monitors encrypted traffic; IPS handles both encrypted and plain",
+        "IDS is deployed at the perimeter; IPS is deployed only on internal segments",
+        "IDS analyzes historical logs; IPS analyzes only real-time traffic"
       ],
       "correct": "IDS detects and alerts on attacks; IPS can actively block attacks",
       "explanation": "An IDS (Intrusion Detection System) detects and alerts on suspicious activity, while an IPS (Intrusion Prevention System) can also actively block or prevent those attacks."
@@ -425,9 +425,9 @@
       "question": "What is the purpose of a Certificate Authority (CA)?",
       "answers": [
         "To issue and manage digital certificates that verify identity",
-        "To encrypt communications between clients and servers using asymmetric key exchange protocols",
-        "To store and protect private keys on behalf of users to prevent key loss or theft",
-        "To generate one-time passwords and manage multi-factor authentication tokens for enterprise users"
+        "To encrypt client-server communications using asymmetric cryptographic keys",
+        "To store and protect private keys on behalf of users",
+        "To generate and distribute one-time passwords for multi-factor authentication"
       ],
       "correct": "To issue and manage digital certificates that verify identity",
       "explanation": "A Certificate Authority (CA) is a trusted entity that issues digital certificates used to verify the identity of websites, individuals, and organizations."
@@ -438,9 +438,9 @@
       "question": "What is a botnet?",
       "answers": [
         "A collection of internet-connected devices infected with malware and controlled by an attacker",
-        "A network of dedicated servers used by security researchers to analyze malware behavior in isolation",
-        "A group of compromised administrator accounts used to move laterally across organizational systems",
-        "A distributed computing platform that pools resources from volunteer systems for legitimate research"
+        "A network of servers used by researchers to study malware",
+        "A group of compromised admin accounts used for lateral movement across enterprise systems",
+        "A distributed computing platform that pools volunteer system resources for legitimate scientific research and academic collaboration"
       ],
       "correct": "A collection of internet-connected devices infected with malware and controlled by an attacker",
       "explanation": "A botnet is a network of computers infected with malware and remotely controlled by an attacker, often used for DDoS attacks, spam campaigns, or other malicious activities."
@@ -555,9 +555,9 @@
       "question": "What is steganography?",
       "answers": [
         "Hiding data within other data, such as hiding a message in an image",
-        "Using strong encryption algorithms to transform readable data into ciphertext that is unreadable without a key",
-        "Generating unpredictable cryptographic keys by combining random inputs from multiple entropy sources",
-        "Applying multiple layers of encryption to data to ensure it remains protected against future cryptanalysis"
+        "Using encryption to transform readable data into unreadable ciphertext",
+        "Generating cryptographic keys from multiple unpredictable entropy sources",
+        "Applying layered encryption to protect data against future cryptanalysis"
       ],
       "correct": "Hiding data within other data, such as hiding a message in an image",
       "explanation": "Steganography is the practice of hiding secret information within ordinary, non-secret data such as images, audio files, or text."
@@ -594,9 +594,9 @@
       "question": "Which of the following BEST describes a honeypot?",
       "answers": [
         "A decoy system designed to attract and detect attackers",
-        "A hardened server with no unnecessary services that serves as a secure gateway to sensitive systems",
-        "A network sensor deployed in the internal environment to capture and forward all traffic to the SIEM",
-        "A secure vault used to store privileged credentials and generate audit logs for all access attempts"
+        "A hardened server with minimal services that acts as a secure network gateway",
+        "A network sensor that captures and forwards all internal traffic to the SIEM",
+        "A secure vault for storing privileged credentials with full access logging"
       ],
       "correct": "A decoy system designed to attract and detect attackers",
       "explanation": "A honeypot is a decoy system designed to attract attackers, allowing security teams to detect, analyze, and learn from attack attempts."
@@ -633,9 +633,9 @@
       "question": "What does VLAN stand for and what is its security benefit?",
       "answers": [
         "Virtual Local Area Network; segments network traffic to isolate groups of devices",
-        "Virtual LAN Architecture; improves throughput by separating high-bandwidth traffic flows",
-        "Verified Local Area Node; validates device identities before permitting network access",
-        "Virtual Link Aggregation Network; bonds multiple interfaces for redundancy and speed"
+        "Virtual LAN Architecture; separates high-bandwidth flows",
+        "Verified Local Area Node; authenticates device identities before granting any network access to endpoints or servers",
+        "Virtual Link Aggregation Network; bonds multiple interfaces for redundancy"
       ],
       "correct": "Virtual Local Area Network; segments network traffic to isolate groups of devices",
       "explanation": "A VLAN (Virtual Local Area Network) segments a physical network into logical groups, isolating traffic between groups and improving security by limiting broadcast domains."
@@ -763,9 +763,9 @@
       "question": "What is the primary difference between encryption and hashing?",
       "answers": [
         "Hashing is one-way; encryption is reversible with the correct key",
-        "Encryption produces fixed-length output; hashing produces variable-length output dependent on the algorithm",
-        "Hashing provides both confidentiality and integrity; encryption provides only confidentiality",
-        "Encryption requires a shared secret between parties; hashing requires a public key infrastructure"
+        "Encryption outputs fixed-length data; hashing outputs variable-length data",
+        "Hashing ensures both confidentiality and integrity; encryption ensures only one",
+        "Encryption uses a shared secret; hashing requires a public key infrastructure"
       ],
       "correct": "Hashing is one-way; encryption is reversible with the correct key",
       "explanation": "Hashing is a one-way process that cannot be reversed. Encryption is designed to be reversed (decrypted) with the appropriate key."
@@ -880,9 +880,9 @@
       "question": "What is an Advanced Persistent Threat (APT)?",
       "answers": [
         "A sophisticated, long-term targeted attack often sponsored by nation-states or organized groups",
-        "A class of vulnerability that affects multiple systems simultaneously and cannot be quickly patched",
-        "A type of malware that uses advanced evasion techniques to avoid detection by security monitoring tools",
-        "An automated attack that continuously probes systems for new vulnerabilities using AI-based techniques"
+        "A vulnerability class affecting many systems at once",
+        "Malware using advanced evasion to avoid detection by security tools",
+        "An AI-driven automated attack framework that continuously probes infrastructure for newly discovered vulnerabilities and exploits them without human intervention"
       ],
       "correct": "A sophisticated, long-term targeted attack often sponsored by nation-states or organized groups",
       "explanation": "An APT is a sophisticated, prolonged cyberattack where an attacker (often nation-state sponsored) gains unauthorized access and remains undetected for an extended period."
@@ -893,9 +893,9 @@
       "question": "What does GDPR stand for and what does it regulate?",
       "answers": [
         "General Data Protection Regulation; regulates the processing of personal data of EU residents",
-        "Global Data Protection Rules; establishes binding international privacy standards for all nations",
-        "Government Digital Privacy Requirements; regulates how federal agencies handle all citizen data",
-        "General Data Preservation Rights; requires organizations to retain all user data indefinitely"
+        "Global Data Protection Rules; sets international privacy standards",
+        "Government Digital Privacy Requirements; controls how federal agencies handle citizen data across all departments",
+        "General Data Preservation Rights; mandates indefinite retention of user data"
       ],
       "correct": "General Data Protection Regulation; regulates the processing of personal data of EU residents",
       "explanation": "GDPR (General Data Protection Regulation) is an EU regulation that governs the collection, processing, and storage of personal data of EU residents."
@@ -944,10 +944,10 @@
       "domain": "Cryptography",
       "question": "What is a rainbow table attack?",
       "answers": [
-        "Using a massive flood of network packets to overwhelm a system and deny legitimate service",
         "Using precomputed hash-to-password tables to reverse hash values and recover passwords",
-        "A side-channel attack exploiting visual display artifacts in monitor refresh cycles",
-        "An attack using many simultaneous TCP connections to exhaust server thread resources"
+        "Flooding a system with packets to deny service",
+        "A side-channel attack that exploits visual artifacts in display refresh cycles to extract sensitive data rendered on screen",
+        "Exhausting server thread resources with many simultaneous TCP connections"
       ],
       "correct": "Using precomputed hash-to-password tables to reverse hash values and recover passwords",
       "explanation": "Rainbow table attacks use precomputed tables of hash values and their corresponding plaintext passwords to quickly crack password hashes."
@@ -1062,9 +1062,9 @@
       "question": "What is the purpose of a SOAR platform?",
       "answers": [
         "To orchestrate and automate security workflows, integrating tools and streamlining incident response",
-        "To provide a centralized repository for storing and searching all security event log data in real time",
-        "To continuously scan the network for vulnerabilities and automatically generate remediation tickets",
-        "To enforce access control policies across all security tools using a unified identity provider"
+        "To store and search security event logs in real time",
+        "To scan for vulnerabilities and auto-generate remediation tickets across the environment on a continuous scheduled basis",
+        "To enforce unified access control policies across all security tools"
       ],
       "correct": "To orchestrate and automate security workflows, integrating tools and streamlining incident response",
       "explanation": "SOAR (Security Orchestration, Automation, and Response) platforms integrate security tools and automate repetitive tasks to improve efficiency and speed of incident response."
@@ -1074,10 +1074,10 @@
       "domain": "Security Architecture",
       "question": "Which of the following is an example of a technical control?",
       "answers": [
-        "Security awareness training",
-        "A data classification policy",
+        "Security training",
+        "A data policy",
         "A firewall",
-        "Background checks for employees"
+        "Background checks"
       ],
       "correct": "A firewall",
       "explanation": "Technical controls (also called logical controls) are technology-based mechanisms such as firewalls, encryption, and access control systems."
@@ -1114,9 +1114,9 @@
       "question": "What is lateral movement in the context of a cyberattack?",
       "answers": [
         "An attacker moving through a network to gain access to additional systems after initial compromise",
-        "An attacker redirecting traffic from one network interface to another to evade detection by the IDS",
-        "An attacker shifting attack techniques from exploitation to social engineering after initial detection",
-        "An attacker exfiltrating data across systems within the organization before leaving the network"
+        "Redirecting traffic between interfaces to evade IDS",
+        "Shifting from exploitation to social engineering after being detected by the security operations team during the initial intrusion attempt",
+        "Exfiltrating data across multiple systems before leaving the network"
       ],
       "correct": "An attacker moving through a network to gain access to additional systems after initial compromise",
       "explanation": "Lateral movement refers to techniques attackers use after gaining initial access to navigate through a network, gaining access to additional systems and escalating privileges."
@@ -1153,9 +1153,9 @@
       "question": "What is forward secrecy (also called perfect forward secrecy)?",
       "answers": [
         "A property where session keys cannot be compromised even if the server's private key is later stolen",
-        "A cryptographic property ensuring that future communications cannot be decrypted using current keys",
-        "A protocol feature that automatically rotates encryption keys at predetermined intervals during a session",
-        "A method of deriving session keys from the previous session key to create a verifiable key chain"
+        "Ensuring future messages cannot be decrypted with current keys",
+        "A protocol feature that rotates encryption keys at set intervals",
+        "A method of chaining session keys by deriving each new key from the previous session's key material to form a cryptographically verifiable sequence"
       ],
       "correct": "A property where session keys cannot be compromised even if the server's private key is later stolen",
       "explanation": "Perfect Forward Secrecy generates unique session keys for each session so that compromising the server's long-term private key does not compromise past session keys."
@@ -1205,9 +1205,9 @@
       "question": "What is clickjacking?",
       "answers": [
         "Tricking users into clicking hidden elements on a webpage that perform unintended actions",
-        "Hijacking a user's active session by stealing authenticated session cookies via network sniffing",
-        "Capturing user click patterns to reconstruct browsing habits and extract sensitive information",
-        "Exploiting JavaScript vulnerabilities to redirect click events to unauthorized external domains"
+        "Stealing session cookies via network sniffing",
+        "Capturing click patterns to reconstruct browsing habits",
+        "Exploiting JavaScript flaws to redirect click events to unauthorized external domains and execute attacker-controlled actions in the user's browser context"
       ],
       "correct": "Tricking users into clicking hidden elements on a webpage that perform unintended actions",
       "explanation": "Clickjacking tricks users into clicking on hidden UI elements (often using transparent iframes) that perform unintended actions such as making purchases or changing settings."
@@ -1218,9 +1218,9 @@
       "question": "What does HIPAA protect?",
       "answers": [
         "Protected health information (PHI) of patients",
-        "Financial records and account transaction data of banking customers",
-        "Personal identifying data and browsing history of European Union residents",
-        "Payment card transaction records and cardholder data from retail merchants"
+        "Financial and transaction records of banking customers",
+        "Personal data and browsing history of EU residents",
+        "Payment card records and cardholder data from retail merchants"
       ],
       "correct": "Protected health information (PHI) of patients",
       "explanation": "HIPAA (Health Insurance Portability and Accountability Act) protects the privacy and security of protected health information (PHI) in the United States."
@@ -1283,9 +1283,9 @@
       "question": "What does OAUTH 2.0 provide?",
       "answers": [
         "An authorization framework allowing third-party services to access resources without sharing passwords",
-        "A cryptographic protocol for encrypting email communications between enterprise users and external parties",
-        "A standard for issuing hardware tokens that generate time-based one-time passwords for authentication",
-        "A PKI-based certificate management protocol for enrolling and revoking digital identity certificates"
+        "A protocol for encrypting enterprise email",
+        "A standard for hardware tokens generating time-based one-time passwords",
+        "A PKI-based certificate management protocol used to handle enrollment, renewal, and revocation of digital identity certificates across federated organizations"
       ],
       "correct": "An authorization framework allowing third-party services to access resources without sharing passwords",
       "explanation": "OAuth 2.0 is an authorization framework that enables third-party applications to access user resources on another service without exposing the user's credentials."
@@ -1334,10 +1334,10 @@
       "domain": "Security Architecture",
       "question": "What is microsegmentation?",
       "answers": [
-        "Breaking data into small encrypted fragments before transmitting it across the network",
         "Dividing a network into very small, isolated segments with granular security controls",
-        "Deploying many smaller perimeter firewalls distributed throughout the corporate network",
-        "Grouping network traffic into segments separated by application protocol type and port"
+        "Encrypting data into small fragments before transmission",
+        "Deploying many smaller firewalls throughout the network",
+        "Grouping and separating network traffic into distinct segments based on application protocol type, port number, and traffic classification policy"
       ],
       "correct": "Dividing a network into very small, isolated segments with granular security controls",
       "explanation": "Microsegmentation divides the network into very small segments with granular security policies, limiting lateral movement and containing potential breaches."
@@ -1478,9 +1478,9 @@
       "question": "What is the Diffie-Hellman key exchange used for?",
       "answers": [
         "Securely exchanging cryptographic keys over a public channel",
-        "Generating one-way hash values that can be used to verify the integrity of transmitted data",
-        "Creating digital signature pairs used to authenticate the sender of encrypted messages",
-        "Storing and retrieving passwords in a secure form that prevents offline cracking attacks"
+        "Generating one-way hash values to verify transmitted data integrity",
+        "Creating digital signature pairs to authenticate message senders",
+        "Storing passwords in a form that resists offline cracking attacks"
       ],
       "correct": "Securely exchanging cryptographic keys over a public channel",
       "explanation": "Diffie-Hellman allows two parties to establish a shared secret key over an insecure channel without having to transmit the key itself, using mathematical properties."
@@ -1595,9 +1595,9 @@
       "question": "What is the purpose of port security on a network switch?",
       "answers": [
         "To restrict which MAC addresses can connect to a switch port",
-        "To apply encryption to traffic on designated switch ports using 802.1AE MACsec standards",
-        "To disable all unused server-side listening ports based on a hardening benchmark configuration",
-        "To collect and forward port-level traffic statistics to a network monitoring and management system"
+        "To encrypt switch port traffic using the 802.1AE MACsec standard",
+        "To disable unused switch ports based on a hardening benchmark configuration",
+        "To collect port traffic statistics and forward them to a monitoring system"
       ],
       "correct": "To restrict which MAC addresses can connect to a switch port",
       "explanation": "Port security restricts which MAC addresses are allowed to communicate through a switch port, preventing unauthorized devices from connecting to the network."
@@ -1634,9 +1634,9 @@
       "question": "What is sandboxing in the context of security?",
       "answers": [
         "Running suspicious code in an isolated environment to observe its behavior without affecting the host system",
-        "Applying data encryption techniques to protect sensitive files in a dedicated secure storage container",
-        "Restricting user account privileges to a limited set of pre-approved applications and system resources",
-        "Isolating network segments using virtual LANs to prevent unauthorized lateral movement between zones"
+        "Encrypting files in a dedicated secure storage container",
+        "Restricting accounts to a limited set of pre-approved apps",
+        "Isolating network segments using virtual LANs to prevent unauthorized lateral movement between zones and enforce strict inter-segment access control policies"
       ],
       "correct": "Running suspicious code in an isolated environment to observe its behavior without affecting the host system",
       "explanation": "Sandboxing runs potentially malicious code in an isolated environment that is separated from the host system and network, allowing safe analysis of its behavior."
@@ -1686,9 +1686,9 @@
       "question": "What is a collision in the context of hashing?",
       "answers": [
         "When two different inputs produce the same hash output",
-        "When multiple data packets arrive at a network switch simultaneously causing a transmission error",
-        "When an encryption key is inadvertently reused across multiple cryptographic operations",
-        "When a hash function reverses its output, exposing the original plaintext input to an attacker"
+        "When packets arrive at a network switch simultaneously, causing an error",
+        "When an encryption key is accidentally reused across operations",
+        "When a hash function exposes the original plaintext through output reversal"
       ],
       "correct": "When two different inputs produce the same hash output",
       "explanation": "A hash collision occurs when two different inputs produce the same hash output. Collisions are a sign of a weak hash algorithm and can be exploited in various attacks."
@@ -1712,9 +1712,9 @@
       "question": "What is a cross-site request forgery (CSRF) attack?",
       "answers": [
         "Tricking an authenticated user's browser into making unauthorized requests to a web application",
-        "Injecting client-side JavaScript into a vulnerable web page that executes in other users' browsers",
-        "Capturing authenticated session cookies by exploiting insecure cookie transmission over HTTP",
-        "Redirecting users from a legitimate site to an attacker-controlled phishing site via open redirect"
+        "Injecting JavaScript that runs in other users' browsers",
+        "Capturing session cookies over insecure HTTP connections",
+        "Redirecting users from a legitimate site to an attacker-controlled phishing site by exploiting open redirect vulnerabilities in the application's URL handling logic"
       ],
       "correct": "Tricking an authenticated user's browser into making unauthorized requests to a web application",
       "explanation": "CSRF tricks an authenticated user's browser into sending unauthorized requests to a web application, exploiting the trust the application has in the user's session."
@@ -1738,9 +1738,9 @@
       "question": "What is the purpose of memory forensics?",
       "answers": [
         "To analyze the contents of system RAM to find evidence of malicious activity or running processes",
-        "To benchmark and stress-test system memory performance to identify hardware defects or failures",
-        "To recover deleted files and reconstruct damaged partitions from failed or formatted storage media",
-        "To audit memory usage patterns to optimize application performance and system resource allocation"
+        "To stress-test memory and find hardware defects",
+        "To recover deleted files from failed storage media",
+        "To audit memory usage patterns across applications in order to optimize system performance, resource allocation, and capacity planning decisions"
       ],
       "correct": "To analyze the contents of system RAM to find evidence of malicious activity or running processes",
       "explanation": "Memory forensics involves capturing and analyzing the contents of a system's RAM to find evidence of malware, running processes, encryption keys, or other artifacts."
@@ -1777,9 +1777,9 @@
       "question": "What is threat intelligence?",
       "answers": [
         "Information about existing or emerging threats and threat actors used to inform security decisions",
-        "Machine learning algorithms embedded in security tools that automatically detect and classify threats",
-        "Social media monitoring data collected and processed to identify public sentiment about security events",
-        "Automated detection signatures that trigger alerts when known attack patterns are observed in traffic"
+        "ML algorithms in security tools that auto-classify threats",
+        "Social media monitoring to gauge public sentiment on security events",
+        "Automated detection signatures embedded in network appliances that generate alerts whenever known attack patterns or indicators of compromise are observed in traffic"
       ],
       "correct": "Information about existing or emerging threats and threat actors used to inform security decisions",
       "explanation": "Threat intelligence is analyzed information about current and potential threats, threat actors, their tactics, and indicators of compromise used to proactively defend against attacks."
@@ -1828,10 +1828,10 @@
       "domain": "Security Program Management",
       "question": "What is a security framework?",
       "answers": [
-        "A physical structure or building that houses an organization's security operations equipment",
         "A structured set of guidelines, standards, and best practices for managing security risks",
-        "The legal and regulatory framework governing the prosecution and sentencing of cybercriminals",
-        "A software development framework for building applications with built-in security features"
+        "A building that houses security operations equipment",
+        "The legal framework governing prosecution of cybercriminals",
+        "A software development framework specifically designed for building enterprise applications with built-in security features and compliance controls"
       ],
       "correct": "A structured set of guidelines, standards, and best practices for managing security risks",
       "explanation": "A security framework is a set of documented standards, guidelines, and best practices (e.g., NIST CSF, ISO 27001) that help organizations manage and reduce security risks."
@@ -1894,9 +1894,9 @@
       "question": "What is the purpose of user and entity behavior analytics (UEBA)?",
       "answers": [
         "To detect anomalous behavior by comparing current user/entity activity to established baselines",
-        "To track time-on-task and productivity metrics for billing users based on system resource consumption",
-        "To provision and deprovision user accounts based on HR-driven lifecycle events in the identity system",
-        "To aggregate consumer behavior data from marketing platforms to improve product security features"
+        "To track productivity metrics for resource billing",
+        "To provision and deprovision accounts based on HR lifecycle events",
+        "To aggregate consumer behavior data from marketing platforms and third-party analytics providers in order to improve product security feature development"
       ],
       "correct": "To detect anomalous behavior by comparing current user/entity activity to established baselines",
       "explanation": "UEBA uses machine learning to establish behavioral baselines and detect anomalies in user and entity behavior that may indicate insider threats or compromised accounts."
@@ -1932,10 +1932,10 @@
       "domain": "Security Program Management",
       "question": "What is a third-party risk assessment?",
       "answers": [
-        "Hiring an independent external party to evaluate and report on your organization's own risks",
         "Evaluating the security posture of vendors, partners, and suppliers who have access to your data",
-        "Evaluating risks that arise only when three or more separate organizations share infrastructure",
-        "A formal risk assessment conducted and submitted during every third fiscal quarter of the year"
+        "Hiring an outside firm to audit your own risks",
+        "Evaluating risks when three or more organizations share infrastructure",
+        "A formal risk assessment conducted and submitted during every third fiscal quarter as mandated by industry regulatory compliance requirements"
       ],
       "correct": "Evaluating the security posture of vendors, partners, and suppliers who have access to your data",
       "explanation": "Third-party risk assessment evaluates the security practices of vendors, partners, and other external parties who have access to organizational systems or data."
@@ -1945,10 +1945,10 @@
       "domain": "General Security Concepts",
       "question": "What does the term 'attack surface' refer to?",
       "answers": [
-        "The geographic region or physical territory from which most cyberattacks are typically launched",
         "The total number of different points where an attacker could try to gain access to a system",
-        "The physical exterior area of a computing device that an attacker can physically manipulate",
-        "The complete inventory of all confirmed and documented vulnerabilities present in a system"
+        "The geographic region from which attacks originate",
+        "The physical exterior of a device an attacker can manipulate",
+        "A comprehensive inventory cataloging all confirmed, documented, and prioritized vulnerabilities that are currently present across every system in the environment"
       ],
       "correct": "The total number of different points where an attacker could try to gain access to a system",
       "explanation": "The attack surface encompasses all the different points (exposed services, interfaces, network ports, user accounts, etc.) where an attacker could potentially gain unauthorized access."
@@ -2037,9 +2037,9 @@
       "question": "What is the purpose of a security information governance program?",
       "answers": [
         "To establish oversight and decision-making frameworks for information security across the organization",
-        "To manage all requests from government agencies for access to organizational data and communications",
-        "To ensure all security expenditures comply with government procurement and contracting regulations",
-        "To centrally manage the acquisition, deployment, and licensing of all security tools and technologies"
+        "To manage government data access requests",
+        "To ensure security spending complies with procurement regulations",
+        "To centrally manage the full lifecycle of security tool acquisition, deployment, licensing, and vendor relationship management across all departments"
       ],
       "correct": "To establish oversight and decision-making frameworks for information security across the organization",
       "explanation": "Information security governance establishes structures, policies, and processes for executive oversight of security, ensuring alignment with business objectives and risk tolerance."
@@ -2075,10 +2075,10 @@
       "domain": "Threats, Vulnerabilities, and Mitigations",
       "question": "What is a directory traversal attack?",
       "answers": [
-        "A technique for systematically scanning and indexing every directory on a compromised system",
         "Exploiting insufficient input validation to access files outside the intended directory",
-        "An attack that exhaustively brute-forces file and directory names on a public web server",
-        "Gaining unauthorized file access via a misconfigured SMB or NFS directory share on a server"
+        "Scanning and indexing every directory on a compromised system",
+        "Brute-forcing file and directory names on a web server",
+        "Gaining unauthorized access to files through a misconfigured SMB or NFS share that exposes directories beyond the intended scope to unauthenticated users"
       ],
       "correct": "Exploiting insufficient input validation to access files outside the intended directory",
       "explanation": "Directory traversal (path traversal) attacks use sequences like '../' in file paths to navigate outside the intended directory and access unauthorized files on the server."
@@ -2089,9 +2089,9 @@
       "question": "What is the purpose of user access reviews?",
       "answers": [
         "To periodically verify that users have only the access they need and revoke inappropriate access",
-        "To assess how users interact with internet and intranet resources for acceptable use policy enforcement",
-        "To measure user satisfaction with the identity and access management system through regular surveys",
-        "To collect and correlate user authentication logs to identify compromised account activity patterns"
+        "To monitor internet usage for policy enforcement",
+        "To survey user satisfaction with the IAM system",
+        "To collect, correlate, and analyze user authentication logs across all systems in order to identify compromised accounts and detect credential-based attack patterns"
       ],
       "correct": "To periodically verify that users have only the access they need and revoke inappropriate access",
       "explanation": "User access reviews periodically validate that each user's access rights remain appropriate and revoke unnecessary or excessive privileges, supporting least privilege."
@@ -2128,9 +2128,9 @@
       "question": "What is an IDOR (Insecure Direct Object Reference) vulnerability?",
       "answers": [
         "When an application exposes internal implementation references (like IDs) without proper authorization checks",
-        "A software defect in object-oriented code that allows unauthorized method invocation between classes",
-        "A hardware-level vulnerability in storage controllers that exposes raw disk data to unprivileged processes",
-        "A database indexing flaw that exposes all indexed records to users with read access to any single record"
+        "A flaw allowing unauthorized method calls between classes",
+        "A hardware bug in storage controllers that leaks raw disk data",
+        "A database indexing flaw that inadvertently exposes all indexed records to any user who has been granted read access to even a single record in the table"
       ],
       "correct": "When an application exposes internal implementation references (like IDs) without proper authorization checks",
       "explanation": "IDOR vulnerabilities occur when an application exposes references to internal objects (like user IDs in URLs) without verifying that the requesting user is authorized to access them."
@@ -2244,10 +2244,10 @@
       "domain": "Security Program Management",
       "question": "What is the purpose of a vulnerability disclosure policy?",
       "answers": [
-        "A policy explicitly forbidding external security researchers from probing or testing systems",
         "To define how security researchers should report discovered vulnerabilities to the organization",
-        "A mandatory requirement to publicly disclose all discovered vulnerabilities within 24 hours",
-        "A process governing how organizations notify customers when their personal data is breached"
+        "A policy banning external researchers from testing systems",
+        "A rule requiring public disclosure of all vulnerabilities within 24 hours",
+        "A process governing how organizations notify affected customers and regulatory bodies when personal data is exposed during a confirmed security breach"
       ],
       "correct": "To define how security researchers should report discovered vulnerabilities to the organization",
       "explanation": "A vulnerability disclosure policy (VDP) establishes a formal process for security researchers to report vulnerabilities, including how to contact the organization and what to expect in return."
@@ -2271,9 +2271,9 @@
       "question": "What is attribute-based access control (ABAC)?",
       "answers": [
         "Access control that uses multiple attributes (user, resource, environment) to make access decisions",
-        "An access control model that assigns users to static roles and grants access based solely on those roles",
-        "An access control system that grants access based on demographic user attributes like job title and age",
-        "A mandatory access control model that assigns security labels to subjects and objects for classification"
+        "Assigning users to static roles for access decisions",
+        "Granting access based on demographic attributes like title and age",
+        "A mandatory access control model that classifies subjects and objects using hierarchical security labels and enforces access based on dominance relationships between levels"
       ],
       "correct": "Access control that uses multiple attributes (user, resource, environment) to make access decisions",
       "explanation": "ABAC makes access decisions based on attributes of the user, resource, action, and environment context, allowing for very fine-grained and dynamic access control policies."
@@ -2297,9 +2297,9 @@
       "question": "What does the MITRE ATT&CK framework provide?",
       "answers": [
         "A knowledgebase of adversary tactics, techniques, and procedures (TTPs) based on real-world observations",
-        "A numerical scoring system for prioritizing vulnerabilities based on exploitability and impact metrics",
-        "A regulatory compliance framework that maps security controls to specific industry requirements",
-        "Pre-built detection signatures that can be imported directly into SIEM and IDS systems for deployment"
+        "A scoring system for prioritizing vulnerabilities",
+        "A compliance framework mapping controls to industry requirements",
+        "Pre-built detection signatures and correlation rules that can be imported directly into SIEM platforms and intrusion detection systems for immediate operational deployment"
       ],
       "correct": "A knowledgebase of adversary tactics, techniques, and procedures (TTPs) based on real-world observations",
       "explanation": "MITRE ATT&CK is a globally accessible knowledgebase of adversary tactics and techniques based on real-world observations, used by defenders to understand and detect attacks."
@@ -2310,9 +2310,9 @@
       "question": "What is the purpose of network access control (NAC) agent software?",
       "answers": [
         "To assess a device's security posture before allowing network access",
-        "To automatically install operating system updates and security patches on all connected endpoint devices",
-        "To monitor and report on real-time bandwidth utilization across all network interfaces and segments",
-        "To create encrypted VPN tunnels between remote endpoints and the organizational network gateway"
+        "To automatically apply security patches to all connected endpoint devices",
+        "To monitor and report bandwidth utilization across all network interfaces",
+        "To create encrypted VPN tunnels between remote endpoints and the gateway"
       ],
       "correct": "To assess a device's security posture before allowing network access",
       "explanation": "NAC agents run on endpoint devices to assess their security posture (patch level, antivirus status, etc.) and report to the NAC system to determine if the device can access the network."
@@ -2465,10 +2465,10 @@
       "domain": "Security Architecture",
       "question": "What is mandatory access control (MAC)?",
       "answers": [
-        "Access control enforced uniformly on all users regardless of role or resource sensitivity",
         "Access control based on security labels and clearance levels set by the system administrator",
-        "Access control that mandates multi-factor authentication for every privileged user session",
-        "Access control decisions enforced at the hardware level through physical security modules"
+        "Uniform access control applied to all users equally",
+        "Requiring MFA for every privileged user session",
+        "Access control decisions computed and enforced entirely at the hardware level through dedicated physical security modules installed in each endpoint device"
       ],
       "correct": "Access control based on security labels and clearance levels set by the system administrator",
       "explanation": "MAC is a strict access control model where access is determined by security labels assigned to objects and clearance levels assigned to subjects, controlled by the system."
@@ -2725,10 +2725,10 @@
       "domain": "Threats, Vulnerabilities, and Mitigations",
       "question": "What is OSINT (Open Source Intelligence)?",
       "answers": [
-        "Intelligence sourced exclusively from classified government databases and law enforcement feeds",
         "Information gathered from publicly available sources used for security research or reconnaissance",
-        "A collection of open-source security software tools used for intelligence gathering operations",
-        "Vulnerability intelligence gathered specifically about flaws found in open-source software code"
+        "Intelligence from classified government databases only",
+        "A collection of open-source tools for intelligence gathering",
+        "Vulnerability intelligence gathered specifically about security flaws found in open-source software libraries, frameworks, and community-maintained code repositories"
       ],
       "correct": "Information gathered from publicly available sources used for security research or reconnaissance",
       "explanation": "OSINT involves collecting and analyzing information from publicly available sources (websites, social media, public records) for reconnaissance, threat intelligence, or research."
@@ -2803,10 +2803,10 @@
       "domain": "Security Architecture",
       "question": "What is the purpose of a security gateway?",
       "answers": [
-        "A physical access control gate or turnstile installed at the entrance of a secure data center",
         "A device or service that enforces security policies for traffic passing between network zones",
-        "An informal term for introductory security training provided to new employees during onboarding",
-        "A designated portal or platform where employees can anonymously report security policy concerns"
+        "A physical gate or turnstile at a data center entrance",
+        "An informal term for introductory security training given to new hires during onboarding",
+        "A designated portal where employees can anonymously report security policy concerns and submit incident details for review"
       ],
       "correct": "A device or service that enforces security policies for traffic passing between network zones",
       "explanation": "A security gateway is a device or service positioned at network boundaries that enforces security policies (filtering, inspection, access control) for traffic passing between zones."
@@ -2816,10 +2816,10 @@
       "domain": "Threats, Vulnerabilities, and Mitigations",
       "question": "What is firmware security and why is it important?",
       "answers": [
-        "Protecting firmware code stored exclusively within spinning hard drives from unauthorized changes",
         "Protecting low-level code in hardware devices that persists even after OS reinstallation",
-        "Applying cryptographic signatures to validate the integrity of firmware update packages only",
-        "Detecting and preventing hardware component failures through proactive firmware health checks"
+        "Firmware code protection for spinning hard drives only",
+        "Applying cryptographic signatures to validate firmware update package integrity before installation",
+        "Detecting and preventing hardware component failures through continuous firmware health monitoring and proactive alerting systems"
       ],
       "correct": "Protecting low-level code in hardware devices that persists even after OS reinstallation",
       "explanation": "Firmware is low-level code in hardware devices (BIOS, UEFI, routers). Firmware attacks can persist even after OS reinstallation, making them particularly dangerous and difficult to detect."
@@ -2843,9 +2843,9 @@
       "question": "What is the purpose of deprovisioning in identity management?",
       "answers": [
         "Removing or disabling access rights when a user no longer needs them (e.g., when leaving the organization)",
-        "Creating new user accounts and assigning initial access rights for employees joining the organization",
-        "Resetting and reissuing credentials for users who have forgotten their passwords or locked their accounts",
-        "Upgrading user accounts with additional hardware tokens and device registrations for enhanced authentication"
+        "Creating new accounts and assigning initial access rights",
+        "Resetting credentials for users who have forgotten passwords or locked their accounts out",
+        "Upgrading user accounts with additional hardware tokens, device registrations, and biometric enrollment for enhanced multi-factor authentication"
       ],
       "correct": "Removing or disabling access rights when a user no longer needs them (e.g., when leaving the organization)",
       "explanation": "Deprovisioning removes or disables user access rights when employees leave the organization, change roles, or no longer need access \u2014 preventing unauthorized access by former users."
@@ -2895,9 +2895,9 @@
       "question": "What is the purpose of S/MIME?",
       "answers": [
         "A standard for encrypting and digitally signing email messages",
-        "A secure MIME encoding specification for safely transferring binary file attachments in email",
-        "A security protocol designed for encrypting multimedia streaming over untrusted public networks",
-        "A method for declaring and cryptographically validating MIME content types during transmission"
+        "A secure MIME encoding for safely transferring binary attachments in email",
+        "A protocol for encrypting multimedia streams over untrusted public networks",
+        "A method for declaring and validating MIME content types during transmission"
       ],
       "correct": "A standard for encrypting and digitally signing email messages",
       "explanation": "S/MIME (Secure/Multipurpose Internet Mail Extensions) is a standard that provides end-to-end encryption and digital signing for email messages."
@@ -3076,9 +3076,9 @@
       "question": "What is the purpose of a SIEM's correlation rules?",
       "answers": [
         "To link related events from multiple sources to identify patterns that indicate security incidents",
-        "To align security analysts' shift schedules so that event reviews occur around the clock without gaps",
-        "To sort and organize incoming log entries chronologically to assist analysts during incident investigation",
-        "To map source IP addresses to geographic locations to identify anomalous access from unexpected regions"
+        "To sort incoming log entries chronologically for analysts",
+        "To align security analysts' shift schedules so event reviews occur continuously without coverage gaps",
+        "To map source IP addresses to geographic locations and flag anomalous access attempts originating from unexpected or high-risk regions worldwide"
       ],
       "correct": "To link related events from multiple sources to identify patterns that indicate security incidents",
       "explanation": "SIEM correlation rules analyze relationships between events from multiple sources to detect attack patterns and security incidents that individual alerts might miss."
@@ -3102,9 +3102,9 @@
       "question": "What is just-in-time (JIT) access?",
       "answers": [
         "Provisioning privileged access only when needed and automatically revoking it after a defined period",
-        "Providing access credentials to users at any time through a self-service portal without approval workflows",
-        "Granting immediate access to systems without requiring a formal request or approval to reduce delays",
-        "Delivering access credentials at the physical point of entry using just-in-time courier delivery systems"
+        "Granting immediate access without formal approval",
+        "Providing credentials through a self-service portal at any time without requiring approval workflows",
+        "Delivering physical access credentials at the point of entry using just-in-time courier delivery systems coordinated with building security personnel"
       ],
       "correct": "Provisioning privileged access only when needed and automatically revoking it after a defined period",
       "explanation": "JIT access grants privileged access only when needed for a specific task and automatically revokes it afterward, minimizing the window of privilege exposure."
@@ -3128,9 +3128,9 @@
       "question": "What is the difference between a vulnerability and an exploit?",
       "answers": [
         "A vulnerability is a weakness; an exploit is the tool or technique used to take advantage of that weakness",
-        "A vulnerability is deliberately introduced; an exploit refers to accidental security flaws in software",
-        "Vulnerabilities and exploits are interchangeable terms used differently by vendors and researchers",
-        "An exploit is an unpatched weakness in software; a vulnerability is the attack that takes advantage of it"
+        "Vulnerabilities and exploits are interchangeable terms",
+        "A vulnerability is deliberately introduced; an exploit refers to accidental flaws in software code",
+        "An exploit is an unpatched weakness in software, while a vulnerability is the specific attack technique used to take advantage of that weakness"
       ],
       "correct": "A vulnerability is a weakness; an exploit is the tool or technique used to take advantage of that weakness",
       "explanation": "A vulnerability is the weakness or flaw in a system. An exploit is the specific code, tool, or technique that takes advantage of that vulnerability to cause harm."
@@ -3167,9 +3167,9 @@
       "question": "What is the purpose of security by design?",
       "answers": [
         "Integrating security considerations from the earliest stages of system design rather than adding security later",
-        "Applying physical security principles to building layouts and data center designs for maximum protection",
-        "Designing custom security tools tailored to the specific threat landscape of each individual organization",
-        "Establishing a standardized design methodology for creating and updating organizational security policies"
+        "Applying physical security principles to building layouts",
+        "Designing custom security tools tailored to an organization's specific threat landscape and risk profile",
+        "Establishing a standardized design methodology for creating, reviewing, and updating all organizational security policies and procedures on a recurring basis"
       ],
       "correct": "Integrating security considerations from the earliest stages of system design rather than adding security later",
       "explanation": "Security by design means building security into systems from the start of development rather than bolting it on afterward, resulting in more effective and cost-efficient security."
@@ -3180,9 +3180,9 @@
       "question": "What is threat modeling?",
       "answers": [
         "A structured approach to identifying potential threats and vulnerabilities in a system during design",
-        "Building three-dimensional visual representations of threat actor networks and their interconnections",
-        "Calculating the projected financial costs of potential attacks to prioritize the security investment budget",
-        "Applying supervised machine learning algorithms to historical attack data to forecast future threat trends"
+        "Calculating projected financial costs of potential attacks",
+        "Building three-dimensional visual representations of threat actor networks and their known interconnections",
+        "Applying supervised machine learning algorithms to historical attack datasets to forecast future threat trends and predict likely adversary behavior patterns"
       ],
       "correct": "A structured approach to identifying potential threats and vulnerabilities in a system during design",
       "explanation": "Threat modeling is a structured process for identifying potential security threats and vulnerabilities in a system during design, allowing security controls to be built in."
@@ -3258,9 +3258,9 @@
       "question": "What is the purpose of a dark web monitoring service?",
       "answers": [
         "To search dark web forums and marketplaces for stolen credentials or organizational data",
-        "To restrict employee access to dark web resources through proxy filtering and DNS blacklisting",
-        "To establish secure communication channels for security researchers operating on the dark web",
-        "To report illegal dark web content to law enforcement agencies on behalf of the organization"
+        "To block employee access to dark web resources",
+        "To establish secure communication channels for security researchers who operate on the dark web",
+        "To automatically report illegal dark web marketplace content to law enforcement agencies on behalf of the subscribing organization and its legal counsel"
       ],
       "correct": "To search dark web forums and marketplaces for stolen credentials or organizational data",
       "explanation": "Dark web monitoring services scan dark web forums, paste sites, and marketplaces for stolen credentials, sensitive data, or leaked organizational information."
@@ -3309,10 +3309,10 @@
       "domain": "Security Operations",
       "question": "What does the term 'indicators of attack' (IOA) mean?",
       "answers": [
-        "Indicators of attack; another name for the same concept as indicators of compromise (IOC)",
         "Behavioral patterns and techniques that indicate an attack is in progress, before it completes",
-        "Visible physical disturbances or environmental changes indicating a facility is under attack",
-        "Metrics used by red teams to demonstrate and justify attack actions during exercise reporting"
+        "Another name for indicators of compromise (IOC)",
+        "Physical disturbances or environmental changes indicating a facility may be under active attack",
+        "Metrics used by red teams to quantify, demonstrate, and justify their attack actions and findings during post-exercise reporting and debriefing sessions"
       ],
       "correct": "Behavioral patterns and techniques that indicate an attack is in progress, before it completes",
       "explanation": "IOAs focus on detecting attacker behaviors and techniques in real time (while an attack is occurring), unlike IOCs which look for evidence of a completed compromise."
@@ -3323,9 +3323,9 @@
       "question": "What is data tokenization?",
       "answers": [
         "Replacing sensitive data with non-sensitive placeholders (tokens) while maintaining a secure mapping",
-        "Using authentication tokens as primary credentials to verify user identity when accessing encrypted data",
-        "Applying distributed ledger technology to create immutable audit records of all data access events",
-        "Segmenting data records into smaller tokens to improve query performance and analysis throughput"
+        "Using authentication tokens to verify user identity",
+        "Applying distributed ledger technology to create immutable audit records of data access events",
+        "Segmenting data records into smaller discrete tokens to improve database query performance, enable parallel analysis, and reduce overall processing throughput times"
       ],
       "correct": "Replacing sensitive data with non-sensitive placeholders (tokens) while maintaining a secure mapping",
       "explanation": "Tokenization replaces sensitive data (like credit card numbers) with non-sensitive tokens that have no value to attackers, with the mapping stored securely in a token vault."
@@ -3387,10 +3387,10 @@
       "domain": "Threats, Vulnerabilities, and Mitigations",
       "question": "What is a living off the land (LotL) attack technique?",
       "answers": [
-        "A cyberattack methodology that specifically targets operational technology in agricultural systems",
         "Using legitimate built-in system tools and features to conduct malicious activities and avoid detection",
+        "A cyberattack methodology targeting agricultural OT systems",
         "Establishing a persistent, concealed base of operations inside a compromised data center facility",
-        "A technique for maintaining network persistence without relying on externally hosted infrastructure"
+        "A technique for maintaining long-term network persistence by relying exclusively on internally available tools and resources without contacting externally hosted infrastructure"
       ],
       "correct": "Using legitimate built-in system tools and features to conduct malicious activities and avoid detection",
       "explanation": "LotL attacks use legitimate OS tools (PowerShell, WMI, certutil) for malicious purposes, making detection difficult since no custom malware files are introduced."
@@ -3400,10 +3400,10 @@
       "domain": "Security Program Management",
       "question": "What is the purpose of a data retention policy?",
       "answers": [
-        "A policy mandating permanent, indefinite retention of all organizational data for future audits",
         "To define how long different types of data should be kept and when it should be securely disposed of",
-        "A policy requiring redundant copies of all critical data to be stored across multiple locations",
-        "A policy that restricts and prevents the unauthorized deletion of data by non-privileged users"
+        "Mandating permanent retention of all organizational data",
+        "A policy requiring redundant copies of critical data to be stored across multiple geographic locations",
+        "A policy that restricts unauthorized deletion of data by non-privileged users and enforces mandatory hold periods on all records subject to active legal proceedings"
       ],
       "correct": "To define how long different types of data should be kept and when it should be securely disposed of",
       "explanation": "A data retention policy defines retention periods for different data types based on business needs and legal requirements, and mandates secure disposal when retention periods expire."
@@ -3426,10 +3426,10 @@
       "domain": "Security Architecture",
       "question": "What is the purpose of multi-tier application architecture from a security perspective?",
       "answers": [
-        "To enhance application responsiveness and throughput by parallelizing components across threads",
         "To separate application components into distinct layers, isolating them and limiting blast radius",
-        "To deliberately increase application development complexity and cost to deter adversarial targeting",
-        "To enable geographic replication and load distribution of application services across regions"
+        "To enhance throughput by parallelizing components across threads",
+        "To increase application development complexity and cost in order to deter adversarial targeting",
+        "To enable geographic replication and load distribution of application services across multiple regions, improving availability and reducing single points of failure for end users"
       ],
       "correct": "To separate application components into distinct layers, isolating them and limiting blast radius",
       "explanation": "Multi-tier architecture separates presentation, application logic, and data tiers, allowing each to be independently secured and limiting an attacker's ability to move between tiers."
@@ -3518,9 +3518,9 @@
       "question": "What is the purpose of continuous monitoring in security?",
       "answers": [
         "Ongoing security assessment of systems to maintain situational awareness and identify threats in real time",
-        "Tracking employee productivity and system usage patterns continuously to enforce corporate work policies",
-        "Regularly reviewing and updating security policies to keep pace with changes in the regulatory environment",
-        "Evaluating security vendor performance on an ongoing basis to ensure contractual obligations are met"
+        "Tracking employee productivity patterns to enforce work policies",
+        "Reviewing and updating security policies regularly to keep pace with regulatory environment changes",
+        "Evaluating security vendor performance on an ongoing basis to ensure all contractual obligations, service-level agreements, and key performance indicators are consistently met"
       ],
       "correct": "Ongoing security assessment of systems to maintain situational awareness and identify threats in real time",
       "explanation": "Continuous monitoring provides ongoing awareness of security status, enabling real-time detection of threats, compliance violations, and changes to the security posture."
@@ -3530,10 +3530,10 @@
       "domain": "Security Architecture",
       "question": "What is the purpose of a jump server in privileged access management?",
       "answers": [
-        "A server that dynamically routes administrator sessions between different network security zones",
         "A hardened, audited intermediary server through which administrators access sensitive systems",
-        "A server that bypasses standard authentication controls for pre-approved trusted admin accounts",
-        "A dedicated emergency access server used exclusively during disaster recovery activation events"
+        "A server that bypasses authentication for trusted admins",
+        "A server that dynamically routes administrator sessions between different network security zones",
+        "A dedicated emergency access server used exclusively during disaster recovery events, providing out-of-band administrative connectivity when primary management systems are unavailable"
       ],
       "correct": "A hardened, audited intermediary server through which administrators access sensitive systems",
       "explanation": "A jump server (bastion host) acts as a monitored gateway that administrators must connect through to reach sensitive systems, providing a single, audited access point."
@@ -3544,9 +3544,9 @@
       "question": "What is a keylogger?",
       "answers": [
         "Hardware or software that captures and records keystrokes, including passwords and sensitive data",
-        "A software application that enforces keyboard input restrictions for kiosk and restricted-use terminals",
-        "A centralized key management logging system that records all cryptographic key generation and usage events",
-        "A hardware token that generates cryptographic key material based on the timing of physical key presses"
+        "Software enforcing keyboard input restrictions on kiosks",
+        "A centralized key management logging system that records all cryptographic key generation and usage",
+        "A hardware token that generates cryptographic key material based on the precise timing of physical key presses and uses those measurements as an entropy source for secure random number generation"
       ],
       "correct": "Hardware or software that captures and records keystrokes, including passwords and sensitive data",
       "explanation": "A keylogger captures and records keystrokes made on a device, allowing attackers to steal passwords, credit card numbers, and other sensitive information typed by the user."
@@ -3557,9 +3557,9 @@
       "question": "What is the CISO's (Chief Information Security Officer) primary responsibility?",
       "answers": [
         "Leading the organization's information security strategy and program",
-        "Managing the IT service desk and coordinating the resolution of all employee technical support requests",
-        "Designing and implementing security features in the organization's software development projects",
-        "Conducting hands-on penetration tests and vulnerability assessments of critical production systems"
+        "Managing the IT service desk and coordinating employee technical support",
+        "Designing and implementing security controls in the organization's software",
+        "Conducting penetration tests and vulnerability assessments of production systems"
       ],
       "correct": "Leading the organization's information security strategy and program",
       "explanation": "The CISO provides executive leadership for the organization's information security strategy, policies, risk management, and security program, reporting to senior leadership."
@@ -3582,10 +3582,10 @@
       "domain": "Cryptography",
       "question": "What is post-quantum cryptography?",
       "answers": [
-        "Cryptographic operations performed after a quantum computer has finished its computation cycle",
         "Cryptographic algorithms designed to remain secure against attacks from quantum computers",
-        "Encryption systems that leverage quantum mechanical effects to perform computations natively",
-        "A proposed upgrade path that adds quantum-speed acceleration to existing classical algorithms"
+        "Encryption systems leveraging quantum mechanical effects natively",
+        "Cryptographic operations performed after a quantum computer has completed its computation cycle",
+        "A proposed upgrade path that adds quantum-speed acceleration capabilities to existing classical cryptographic algorithms while maintaining backward compatibility with legacy implementations"
       ],
       "correct": "Cryptographic algorithms designed to remain secure against attacks from quantum computers",
       "explanation": "Post-quantum cryptography develops cryptographic algorithms designed to resist attacks from quantum computers, which could break current RSA and ECC encryption."
@@ -3608,10 +3608,10 @@
       "domain": "Threats, Vulnerabilities, and Mitigations",
       "question": "What is domain shadowing?",
       "answers": [
-        "Registering lookalike domains with visually similar characters to deceive and mislead victims",
         "Compromising a legitimate domain's DNS to create malicious subdomains for C2 or phishing",
+        "Registering lookalike domains to deceive victims",
         "Creating volume shadow copies of domain controller databases for offline credential extraction",
-        "Concealing malicious command-and-control domains behind content delivery network edge nodes"
+        "Concealing malicious command-and-control domains behind content delivery network edge nodes and distributed reverse proxy infrastructure to evade domain reputation analysis"
       ],
       "correct": "Compromising a legitimate domain's DNS to create malicious subdomains for C2 or phishing",
       "explanation": "Domain shadowing involves compromising a legitimate domain's DNS account to create malicious subdomains, leveraging the reputation of the legitimate domain to evade detection."
@@ -3661,9 +3661,9 @@
       "question": "What is vendor risk management?",
       "answers": [
         "Assessing and managing security risks posed by third-party vendors who access organizational systems or data",
-        "Evaluating the financial stability of vendors to assess the risk of service disruption due to insolvency",
-        "Negotiating contract terms and penalties related to financial losses from vendor-caused service outages",
-        "Assessing the technical quality and performance history of security products offered by potential vendors"
+        "Evaluating vendor financial stability and insolvency risk",
+        "Negotiating contract terms and penalties for financial losses caused by vendor service outages",
+        "Assessing the technical quality, performance history, and feature completeness of security products offered by potential vendors before making acquisition and procurement decisions"
       ],
       "correct": "Assessing and managing security risks posed by third-party vendors who access organizational systems or data",
       "explanation": "Vendor risk management evaluates and monitors the security posture of third-party vendors with access to organizational systems, data, or infrastructure."
@@ -3725,10 +3725,10 @@
       "domain": "Security Operations",
       "question": "What is the purpose of penetration test scoping?",
       "answers": [
-        "Selecting the correct optical scope or magnification level when conducting physical surveillance",
         "Defining the specific systems, networks, and techniques included and excluded from a penetration test",
-        "Establishing the overall budget, duration, and resource allocation for a penetration test project",
-        "Assessing and documenting the full extent and financial cost of damages following a cyberattack"
+        "Establishing the budget and duration for a pentest project",
+        "Assessing and documenting the full extent of damages and financial costs following a cyberattack",
+        "Selecting the correct optical scope magnification level and appropriate concealment equipment when conducting physical surveillance operations as part of a social engineering assessment"
       ],
       "correct": "Defining the specific systems, networks, and techniques included and excluded from a penetration test",
       "explanation": "Scoping defines exactly what is in and out of bounds for a penetration test \u2014 which systems can be tested, what techniques are allowed, and any systems that must be avoided."
@@ -3752,9 +3752,9 @@
       "question": "What is BGP hijacking?",
       "answers": [
         "Maliciously announcing IP address prefixes not belonging to the attacker to redirect internet traffic",
-        "Physically seizing control of BGP-speaking router hardware at internet exchange points by threat actors",
-        "Intercepting BGP UPDATE messages in transit to extract route table information for network reconnaissance",
-        "Exploiting memory safety vulnerabilities in BGP daemon software to achieve remote code execution"
+        "Exploiting memory safety flaws in BGP daemon software",
+        "Intercepting BGP UPDATE messages in transit to extract route table data for network reconnaissance",
+        "Physically seizing control of BGP-speaking router hardware at internet exchange points to manipulate routing tables and redirect traffic through attacker-controlled network infrastructure"
       ],
       "correct": "Maliciously announcing IP address prefixes not belonging to the attacker to redirect internet traffic",
       "explanation": "BGP hijacking occurs when an attacker announces ownership of IP address blocks they don't control, causing internet traffic to be routed through the attacker's systems."
@@ -3764,10 +3764,10 @@
       "domain": "Security Program Management",
       "question": "What is a service organization control (SOC) audit?",
       "answers": [
-        "A customer satisfaction audit evaluating a company's responsiveness to client service requests",
         "An independent audit of a service organization's internal controls relevant to customer security",
+        "A customer satisfaction audit evaluating service responsiveness",
         "A personnel security audit reviewing background checks and clearances for service organization staff",
-        "A legal review of service-level agreements and contracts to identify unacceptable security clauses"
+        "A legal review of service-level agreements and contracts conducted to identify unacceptable security clauses, liability gaps, and insufficient data protection provisions that may expose customer data"
       ],
       "correct": "An independent audit of a service organization's internal controls relevant to customer security",
       "explanation": "SOC audits (SOC 1, 2, 3) provide independent assessment of a service organization's controls, giving customers assurance about the security and integrity of the provider's services."
@@ -3777,10 +3777,10 @@
       "domain": "Security Operations",
       "question": "What is the purpose of out-of-band management?",
       "answers": [
-        "Managing network devices using audio-frequency signals transmitted outside the normal data band",
         "Managing systems through a separate, dedicated management network isolated from production traffic",
-        "Administering systems whose firmware or software versions fall outside the vendor support window",
-        "Connecting to and managing remote infrastructure via a dedicated satellite uplink connection"
+        "Administering systems outside the vendor support window",
+        "Managing network devices using audio-frequency signals transmitted outside the normal data band",
+        "Connecting to and managing remote infrastructure via a dedicated satellite uplink connection that operates independently from the organization's primary terrestrial network links"
       ],
       "correct": "Managing systems through a separate, dedicated management network isolated from production traffic",
       "explanation": "Out-of-band management uses a dedicated network separate from production traffic for administrative access, ensuring management access is available even when the primary network is compromised or down."
@@ -3790,10 +3790,10 @@
       "domain": "Cryptography",
       "question": "What is the purpose of a cryptographic protocol such as TLS 1.3?",
       "answers": [
-        "A handshake protocol that mandates exactly three independent layers of symmetric encryption",
         "The latest version of TLS with improved security and performance, removing deprecated algorithms",
-        "A specialized TLS profile configured to encrypt precisely 1.3 terabytes per session maximum",
-        "Version 1.3 of the Advanced Encryption Standard (AES) block cipher algorithm specification"
+        "Version 1.3 of the AES block cipher specification",
+        "A handshake protocol that mandates exactly three independent layers of symmetric encryption",
+        "A specialized TLS profile configured to encrypt precisely 1.3 terabytes of data per session before requiring renegotiation of the cryptographic parameters and session key material"
       ],
       "correct": "The latest version of TLS with improved security and performance, removing deprecated algorithms",
       "explanation": "TLS 1.3 is the latest version of TLS, featuring improved security (removing weak algorithms like RC4, 3DES), faster handshakes, and mandatory forward secrecy."
@@ -3816,10 +3816,10 @@
       "domain": "Threats, Vulnerabilities, and Mitigations",
       "question": "What is credential harvesting?",
       "answers": [
-        "Gathering employee credentials during authorized internal security audits and compliance reviews",
         "Collecting large numbers of usernames and passwords through phishing, malware, or data breaches",
-        "Collecting cryptographic session tokens to perform authentication replay on secured services",
-        "Systematically collecting credentials during authorized red team penetration testing engagements"
+        "Gathering credentials during authorized internal audits",
+        "Collecting cryptographic session tokens to perform authentication replay attacks on secured services",
+        "Systematically collecting usernames, passwords, and access credentials during authorized red team penetration testing engagements conducted under formal rules of engagement agreements"
       ],
       "correct": "Collecting large numbers of usernames and passwords through phishing, malware, or data breaches",
       "explanation": "Credential harvesting is the collection of authentication credentials (usernames, passwords, tokens) through various means including phishing, malware, or purchasing breach data."
@@ -3843,9 +3843,9 @@
       "question": "What is the purpose of a password complexity requirement?",
       "answers": [
         "To increase the difficulty and time required to crack passwords through brute force or dictionary attacks",
-        "To ensure employees include organization-specific identifiers in their passwords to aid account recovery",
-        "To deliberately increase user friction so that employees seek more secure single sign-on alternatives",
-        "To enable centralized password validation and enforce consistent policies across all managed systems"
+        "Ensuring passwords contain organization-specific identifiers",
+        "Deliberately increasing user friction so employees seek more secure single sign-on alternatives",
+        "Enabling centralized password validation and enforcing consistent password policies across all managed systems, directory services, and federated identity providers in the enterprise"
       ],
       "correct": "To increase the difficulty and time required to crack passwords through brute force or dictionary attacks",
       "explanation": "Password complexity requirements (length, mixed character types) increase the keyspace, making passwords significantly harder and slower to crack through brute force."
@@ -3869,9 +3869,9 @@
       "question": "What is an input validation vulnerability?",
       "answers": [
         "Failing to properly check user-supplied input, allowing malicious data to affect application behavior",
-        "A flaw in the server-side validation infrastructure that allows unauthorized users to bypass login controls",
-        "A hardware vulnerability in input devices that allows attackers to intercept data before it reaches the OS",
-        "A cryptographic weakness in the input data encryption mechanism that allows plaintext to be recovered"
+        "A hardware vulnerability in input devices intercepting data",
+        "A flaw in server-side validation that allows unauthorized users to bypass login controls entirely",
+        "A cryptographic weakness in the input data encryption mechanism that allows plaintext content to be recovered by an attacker through known-ciphertext analysis or side-channel techniques"
       ],
       "correct": "Failing to properly check user-supplied input, allowing malicious data to affect application behavior",
       "explanation": "Input validation vulnerabilities occur when applications fail to properly check user input for size, type, format, and content, enabling attacks like SQL injection, XSS, and buffer overflows."
@@ -3881,10 +3881,10 @@
       "domain": "Security Program Management",
       "question": "What is the purpose of a security maturity model like CMMC?",
       "answers": [
-        "A product certification program that evaluates and approves security hardware for government use",
         "To assess and certify an organization's cybersecurity maturity level against defined requirements",
-        "A professional certification that measures the cybersecurity knowledge of individual practitioners",
-        "A severity scoring methodology used to grade and prioritize reported security incidents by risk"
+        "A severity scoring system for prioritizing security incidents",
+        "A product certification program that evaluates and approves security hardware for government use",
+        "A professional certification framework that measures the cybersecurity knowledge and practical skills of individual practitioners through standardized examinations and hands-on assessments"
       ],
       "correct": "To assess and certify an organization's cybersecurity maturity level against defined requirements",
       "explanation": "CMMC (Cybersecurity Maturity Model Certification) provides a tiered framework for assessing and certifying organizations' cybersecurity practices, especially for DoD contractors."
@@ -4025,7 +4025,7 @@
       "question": "A network administrator wants employees to authenticate to the company's wireless network using their individual corporate usernames and passwords \u2014 NOT a shared passphrase. Which technology makes this possible?",
       "answers": [
         "WPA3",
-        "PSK (Pre-Shared Key)",
+        "Shared passphrase",
         "MFA",
         "802.1X"
       ],
@@ -4051,9 +4051,9 @@
       "question": "Which of the following security concerns is MOST commonly associated with a hybrid cloud environment?",
       "answers": [
         "Network protection mismatches between cloud providers",
-        "Insufficient containerization support across on-premises infrastructure compared to cloud environments",
-        "Incompatibility of IoT device management protocols between on-premises and cloud-hosted management systems",
-        "Physical data center security gaps caused by reduced on-site staff presence during cloud migration periods"
+        "Insufficient container support across on-premises and cloud platforms",
+        "IoT management protocol incompatibility between cloud environments",
+        "Physical security gaps from reduced on-site staff during cloud migration"
       ],
       "correct": "Network protection mismatches between cloud providers",
       "explanation": "Hybrid clouds span multiple private and public cloud environments. The added complexity makes it easy to inadvertently apply inconsistent authentication, permissions, and security controls across providers \u2014 creating network protection mismatches. Containerization and IoT issues are not specifically tied to hybrid cloud."
@@ -4065,10 +4065,10 @@
       "answers": [
         "Password spraying",
         "Downgrade attack",
-        "Brute force",
+        "Brute-force attack",
         "Credential stuffing"
       ],
-      "correct": "Brute force",
+      "correct": "Brute-force attack",
       "explanation": "BRUTE FORCE tries a massive number of combinations against one account until the password is found \u2014 the 445 attempts are a dead giveaway. PASSWORD SPRAYING tries a small number of common passwords across MANY accounts to stay under lockout thresholds. Spraying avoids alerts; brute force does not."
     },
     {
@@ -4271,10 +4271,10 @@
       "domain": "Security Architecture",
       "question": "Which of the following BEST provides FEDERATION for authentication?",
       "answers": [
-        "SSO \u2014 allowing users to authenticate once and access all internal corporate applications without re-entering credentials for each system",
         "Federation \u2014 allowing users to authenticate to one organization's resources using credentials from a DIFFERENT, trusted organization",
-        "802.1X \u2014 requiring devices to present valid corporate credentials to a RADIUS server before being granted access to the internal network",
-        "LDAP \u2014 providing a central, hierarchical directory service that stores and manages user accounts, credentials, and group membership data"
+        "SSO \u2014 authenticating once to access all internal corporate apps without re-entering credentials",
+        "802.1X \u2014 requiring devices to present valid credentials to a RADIUS server before network access",
+        "LDAP \u2014 providing a central hierarchical directory service that stores and manages user accounts, credentials, group memberships, and organizational unit structures for access control decisions"
       ],
       "correct": "Federation \u2014 allowing users to authenticate to one organization's resources using credentials from a DIFFERENT, trusted organization",
       "explanation": "FEDERATION enables cross-organization authentication \u2014 your credentials from Company A let you log into Company B's resources. SSO is about one login granting access to many resources WITHIN the same organization. A website that lets you 'Sign in with Google' is an example of federation."
@@ -4284,9 +4284,9 @@
       "domain": "Security Architecture",
       "question": "A company deploys applications across multiple cloud providers and needs efficient, dynamic connectivity between users and all those cloud services. Which connection type is BEST suited?",
       "answers": [
-        "Air-gapped network",
+        "Air gap",
         "802.1X",
-        "Site-to-site IPsec VPN",
+        "IPsec VPN",
         "SD-WAN"
       ],
       "correct": "SD-WAN",

@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.6.1] - 2026-04-29
+
+### Fixed
+- Eliminated answer-length bias in `security-plus-full.json`: previous distractor-padding pass had overcorrected, leaving correct answers as the shortest option in ~21 questions. Distractors trimmed to match correct answer register.
+- Injected length variance across 60 questions where all four answers were uniformly 80–110 chars — distractors now span a natural short/medium/long range so no length signal points to the right answer.
+
+---
+
 ## [0.6.0] - 2026-04-29
 
 ### Added
