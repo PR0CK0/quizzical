@@ -857,7 +857,8 @@ fn show_correct(out: &mut impl Write, q: &Question, width: u16, height: u16) {
     wait_for_key();
 }
 
-fn show_wrong(out: &mut impl Write, q: &Question, chosen: &str, width: u16, height: u16) {
+/// Returns true if the user requests a redo.
+fn show_wrong(out: &mut impl Write, q: &Question, chosen: &str, width: u16, height: u16, allow_redo: bool) -> bool {
     let _ = queue!(out, Clear(ClearType::All));
     let mut rng = rand::thread_rng();
     let taunt = WRONG_MSGS[rng.gen_range(0..WRONG_MSGS.len())];
@@ -900,10 +901,39 @@ fn show_wrong(out: &mut impl Write, q: &Question, chosen: &str, width: u16, heig
         row += 1;
     }
 
-    let cont = "[ press any key for next question ]";
-    let _ = queue!(out, MoveTo(cx.saturating_sub(cont.len() as u16 / 2), height - 2), SetForegroundColor(Color::DarkGrey), Print(cont), ResetColor);
+    let prompt = if allow_redo {
+        "[ any key ] next   [ R ] fat-fingered?"
+    } else {
+        "[ press any key for next question ]"
+    };
+    let _ = queue!(out, MoveTo(cx.saturating_sub(prompt.len() as u16 / 2), height - 2), SetForegroundColor(Color::DarkGrey), Print(prompt), ResetColor);
     out.flush().unwrap();
-    wait_for_key();
+
+    loop {
+        if let Ok(Event::Key(k)) = event::read() {
+            if allow_redo && matches!(k.code, KeyCode::Char('r') | KeyCode::Char('R')) {
+                // Inline confirmation — redraw the bottom two rows only
+                let blank = " ".repeat(width as usize);
+                let _ = queue!(out, MoveTo(0, height - 3), Print(&blank));
+                let _ = queue!(out, MoveTo(0, height - 2), Print(&blank));
+                let q1 = "  Are you lying that you knew it?";
+                let q2 = "  [ Y ] fat finger, I swear   [ N ] no, I guessed";
+                let _ = queue!(out,
+                    MoveTo(cx.saturating_sub(q1.len() as u16 / 2), height - 3),
+                    SetForegroundColor(Color::Yellow), SetAttribute(Attribute::Bold), Print(q1), ResetColor,
+                    MoveTo(cx.saturating_sub(q2.len() as u16 / 2), height - 2),
+                    SetForegroundColor(Color::DarkGrey), Print(q2), ResetColor
+                );
+                out.flush().unwrap();
+                loop {
+                    if let Ok(Event::Key(k2)) = event::read() {
+                        return matches!(k2.code, KeyCode::Char('y') | KeyCode::Char('Y'));
+                    }
+                }
+            }
+            return false;
+        }
+    }
 }
 
 fn show_timeout(out: &mut impl Write, q: &Question, width: u16, height: u16) {
@@ -1358,9 +1388,52 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     if tts { tts_speak("Correct!", &mut tts_proc); }
                     show_correct(&mut out, q, w, h);
                 } else {
-                    wrong_questions.push(q.clone());
                     if tts { tts_speak("Incorrect!", &mut tts_proc); }
-                    show_wrong(&mut out, q, &shuffled[chosen_idx], w, h);
+                    let wants_redo = show_wrong(&mut out, q, &shuffled[chosen_idx], w, h, true);
+
+                    if wants_redo {
+                        // Re-ask the same question with the same shuffled order
+                        let (w, h) = terminal::size()?;
+                        show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w, h);
+                        if tts { tts_speak(&tts_script(q, &shuffled), &mut tts_proc); }
+
+                        let redo_idx = loop {
+                            match event::read()? {
+                                Event::Key(k) => {
+                                    let i = match k.code {
+                                        KeyCode::Char('1') => 0usize,
+                                        KeyCode::Char('2') => 1,
+                                        KeyCode::Char('3') => 2,
+                                        KeyCode::Char('4') => 3,
+                                        KeyCode::Char('q') | KeyCode::Esc => {
+                                            if tts { tts_speak("", &mut tts_proc); }
+                                            break 'questions;
+                                        }
+                                        _ => continue,
+                                    };
+                                    if i < shuffled.len() { break i; }
+                                }
+                                Event::Resize(w2, h2) => {
+                                    show_question_normal(&mut out, q, &shuffled, idx + 1, total, score, w2, h2);
+                                }
+                                _ => continue,
+                            }
+                        };
+
+                        let (w, h) = terminal::size()?;
+                        if redo_idx == correct_idx {
+                            score += 1;
+                            if tts { tts_speak("Correct!", &mut tts_proc); }
+                            show_correct(&mut out, q, w, h);
+                            // not added to wrong_questions — redo counts as correct
+                        } else {
+                            wrong_questions.push(q.clone());
+                            if tts { tts_speak("Incorrect!", &mut tts_proc); }
+                            show_wrong(&mut out, q, &shuffled[redo_idx], w, h, false);
+                        }
+                    } else {
+                        wrong_questions.push(q.clone());
+                    }
                 }
             }
             let (w, h) = terminal::size()?;

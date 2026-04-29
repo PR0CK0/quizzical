@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.6.0] - 2026-04-29
+
+### Added
+- **Redo on fat-finger** — in Normal mode, after a wrong answer press `R` for an inline confirmation ("Are you lying that you knew it?"). Confirm with `Y` to re-answer the same question with the same shuffle. A correct redo counts toward your score and the question is not added to the wrong list. A second wrong answer adds it to the wrong list with no further redo.
+
+---
+
 ## [0.5.2] - 2026-04-29
 
 ### Fixed
