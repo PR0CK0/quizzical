@@ -10,6 +10,7 @@ use crossterm::{
 use rand::seq::SliceRandom;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::io::{stdout, Write};
 use std::path::PathBuf;
@@ -50,6 +51,7 @@ enum GameMode {
     Normal,
     Hard,
     Deathmatch,
+    Weak,
 }
 
 impl GameMode {
@@ -57,7 +59,7 @@ impl GameMode {
         match self {
             GameMode::Deathmatch => 5.0,
             GameMode::Hard => 10.0,
-            GameMode::Normal => 0.0,
+            GameMode::Normal | GameMode::Weak => 0.0,
         }
     }
     fn is_timed(self) -> bool {
@@ -95,6 +97,92 @@ fn load_leaderboard() -> Vec<LeaderboardEntry> {
 fn save_leaderboard(entries: &[LeaderboardEntry]) {
     if let Ok(json) = serde_json::to_string_pretty(entries) {
         let _ = std::fs::write(scores_path(), json);
+    }
+}
+
+// ─── Weak bank ───────────────────────────────────────────────────────────────
+
+#[derive(Serialize, Deserialize, Clone)]
+struct WeakEntry {
+    question: String,
+    streak: u8, // consecutive correct answers in weak drill; ≥2 → graduated (removed)
+}
+
+#[derive(Serialize, Deserialize, Default)]
+struct WeakBank {
+    #[serde(default)]
+    decks: HashMap<String, Vec<WeakEntry>>,
+}
+
+fn weak_path() -> std::path::PathBuf {
+    let base = dirs_next::data_dir()
+        .or_else(|| std::env::var("HOME").ok().map(std::path::PathBuf::from))
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    let dir = base.join("quizzical");
+    let _ = std::fs::create_dir_all(&dir);
+    dir.join("weak.json")
+}
+
+fn load_weak_bank() -> WeakBank {
+    std::fs::read_to_string(weak_path())
+        .ok()
+        .and_then(|s| serde_json::from_str(&s).ok())
+        .unwrap_or_default()
+}
+
+fn save_weak_bank(bank: &WeakBank) {
+    if let Ok(json) = serde_json::to_string_pretty(bank) {
+        let _ = std::fs::write(weak_path(), json);
+    }
+}
+
+impl WeakBank {
+    /// Add question to bank if not already present. No-op if already tracked.
+    fn add(&mut self, deck_key: &str, q: &Question) {
+        let entries = self.decks.entry(deck_key.to_string()).or_default();
+        if !entries.iter().any(|e| e.question == q.question) {
+            entries.push(WeakEntry { question: q.question.clone(), streak: 0 });
+        }
+    }
+
+    /// Reset streak on wrong answer during weak drill.
+    fn reset_streak(&mut self, deck_key: &str, question_text: &str) {
+        if let Some(entries) = self.decks.get_mut(deck_key) {
+            if let Some(e) = entries.iter_mut().find(|e| e.question == question_text) {
+                e.streak = 0;
+            }
+        }
+    }
+
+    /// Increment streak on correct answer during weak drill.
+    /// Returns true if the question graduated (streak reached 2) and was removed.
+    fn increment_streak(&mut self, deck_key: &str, question_text: &str) -> bool {
+        if let Some(entries) = self.decks.get_mut(deck_key) {
+            if let Some(e) = entries.iter_mut().find(|e| e.question == question_text) {
+                e.streak += 1;
+            }
+            if entries.iter().any(|e| e.question == question_text && e.streak >= 2) {
+                entries.retain(|e| e.question != question_text);
+                return true;
+            }
+        }
+        false
+    }
+
+    fn count(&self, deck_key: &str) -> usize {
+        self.decks.get(deck_key).map(|v| v.len()).unwrap_or(0)
+    }
+
+    /// Return Question objects for this deck's weak entries (matched by question text).
+    fn get_questions(&self, deck_key: &str, all: &[Question]) -> Vec<Question> {
+        let entries = match self.decks.get(deck_key) {
+            Some(e) => e,
+            None => return vec![],
+        };
+        entries.iter()
+            .filter_map(|e| all.iter().find(|q| q.question == e.question))
+            .cloned()
+            .collect()
     }
 }
 
@@ -438,7 +526,7 @@ fn draw_combo_row(out: &mut impl Write, width: u16, y: u16, bs: &TimedState, tic
 
 // ─── Screens ─────────────────────────────────────────────────────────────────
 
-fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_name: &str, tts_default: bool) -> Option<(GameMode, bool)> {
+fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_name: &str, tts_default: bool, weak_count: usize) -> Option<(GameMode, bool)> {
     let mut mode = GameMode::Normal;
     let mut tts_on = tts_default;
     let cx = width / 2;
@@ -484,12 +572,13 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
             ResetColor
         );
 
-        // mode toggle
+        // ── mode toggle row (NORMAL / HARD / DEATHMATCH) ──
         let toggle_y = art_start + art_lines.len() as u16 + 3;
         let normal_label = "  NORMAL  ";
         let beat_label = "  ⚡ HARD  ";
         let hard_label = "  ☠ DEATHMATCH  ";
         let gap = "    ";
+        let top_three_active = matches!(mode, GameMode::Normal | GameMode::Hard | GameMode::Deathmatch);
 
         let total_toggle_w = normal_label.len() + gap.len() + beat_label.len() + gap.len() + hard_label.len() + 4;
         let tx = cx.saturating_sub(total_toggle_w as u16 / 2);
@@ -498,22 +587,21 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
         let _ = if mode == GameMode::Normal {
             queue!(out, MoveTo(tx, toggle_y), SetBackgroundColor(Color::Cyan), SetForegroundColor(Color::Black), SetAttribute(Attribute::Bold), Print(normal_label), ResetColor)
         } else {
-            queue!(out, MoveTo(tx, toggle_y), SetForegroundColor(Color::DarkGrey), Print(normal_label), ResetColor)
+            let c = if top_three_active { Color::DarkGrey } else { Color::DarkGrey };
+            queue!(out, MoveTo(tx, toggle_y), SetForegroundColor(c), Print(normal_label), ResetColor)
         };
-
         let _ = queue!(out, MoveTo(tx + normal_label.len() as u16, toggle_y), Print(gap));
 
-        // BEAT box
+        // HARD box
         let beat_x = tx + normal_label.len() as u16 + gap.len() as u16;
         let _ = if mode == GameMode::Hard {
             queue!(out, MoveTo(beat_x, toggle_y), SetBackgroundColor(Color::Yellow), SetForegroundColor(Color::Black), SetAttribute(Attribute::Bold), Print(beat_label), ResetColor)
         } else {
             queue!(out, MoveTo(beat_x, toggle_y), SetForegroundColor(Color::DarkGrey), Print(beat_label), ResetColor)
         };
-
         let _ = queue!(out, MoveTo(beat_x + beat_label.len() as u16, toggle_y), Print(gap));
 
-        // HARD box
+        // DEATHMATCH box
         let hard_x = beat_x + beat_label.len() as u16 + gap.len() as u16;
         let _ = if mode == GameMode::Deathmatch {
             queue!(out, MoveTo(hard_x, toggle_y), SetBackgroundColor(Color::DarkRed), SetForegroundColor(Color::White), SetAttribute(Attribute::Bold), Print(hard_label), ResetColor)
@@ -521,20 +609,40 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
             queue!(out, MoveTo(hard_x, toggle_y), SetForegroundColor(Color::DarkGrey), Print(hard_label), ResetColor)
         };
 
+        // ── WEAK DRILL row (separated by blank line) ──
+        let weak_y = toggle_y + 2;
+        let weak_label = "  ⚠ WEAK DRILL  ";
+        let weak_note = if weak_count > 0 {
+            format!("  ·  {} question{}  ·  grows from Normal play", weak_count, if weak_count == 1 { "" } else { "s" })
+        } else {
+            "  ·  empty  ·  answer questions wrong in Normal mode to populate".to_string()
+        };
+
+        // label
+        let _ = if mode == GameMode::Weak {
+            queue!(out, MoveTo(tx, weak_y), SetBackgroundColor(Color::Magenta), SetForegroundColor(Color::Black), SetAttribute(Attribute::Bold), Print(weak_label), ResetColor)
+        } else {
+            queue!(out, MoveTo(tx, weak_y), SetForegroundColor(Color::DarkGrey), Print(weak_label), ResetColor)
+        };
+        // inline description
+        let note_color = if mode == GameMode::Weak && weak_count > 0 { Color::White } else { Color::DarkGrey };
+        let _ = queue!(out, MoveTo(tx + weak_label.len() as u16, weak_y), SetForegroundColor(note_color), Print(&weak_note), ResetColor);
+
+        // ── hints ──
         let hint1 = "[ ← → ] or [ B ] to cycle mode";
         let hint2 = "[ Enter ] to start   [ q / Esc ] back to decks";
         let _ = queue!(
             out,
-            MoveTo(cx.saturating_sub(hint1.len() as u16 / 2), toggle_y + 2),
+            MoveTo(cx.saturating_sub(hint1.len() as u16 / 2), toggle_y + 4),
             SetForegroundColor(Color::DarkGrey), Print(hint1), ResetColor,
-            MoveTo(cx.saturating_sub(hint2.len() as u16 / 2), toggle_y + 3),
+            MoveTo(cx.saturating_sub(hint2.len() as u16 / 2), toggle_y + 5),
             SetForegroundColor(Color::DarkGrey), Print(hint2), ResetColor
         );
 
         if mode.is_timed() {
             let beat_info = format!("  Timed: {}s/question  │  Points: faster = more  │  Chain for combo  ", mode.beat_time() as u32);
             let color = if mode == GameMode::Deathmatch { Color::Red } else { Color::Yellow };
-            let _ = queue!(out, MoveTo(cx.saturating_sub(beat_info.len() as u16 / 2), toggle_y + 5), SetForegroundColor(color), Print(&beat_info), ResetColor);
+            let _ = queue!(out, MoveTo(cx.saturating_sub(beat_info.len() as u16 / 2), toggle_y + 7), SetForegroundColor(color), Print(&beat_info), ResetColor);
         }
 
         // TTS toggle — Normal mode only
@@ -542,7 +650,7 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
             let tts_label = if tts_on { "  [ T ]  TTS: ON   " } else { "  [ T ]  TTS: off  " };
             let tts_color = if tts_on { Color::Green } else { Color::DarkGrey };
             let _ = queue!(out,
-                MoveTo(cx.saturating_sub(tts_label.len() as u16 / 2), toggle_y + 5),
+                MoveTo(cx.saturating_sub(tts_label.len() as u16 / 2), toggle_y + 7),
                 SetForegroundColor(tts_color), Print(tts_label), ResetColor);
         }
 
@@ -550,20 +658,28 @@ fn show_title(out: &mut impl Write, width: u16, height: u16, total: usize, deck_
 
         match event::read().ok() {
             Some(Event::Key(k)) => match k.code {
-                KeyCode::Enter => return Some((mode, tts_on)),
+                KeyCode::Enter => {
+                    if mode == GameMode::Weak && weak_count == 0 {
+                        // bank empty — stay on title, note is already shown inline
+                    } else {
+                        return Some((mode, tts_on));
+                    }
+                }
                 KeyCode::Char('q') | KeyCode::Esc => return None,
                 KeyCode::Char('b') | KeyCode::Char('B') | KeyCode::Right | KeyCode::Tab => {
                     mode = match mode {
                         GameMode::Normal => GameMode::Hard,
                         GameMode::Hard => GameMode::Deathmatch,
-                        GameMode::Deathmatch => GameMode::Normal,
+                        GameMode::Deathmatch => GameMode::Weak,
+                        GameMode::Weak => GameMode::Normal,
                     };
                 }
                 KeyCode::Left => {
                     mode = match mode {
-                        GameMode::Normal => GameMode::Deathmatch,
+                        GameMode::Normal => GameMode::Weak,
                         GameMode::Hard => GameMode::Normal,
                         GameMode::Deathmatch => GameMode::Hard,
+                        GameMode::Weak => GameMode::Deathmatch,
                     };
                 }
                 KeyCode::Char('t') | KeyCode::Char('T') => {
@@ -1140,6 +1256,56 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
     }
 }
 
+fn show_final_weak(out: &mut impl Write, correct: usize, total: usize, graduated: usize, remaining: usize, width: u16, height: u16) {
+    let _ = queue!(out, Clear(ClearType::All));
+    let cx = width / 2;
+    let cy = height / 2;
+    let pct = if total > 0 { correct * 100 / total } else { 0 };
+    let color = color_for_pct(pct);
+
+    let (grade, sub) = if remaining == 0 {
+        ("★  BANK CLEARED!", "Every weak question graduated. You nailed it.")
+    } else if graduated > 0 {
+        ("✓  GOOD SESSION", "Keep drilling — the bank shrinks with every pass.")
+    } else {
+        ("~  KEEP AT IT", "No graduations this time. Run it again.")
+    };
+
+    let score_line  = format!("Correct:     {} / {}", correct, total);
+    let grad_line   = format!("Graduated:   {} question{}", graduated, if graduated == 1 { "" } else { "s" });
+    let remain_line = format!("Remaining:   {} in bank", remaining);
+
+    let lines: Vec<(&str, Color, bool)> = vec![
+        ("╔══════════════════════════════════╗", Color::Magenta, true),
+        ("║       WEAK DRILL COMPLETE!       ║", Color::Magenta, true),
+        ("╚══════════════════════════════════╝", Color::Magenta, true),
+        ("", Color::Reset, false),
+        (&score_line,  color, false),
+        (&grad_line,   Color::Green, false),
+        (&remain_line, Color::DarkGrey, false),
+        ("", Color::Reset, false),
+        (grade, color, true),
+        (sub,   Color::DarkGrey, false),
+    ];
+
+    let start = cy.saturating_sub(lines.len() as u16 / 2);
+    for (i, (line, clr, bold)) in lines.iter().enumerate() {
+        let x = cx.saturating_sub(line.chars().count() as u16 / 2);
+        let y = start + i as u16;
+        if *bold {
+            let _ = queue!(out, MoveTo(x, y), SetForegroundColor(*clr), SetAttribute(Attribute::Bold), Print(line), ResetColor);
+        } else {
+            let _ = queue!(out, MoveTo(x, y), SetForegroundColor(*clr), Print(line), ResetColor);
+        }
+    }
+
+    let cont = "[ any key ] back to menu";
+    let _ = queue!(out, MoveTo(cx.saturating_sub(cont.len() as u16 / 2), height - 2),
+        SetForegroundColor(Color::DarkGrey), Print(cont), ResetColor);
+    out.flush().unwrap();
+    wait_for_key();
+}
+
 fn drain_events() {
     while crossterm::event::poll(std::time::Duration::from_millis(0)).unwrap_or(false) {
         let _ = crossterm::event::read();
@@ -1334,13 +1500,15 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         let bank: QBank = serde_json::from_str(&raw)?;
         let deck_name = if bank.name.is_empty() { "quiz".to_string() } else { bank.name.clone() };
         let questions_orig = bank.questions;
+        let deck_key = json_path.to_string_lossy().into_owned();
 
         'session: loop {
             let mut questions = questions_orig.clone();
             questions.shuffle(&mut rng);
 
+            let weak_count = load_weak_bank().count(&deck_key);
             let (w, h) = terminal::size()?;
-            let (mode, tts) = match show_title(&mut out, w, h, questions.len(), &deck_name, tts_default) {
+            let (mode, tts) = match show_title(&mut out, w, h, questions.len(), &deck_name, tts_default, weak_count) {
                 Some(r) => r,
                 None => break 'session,
             };
@@ -1349,8 +1517,116 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let total = questions.len();
 
+        // ── Weak drill mode ───────────────────────────────────────────────────────
+        if mode == GameMode::Weak {
+            let mut wb = load_weak_bank();
+            let mut weak_qs = wb.get_questions(&deck_key, &questions_orig);
+            if weak_qs.is_empty() { break; }
+            weak_qs.shuffle(&mut rng);
+            let weak_total = weak_qs.len();
+            let mut score = 0usize;
+            let mut graduated = 0usize;
+            let mut tts_proc: Option<Child> = None;
+
+            'weak: for (idx, q) in weak_qs.iter().enumerate() {
+                let (shuffled, correct_idx) = q.shuffled_answers(&mut rng);
+                let (w, h) = terminal::size()?;
+                show_question_normal(&mut out, q, &shuffled, idx + 1, weak_total, score, w, h);
+                if tts { tts_speak(&tts_script(q, &shuffled), &mut tts_proc); }
+
+                let chosen_idx = loop {
+                    match event::read()? {
+                        Event::Key(k) => {
+                            let i = match k.code {
+                                KeyCode::Char('1') => 0usize,
+                                KeyCode::Char('2') => 1,
+                                KeyCode::Char('3') => 2,
+                                KeyCode::Char('4') => 3,
+                                KeyCode::Char('q') | KeyCode::Esc => {
+                                    if tts { tts_speak("", &mut tts_proc); }
+                                    break 'weak;
+                                }
+                                _ => continue,
+                            };
+                            if i < shuffled.len() { break i; }
+                        }
+                        Event::Resize(w2, h2) => {
+                            show_question_normal(&mut out, q, &shuffled, idx + 1, weak_total, score, w2, h2);
+                        }
+                        _ => continue,
+                    }
+                };
+
+                let (w, h) = terminal::size()?;
+                if chosen_idx == correct_idx {
+                    score += 1;
+                    if tts { tts_speak("Correct!", &mut tts_proc); }
+                    if wb.increment_streak(&deck_key, &q.question) {
+                        graduated += 1;
+                    }
+                    save_weak_bank(&wb);
+                    show_correct(&mut out, q, w, h);
+                } else {
+                    if tts { tts_speak("Incorrect!", &mut tts_proc); }
+                    let wants_redo = show_wrong(&mut out, q, &shuffled[chosen_idx], w, h, true);
+
+                    if wants_redo {
+                        let (w, h) = terminal::size()?;
+                        show_question_normal(&mut out, q, &shuffled, idx + 1, weak_total, score, w, h);
+                        if tts { tts_speak(&tts_script(q, &shuffled), &mut tts_proc); }
+
+                        let redo_idx = loop {
+                            match event::read()? {
+                                Event::Key(k) => {
+                                    let i = match k.code {
+                                        KeyCode::Char('1') => 0usize,
+                                        KeyCode::Char('2') => 1,
+                                        KeyCode::Char('3') => 2,
+                                        KeyCode::Char('4') => 3,
+                                        KeyCode::Char('q') | KeyCode::Esc => {
+                                            if tts { tts_speak("", &mut tts_proc); }
+                                            break 'weak;
+                                        }
+                                        _ => continue,
+                                    };
+                                    if i < shuffled.len() { break i; }
+                                }
+                                Event::Resize(w2, h2) => {
+                                    show_question_normal(&mut out, q, &shuffled, idx + 1, weak_total, score, w2, h2);
+                                }
+                                _ => continue,
+                            }
+                        };
+
+                        let (w, h) = terminal::size()?;
+                        if redo_idx == correct_idx {
+                            score += 1;
+                            if tts { tts_speak("Correct!", &mut tts_proc); }
+                            if wb.increment_streak(&deck_key, &q.question) {
+                                graduated += 1;
+                            }
+                            save_weak_bank(&wb);
+                            show_correct(&mut out, q, w, h);
+                        } else {
+                            wb.reset_streak(&deck_key, &q.question);
+                            save_weak_bank(&wb);
+                            if tts { tts_speak("Incorrect!", &mut tts_proc); }
+                            show_wrong(&mut out, q, &shuffled[redo_idx], w, h, false);
+                        }
+                    } else {
+                        wb.reset_streak(&deck_key, &q.question);
+                        save_weak_bank(&wb);
+                    }
+                }
+            }
+
+            let remaining = wb.count(&deck_key);
+            let (w, h) = terminal::size()?;
+            show_final_weak(&mut out, score, weak_total, graduated, remaining, w, h);
+            break; // return to title screen
+
         // ── Normal mode ──────────────────────────────────────────────────────────
-        if mode == GameMode::Normal {
+        } else if mode == GameMode::Normal {
             let mut score = 0usize;
             let mut wrong_questions: Vec<Question> = vec![];
             let mut tts_proc: Option<Child> = None;
@@ -1425,14 +1701,21 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                             score += 1;
                             if tts { tts_speak("Correct!", &mut tts_proc); }
                             show_correct(&mut out, q, w, h);
-                            // not added to wrong_questions — redo counts as correct
+                            // fat-finger confirmed — not added to wrong list or weak bank
                         } else {
                             wrong_questions.push(q.clone());
+                            // redo also wrong → add to weak bank
+                            let mut wb = load_weak_bank();
+                            wb.add(&deck_key, q);
+                            save_weak_bank(&wb);
                             if tts { tts_speak("Incorrect!", &mut tts_proc); }
                             show_wrong(&mut out, q, &shuffled[redo_idx], w, h, false);
                         }
                     } else {
                         wrong_questions.push(q.clone());
+                        let mut wb = load_weak_bank();
+                        wb.add(&deck_key, q);
+                        save_weak_bank(&wb);
                     }
                 }
             }
@@ -1446,7 +1729,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
 
         // ── Timed modes (Hard / Deathmatch) ──────────────────────────────────────
-        } else {
+        } else if mode == GameMode::Hard || mode == GameMode::Deathmatch {
             let beat_time = mode.beat_time();
             let mut bs = TimedState::new();
             let mut answered = 0usize;
@@ -1618,6 +1901,39 @@ mod tests {
             assert_eq!(shuffled[correct_idx], "C");
             assert_eq!(shuffled.len(), 4);
         }
+    }
+
+    #[test]
+    fn weak_bank_add_increment_graduate() {
+        let q = Question {
+            domain: "Test".into(), question: "What is X?".into(),
+            answers: vec!["A".into(), "B".into()], correct: "A".into(),
+            explanation: "Because A.".into(),
+        };
+        let mut wb = WeakBank::default();
+        let key = "test_deck";
+
+        // add → 1 entry
+        wb.add(key, &q);
+        assert_eq!(wb.count(key), 1);
+
+        // add again → no-op
+        wb.add(key, &q);
+        assert_eq!(wb.count(key), 1);
+
+        // first correct → streak 1, not graduated
+        assert!(!wb.increment_streak(key, &q.question));
+        assert_eq!(wb.count(key), 1);
+
+        // wrong → streak reset to 0
+        wb.reset_streak(key, &q.question);
+        let entry = &wb.decks[key][0];
+        assert_eq!(entry.streak, 0);
+
+        // two consecutive correct → graduated (removed)
+        wb.increment_streak(key, &q.question);
+        assert!(wb.increment_streak(key, &q.question));
+        assert_eq!(wb.count(key), 0);
     }
 
     #[test]

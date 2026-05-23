@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.7.0] - 2026-05-23
+
+### Added
+- **Weak bank** — persistent per-deck tracking of questions you get wrong in Normal mode. Wrong answers are automatically added to the bank; 2 consecutive correct answers during a Weak drill graduates (removes) the question.
+- **Weak Drill mode** — new mode on the title screen, visually separated below NORMAL / HARD / DEATHMATCH with `←` / `→`. Shows live question count and a note that the bank grows from Normal play. Non-startable when bank is empty. End screen reports how many graduated and how many remain.
+- Bank persists to `~/Library/Application Support/quizzical/weak.json` (per-deck, keyed by deck filename).
+
+---
+
 ## [0.6.1] - 2026-04-29
 
 ### Fixed
