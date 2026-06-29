@@ -330,10 +330,22 @@ fn wait_for_key() {
     }
 }
 
-fn color_for_pct(pct: usize) -> Color {
-    if pct >= 75 {
+fn key_to_answer_idx(code: KeyCode) -> Option<usize> {
+    match code {
+        KeyCode::Char(c) if ('1'..='7').contains(&c) => Some(c as usize - '1' as usize),
+        _ => None,
+    }
+}
+
+fn answer_hint(count: usize) -> String {
+    let labels: String = (1..=count).map(|n| n.to_string()).collect::<Vec<_>>().join(" / ");
+    format!("  Answer [{}]  or  [q] to quit: ", labels)
+}
+
+fn color_for_pct(pct: f64) -> Color {
+    if pct >= 75.0 {
         Color::Green
-    } else if pct >= 60 {
+    } else if pct >= 60.0 {
         Color::Yellow
     } else {
         Color::Red
@@ -357,9 +369,9 @@ fn fmt_score(n: u64) -> String {
 
 fn draw_header_normal(out: &mut impl Write, width: u16, q_num: usize, total: usize, score: usize) {
     let completed = q_num.saturating_sub(1);
-    let pct = if completed > 0 { score * 100 / completed } else { 0 };
+    let pct = if completed > 0 { score as f64 * 100.0 / completed as f64 } else { 0.0 };
     let bar = format!(
-        " ╔══ QUIZZICAL ══╗  Q {}/{} │ Score: {}/{} ({}%)",
+        " ╔══ QUIZZICAL ══╗  Q {}/{} │ Score: {}/{} ({:.1}%)",
         q_num, total, score, completed, pct
     );
     let _ = queue!(
@@ -769,7 +781,7 @@ fn show_question_normal(
         MoveTo(2, height - 2),
         SetForegroundColor(Color::White),
         SetAttribute(Attribute::Bold),
-        Print("  Answer [1 / 2 / 3 / 4]  or  [q] to quit: "),
+        Print(answer_hint(answers.len())),
         ResetColor
     );
     out.flush().unwrap();
@@ -795,7 +807,7 @@ fn show_question_timed(
         MoveTo(2, height - 2),
         SetForegroundColor(Color::White),
         SetAttribute(Attribute::Bold),
-        Print("  Answer [1 / 2 / 3 / 4]  or  [q] to quit:"),
+        Print(answer_hint(answers.len())),
         ResetColor
     );
     // initial fuse (full) — occupies rows h-6, h-5, h-4
@@ -847,18 +859,14 @@ fn run_timed_question(
         if event::poll(Duration::from_millis(50)).unwrap_or(false) {
             match event::read() {
                 Ok(Event::Key(k)) => {
-                    let idx = match k.code {
-                        KeyCode::Char('1') => 0usize,
-                        KeyCode::Char('2') => 1,
-                        KeyCode::Char('3') => 2,
-                        KeyCode::Char('4') => 3,
-                        KeyCode::Char('q') | KeyCode::Esc => return TimedResult::Quit,
-                        _ => { tick += 1; continue; }
+                    let idx = match key_to_answer_idx(k.code) {
+                        Some(i) if i < answers.len() => i,
+                        _ => match k.code {
+                            KeyCode::Char('q') | KeyCode::Esc => return TimedResult::Quit,
+                            _ => { tick += 1; continue; }
+                        }
                     };
-                    if idx < answers.len() {
-                        return TimedResult::Answer(idx, elapsed);
-                    }
-                    tick += 1;
+                    return TimedResult::Answer(idx, elapsed);
                 }
                 Ok(Event::Resize(w2, h2)) => {
                     show_question_timed(out, q, answers, q_num, total, bs, w2, h2, beat_time);
@@ -1093,22 +1101,22 @@ fn show_timeout(out: &mut impl Write, q: &Question, width: u16, height: u16) {
 
 fn show_final(out: &mut impl Write, score: usize, total: usize, width: u16, height: u16, wrong_questions: &[Question]) -> EndAction {
     let _ = queue!(out, Clear(ClearType::All));
-    let pct = if total > 0 { score * 100 / total } else { 0 };
+    let pct = if total > 0 { score as f64 * 100.0 / total as f64 } else { 0.0 };
     let cx = width / 2;
     let cy = height / 2;
 
-    let (grade, sub) = if pct >= 90 {
+    let (grade, sub) = if pct >= 90.0 {
         ("★  OUTSTANDING", "You might actually be ready for the real thing.")
-    } else if pct >= 75 {
+    } else if pct >= 75.0 {
         ("✓  SOLID PASS", "Keep reviewing the ones you missed.")
-    } else if pct >= 60 {
+    } else if pct >= 60.0 {
         ("~  GETTING THERE", "Focus on the wrong answers. Run it again.")
     } else {
         ("✗  KEEP STUDYING", "Go back through the study guides. You've got this.")
     };
 
     let color = color_for_pct(pct);
-    let score_line = format!("Final Score:  {} / {}  ({}%)", score, total, pct);
+    let score_line = format!("Final Score:  {} / {}  ({:.1}%)", score, total, pct);
 
     let lines: Vec<(&str, Color, bool)> = vec![
         ("╔══════════════════════════════════╗", color, true),
@@ -1157,7 +1165,7 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
     let cx = width / 2;
     let cy = height / 2;
 
-    let pct = if answered > 0 { bs.correct * 100 / answered } else { 0 };
+    let pct = if answered > 0 { bs.correct as f64 * 100.0 / answered as f64 } else { 0.0 };
     let color = color_for_pct(pct);
 
     let (grade, sub) = if bs.score == 0 {
@@ -1166,7 +1174,7 @@ fn show_final_timed(out: &mut impl Write, bs: &TimedState, answered: usize, tota
         ("★  LEGENDARY", "That combo chain. Unreal.")
     } else if bs.max_combo >= 6 {
         ("◆  ELITE", "Speed AND accuracy. That's the combo.")
-    } else if pct >= 80 {
+    } else if pct >= 80.0 {
         ("✓  SOLID SPEED RUN", "Clean answers, decent pace.")
     } else {
         ("~  KEEP GRINDING", "Speed will come with reps.")
@@ -1260,7 +1268,7 @@ fn show_final_weak(out: &mut impl Write, correct: usize, total: usize, graduated
     let _ = queue!(out, Clear(ClearType::All));
     let cx = width / 2;
     let cy = height / 2;
-    let pct = if total > 0 { correct * 100 / total } else { 0 };
+    let pct = if total > 0 { correct as f64 * 100.0 / total as f64 } else { 0.0 };
     let color = color_for_pct(pct);
 
     let (grade, sub) = if remaining == 0 {
@@ -1537,16 +1545,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 let chosen_idx = loop {
                     match event::read()? {
                         Event::Key(k) => {
-                            let i = match k.code {
-                                KeyCode::Char('1') => 0usize,
-                                KeyCode::Char('2') => 1,
-                                KeyCode::Char('3') => 2,
-                                KeyCode::Char('4') => 3,
-                                KeyCode::Char('q') | KeyCode::Esc => {
-                                    if tts { tts_speak("", &mut tts_proc); }
-                                    break 'weak;
+                            let i = if let Some(i) = key_to_answer_idx(k.code) {
+                                i
+                            } else {
+                                match k.code {
+                                    KeyCode::Char('q') | KeyCode::Esc => {
+                                        if tts { tts_speak("", &mut tts_proc); }
+                                        break 'weak;
+                                    }
+                                    _ => continue,
                                 }
-                                _ => continue,
                             };
                             if i < shuffled.len() { break i; }
                         }
@@ -1639,16 +1647,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 let chosen_idx = loop {
                     match event::read()? {
                         Event::Key(k) => {
-                            let i = match k.code {
-                                KeyCode::Char('1') => 0usize,
-                                KeyCode::Char('2') => 1,
-                                KeyCode::Char('3') => 2,
-                                KeyCode::Char('4') => 3,
-                                KeyCode::Char('q') | KeyCode::Esc => {
-                                    if tts { tts_speak("", &mut tts_proc); }
-                                    break 'questions;
+                            let i = if let Some(i) = key_to_answer_idx(k.code) {
+                                i
+                            } else {
+                                match k.code {
+                                    KeyCode::Char('q') | KeyCode::Esc => {
+                                        if tts { tts_speak("", &mut tts_proc); }
+                                        break 'questions;
+                                    }
+                                    _ => continue,
                                 }
-                                _ => continue,
                             };
                             if i < shuffled.len() { break i; }
                         }

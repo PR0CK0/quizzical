@@ -2,6 +2,8 @@
 
 [![crates.io](https://img.shields.io/crates/v/quizzical.svg)](https://crates.io/crates/quizzical)
 
+> **Status:** passively maintained. The crates.io publish token has been allowed to expire — the existing release remains available via `cargo install quizzical`. New versions may be published occasionally but are not guaranteed.
+
 ![demo](demo.png)
 
 A terminal quiz game for certification exam prep. Built in Rust with a full-screen TUI, physics-based animations, and timed modes with a burning fuse timer and combo scoring.

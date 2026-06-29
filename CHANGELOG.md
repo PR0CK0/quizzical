@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.7.1] - 2026-06-29
+
+### Changed
+- README: noted passive maintenance status and expired crates.io publish token
+- UI: accuracy percentage now shows one decimal place (e.g. 84.8% instead of 84%)
+- UI: answer count is now dynamic (supports 2–7 options); hint and key input adapt automatically
+
+---
+
 ## [0.7.0] - 2026-05-23
 
 ### Added
